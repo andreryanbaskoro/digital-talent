@@ -16,6 +16,7 @@ class PenggunaSeeder extends Seeder
             'kata_sandi' => Hash::make('password123'),
             'peran' => 'disnaker',
             'status' => 'aktif',
+            'nip' => '1234567890',
         ]);
 
         Pengguna::create([
