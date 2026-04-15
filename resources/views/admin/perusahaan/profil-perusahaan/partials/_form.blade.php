@@ -125,6 +125,7 @@ $isEdit = isset($profil);
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Logo</label>
+
                                 <input type="file" name="logo"
                                     class="form-control @error('logo') is-invalid @enderror">
 
@@ -132,13 +133,19 @@ $isEdit = isset($profil);
                                 <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
 
+                                {{-- tombol lihat logo --}}
                                 @if(isset($profil) && $profil->logo)
-                                <div class="mt-2 text-center">
-                                    <small class="text-muted d-block">Logo saat ini</small>
-                                    <img src="{{ asset('storage/'.$profil->logo) }}"
-                                        class="img-fluid rounded-circle mt-1"
-                                        style="width:80px;height:80px;object-fit:cover;">
+                                <div class="mt-2">
+                                    <a href="{{ asset('storage/'.$profil->logo) }}"
+                                        target="_blank"
+                                        class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-image"></i> Lihat Logo
+                                    </a>
                                 </div>
+                                @else
+                                <small class="text-muted d-block mt-2">
+                                    Belum ada logo
+                                </small>
                                 @endif
                             </div>
                         </div>

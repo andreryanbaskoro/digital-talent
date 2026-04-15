@@ -2,335 +2,183 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
-// ================= CONTROLLERS =================
 use App\Http\Controllers\Auth\LoginController;
 
 // DISNAKER
 use App\Http\Controllers\Admin\Disnaker\DashboardController as DisnakerDashboardController;
 use App\Http\Controllers\Admin\Disnaker\VerifikasiLowonganController;
 use App\Http\Controllers\Admin\Disnaker\PenggunaController;
+use App\Http\Controllers\Admin\Disnaker\Ak1Controller;
+use App\Http\Controllers\Admin\Disnaker\ProfilPencariKerjaController as DisnakerProfilPencariKerjaController;
+use App\Http\Controllers\Admin\Disnaker\ProfilPerusahaanController as DisnakerProfilPerusahaanController;
 
 // PERUSAHAAN
 use App\Http\Controllers\Admin\Perusahaan\DashboardController as PerusahaanDashboardController;
-use App\Http\Controllers\Admin\Perusahaan\ProfilPerusahaanController;
+use App\Http\Controllers\Admin\Perusahaan\ProfilPerusahaanController as PerusahaanProfilPerusahaanController;
 use App\Http\Controllers\Admin\Perusahaan\LowonganPekerjaanController;
 
 // PENCAKER
 use App\Http\Controllers\Admin\Pencaker\DashboardController as PencakerDashboardController;
-use App\Http\Controllers\Admin\Pencaker\ProfilPencariKerjaController;
-use App\Http\Controllers\Admin\Pencaker\KeterampilanAk1Controller;
+use App\Http\Controllers\Admin\Pencaker\ProfilPencariKerjaController as PencakerProfilPencariKerjaController;
 use App\Http\Controllers\Admin\Pencaker\KartuAk1Controller;
+use App\Http\Controllers\Admin\Pencaker\KeterampilanAk1Controller;
 use App\Http\Controllers\Admin\Pencaker\PengalamanKerjaAk1Controller;
 use App\Http\Controllers\Admin\Pencaker\RiwayatPendidikanAk1Controller;
 
+Route::redirect('/', '/login');
 
-
-// =================== HELPER ===================
-function routeByRole(array $map, $method = 'index')
-{
-    $role = Auth::user()->peran;
-
-    if (!isset($map[$role])) {
-        abort(403, 'Akses ditolak');
-    }
-
-    return app($map[$role])->$method(request());
-}
-
-
-// =================== HOME ===================
-Route::get('/', fn() => redirect()->route('login'));
-
-
-// =================== AUTH ===================
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
+Route::middleware(['auth'])->get('/dashboard', function () {
+    return match (Auth::user()->peran) {
+        'disnaker'   => redirect()->route('disnaker.dashboard'),
+        'perusahaan' => redirect()->route('perusahaan.dashboard'),
+        'pencaker'   => redirect()->route('pencaker.dashboard'),
+        default      => abort(403),
+    };
+})->name('dashboard');
 
-// =================== DASHBOARD ===================
-Route::get('/dashboard', function () {
-    return routeByRole([
-        'disnaker' => DisnakerDashboardController::class,
-        'perusahaan' => PerusahaanDashboardController::class,
-        'pencaker' => PencakerDashboardController::class,
-    ]);
-})->middleware('auth')->name('dashboard');
+Route::middleware(['auth', 'cekrole:disnaker'])
+    ->prefix('admin/disnaker')
+    ->name('disnaker.')
+    ->group(function () {
 
-Route::middleware('auth')->group(function () {
+        Route::get('/dashboard', [DisnakerDashboardController::class, 'index'])->name('dashboard');
 
-    // ================= PROFIL =================
-    Route::get('/profil', function () {
-        return match (Auth::user()->peran) {
-            'perusahaan' => app(App\Http\Controllers\Admin\Perusahaan\ProfilPerusahaanController::class)->index(),
-            'pencaker' => app(App\Http\Controllers\Admin\Pencaker\ProfilPencariKerjaController::class)->index(),
-            default => abort(403),
-        };
-    })->name('profil.index');
+        Route::prefix('verifikasi-lowongan')->name('verifikasi-lowongan.')->group(function () {
+            Route::get('/', [VerifikasiLowonganController::class, 'index'])->name('index');
+            Route::post('/{id}/approve', [VerifikasiLowonganController::class, 'approve'])->name('approve');
+            Route::post('/{id}/reject', [VerifikasiLowonganController::class, 'reject'])->name('reject');
+        });
 
-    // ================= EDIT =================
-    Route::get('/profil/edit', function () {
-        return match (Auth::user()->peran) {
-            'perusahaan' => app(App\Http\Controllers\Admin\Perusahaan\ProfilPerusahaanController::class)->edit(),
-            'pencaker' => app(App\Http\Controllers\Admin\Pencaker\ProfilPencariKerjaController::class)->edit(),
-            default => abort(403),
-        };
-    })->name('profil.edit');
+        Route::prefix('pengguna')->name('pengguna.')->group(function () {
+            Route::get('/', [PenggunaController::class, 'index'])->name('index');
+            Route::get('/create', [PenggunaController::class, 'create'])->name('create');
+            Route::post('/', [PenggunaController::class, 'store'])->name('store');
+            Route::get('/{id}', [PenggunaController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [PenggunaController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [PenggunaController::class, 'update'])->name('update');
+            Route::delete('/{id}', [PenggunaController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [PenggunaController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force', [PenggunaController::class, 'forceDelete'])->name('forceDelete');
+        });
 
-    // ================= UPDATE =================
-    Route::put('/profil/update', function (\Illuminate\Http\Request $request) {
-        return match (Auth::user()->peran) {
-            'perusahaan' => app(App\Http\Controllers\Admin\Perusahaan\ProfilPerusahaanController::class)->update($request),
-            'pencaker' => app(App\Http\Controllers\Admin\Pencaker\ProfilPencariKerjaController::class)->update($request),
-            default => abort(403),
-        };
-    })->name('profil.update');
-});
+        Route::prefix('ak1')->name('ak1.')->group(function () {
+            Route::get('/', [Ak1Controller::class, 'index'])->name('index');
+            Route::get('/verifikasi', [Ak1Controller::class, 'verifikasi'])->name('verifikasi');
+            Route::get('/draft', [Ak1Controller::class, 'draft'])->name('draft');
+            Route::get('/pending', [Ak1Controller::class, 'pending'])->name('pending');
+            Route::get('/disetujui', [Ak1Controller::class, 'disetujui'])->name('disetujui');
+            Route::get('/ditolak', [Ak1Controller::class, 'ditolak'])->name('ditolak');
 
-// =================== LOWONGAN ===================
-Route::get('/lowongan', function () {
-    return routeByRole([
-        'perusahaan' => LowonganPekerjaanController::class,
-        'pencaker' => LowonganPekerjaanController::class, // nanti beda method kalau perlu
-    ]);
-})->middleware('auth');
+            Route::get('/{id}', [Ak1Controller::class, 'show'])->name('show');
+            Route::get('/{id}/json', [Ak1Controller::class, 'detailJson'])->name('json');
+            Route::put('/{id}/status', [Ak1Controller::class, 'updateStatus'])->name('status.update');
+            Route::delete('/{id}', [Ak1Controller::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [Ak1Controller::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force', [Ak1Controller::class, 'forceDelete'])->name('forceDelete');
+        });
 
-Route::get('/lowongan/create', function () {
-    if (Auth::user()->peran !== 'perusahaan') {
-        abort(403);
-    }
+        Route::prefix('pencari-kerja')->name('pencari-kerja.')->group(function () {
+            Route::get('/', [DisnakerProfilPencariKerjaController::class, 'index'])->name('index');
+            Route::get('/{id}', [DisnakerProfilPencariKerjaController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [DisnakerProfilPencariKerjaController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [DisnakerProfilPencariKerjaController::class, 'update'])->name('update');
+            Route::delete('/{id}', [DisnakerProfilPencariKerjaController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [DisnakerProfilPencariKerjaController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force', [DisnakerProfilPencariKerjaController::class, 'forceDelete'])->name('forceDelete');
+        });
 
-    return app(LowonganPekerjaanController::class)->create();
-})->middleware('auth');
+        Route::prefix('perusahaan')->name('perusahaan.')->group(function () {
+            Route::get('/', [DisnakerProfilPerusahaanController::class, 'index'])->name('index');
+            Route::get('/{id}', [DisnakerProfilPerusahaanController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [DisnakerProfilPerusahaanController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [DisnakerProfilPerusahaanController::class, 'update'])->name('update');
+            Route::delete('/{id}', [DisnakerProfilPerusahaanController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [DisnakerProfilPerusahaanController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force', [DisnakerProfilPerusahaanController::class, 'forceDelete'])->name('forceDelete');
+        });
+    });
 
-Route::post('/lowongan', function () {
-    if (Auth::user()->peran !== 'perusahaan') {
-        abort(403);
-    }
+Route::middleware(['auth', 'cekrole:perusahaan'])
+    ->prefix('admin/perusahaan')
+    ->name('perusahaan.')
+    ->group(function () {
 
-    return app(LowonganPekerjaanController::class)->store(request());
-})->middleware('auth');
+        Route::get('/dashboard', [PerusahaanDashboardController::class, 'index'])->name('dashboard');
 
+        Route::prefix('profil')->name('profil.')->group(function () {
+            Route::get('/', [PerusahaanProfilPerusahaanController::class, 'index'])->name('index');
+            Route::get('/show', [PerusahaanProfilPerusahaanController::class, 'show'])->name('show');
+            Route::get('/edit', [PerusahaanProfilPerusahaanController::class, 'edit'])->name('edit');
+            Route::put('/', [PerusahaanProfilPerusahaanController::class, 'update'])->name('update');
+            Route::delete('/', [PerusahaanProfilPerusahaanController::class, 'destroy'])->name('destroy');
+            Route::post('/restore', [PerusahaanProfilPerusahaanController::class, 'restore'])->name('restore');
+            Route::delete('/force', [PerusahaanProfilPerusahaanController::class, 'forceDelete'])->name('forceDelete');
+        });
 
-// =================== LAMARAN ===================
-Route::get('/lamaran', function () {
-    if (Auth::user()->peran !== 'pencaker') {
-        abort(403);
-    }
+        Route::prefix('lowongan')->name('lowongan.')->group(function () {
+            Route::get('/', [LowonganPekerjaanController::class, 'index'])->name('index');
+            Route::get('/create', [LowonganPekerjaanController::class, 'create'])->name('create');
+            Route::post('/', [LowonganPekerjaanController::class, 'store'])->name('store');
+            Route::get('/{id}', [LowonganPekerjaanController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [LowonganPekerjaanController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [LowonganPekerjaanController::class, 'update'])->name('update');
+            Route::delete('/{id}', [LowonganPekerjaanController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [LowonganPekerjaanController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force', [LowonganPekerjaanController::class, 'forceDelete'])->name('forceDelete');
+        });
+    });
 
-    return 'Lamaran Saya';
-})->middleware('auth');
+Route::middleware(['auth', 'cekrole:pencaker'])
+    ->prefix('admin/pencaker')
+    ->name('pencaker.')
+    ->group(function () {
 
-// =================== DISNAKER ===================
-Route::get('/verifikasi-lowongan', function () {
-    if (Auth::user()->peran !== 'disnaker') {
-        abort(403);
-    }
+        Route::get('/dashboard', [PencakerDashboardController::class, 'index'])->name('dashboard');
 
-    return app(VerifikasiLowonganController::class)->index();
-})->middleware('auth');
+        Route::prefix('profil')->name('profil.')->group(function () {
+            Route::get('/', [PencakerProfilPencariKerjaController::class, 'index'])->name('index');
+            Route::get('/show', [PencakerProfilPencariKerjaController::class, 'show'])->name('show');
+            Route::get('/edit', [PencakerProfilPencariKerjaController::class, 'edit'])->name('edit');
+            Route::put('/', [PencakerProfilPencariKerjaController::class, 'update'])->name('update');
+            Route::delete('/', [PencakerProfilPencariKerjaController::class, 'destroy'])->name('destroy');
+            Route::post('/restore', [PencakerProfilPencariKerjaController::class, 'restore'])->name('restore');
+            Route::delete('/force', [PencakerProfilPencariKerjaController::class, 'forceDelete'])->name('forceDelete');
+        });
 
+        Route::prefix('ak1')->name('ak1.')->group(function () {
+            Route::get('/', [KartuAk1Controller::class, 'index'])->name('index');
 
-Route::post('/verifikasi-lowongan/{id}/approve', function ($id) {
-    if (Auth::user()->peran !== 'disnaker') {
-        abort(403);
-    }
+            Route::get('/formulir', [KartuAk1Controller::class, 'formulir'])->name('formulir');
 
-    return app(VerifikasiLowonganController::class)->approve($id);
-})->middleware('auth');
+            Route::get('/formulir/dokumen-pribadi', [KartuAk1Controller::class, 'dokumenPribadi'])->name('formulir.dokumen-pribadi');
+            Route::post('/dokumen/upload/{type}', [KartuAk1Controller::class, 'uploadDokumen'])
+                ->name('dokumen.upload');
 
-Route::post('/verifikasi-lowongan/{id}/reject', function ($id) {
-    if (Auth::user()->peran !== 'disnaker') {
-        abort(403);
-    }
+            Route::get('/formulir/pengalaman-kerja', [PengalamanKerjaAk1Controller::class, 'index'])->name('formulir.pengalaman-kerja');
 
-    return app(VerifikasiLowonganController::class)->reject($id);
-})->middleware('auth');
+            Route::get('/formulir/riwayat-pendidikan', [RiwayatPendidikanAk1Controller::class, 'index'])->name('formulir.riwayat-pendidikan');
 
+            Route::get('/formulir/keterampilan', [KeterampilanAk1Controller::class, 'index'])->name('formulir.keterampilan');
+            Route::post('/keterampilan', [KeterampilanAk1Controller::class, 'store'])->name('keterampilan.store');
+            Route::delete('/keterampilan/{id}', [KeterampilanAk1Controller::class, 'destroy'])->name('keterampilan.destroy');
 
-// =================== PENGGUNA (DISNAKER) ===================
-Route::get('/pengguna', function () {
-    if (Auth::user()->peran !== 'disnaker') {
-        abort(403);
-    }
+            Route::post('/pengalaman', [PengalamanKerjaAk1Controller::class, 'store'])->name('pengalaman.store');
+            Route::delete('/pengalaman/{id}', [PengalamanKerjaAk1Controller::class, 'destroy'])->name('pengalaman.destroy');
 
-    return app(PenggunaController::class)->index();
-})->middleware('auth');
+            Route::post('/riwayat-pendidikan', [RiwayatPendidikanAk1Controller::class, 'store'])->name('riwayat.store');
+            Route::delete('/riwayat-pendidikan/{id}', [RiwayatPendidikanAk1Controller::class, 'destroy'])->name('riwayat.destroy');
 
-Route::get('/pengguna/create', function () {
-    if (Auth::user()->peran !== 'disnaker') {
-        abort(403);
-    }
-
-    return app(PenggunaController::class)->create();
-})->middleware('auth');
-
-
-// =================== AK1 ===================
-Route::middleware(['auth'])->group(function () {
-
-    /*
-    |--------------------------------------------------------------------------
-    | AK1 MAIN
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/ak1', [KartuAk1Controller::class, 'index'])
-        ->name('ak1.index');
-
-    Route::get('/ak1/formulir', [KartuAk1Controller::class, 'formulir'])
-        ->name('ak1.formulir');
-
-    /*
-    |--------------------------------------------------------------------------
-    | FORMULIR SECTIONS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get(
-        '/ak1/formulir/dokumen-pribadi',
-        [KartuAk1Controller::class, 'dokumenPribadi']
-    )
-        ->name('ak1.formulir.dokumen-pribadi');
-
-    Route::get(
-        '/ak1/formulir/pengalaman-kerja',
-        [KartuAk1Controller::class, 'pengalamanKerja']
-    )
-        ->name('ak1.formulir.pengalaman-kerja');
-
-    Route::get(
-        '/ak1/formulir/riwayat-pendidikan',
-        [KartuAk1Controller::class, 'riwayatPendidikan']
-    )
-        ->name('ak1.formulir.riwayat-pendidikan');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | KETERAMPILAN (SEPARATE CONTROLLER)
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get(
-        '/ak1/formulir/keterampilan',
-        [KeterampilanAk1Controller::class, 'index']
-    )
-        ->name('ak1.formulir.keterampilan');
-
-    Route::post(
-        '/ak1/keterampilan',
-        [KeterampilanAk1Controller::class, 'store']
-    )
-        ->name('ak1.keterampilan.store');
-
-    Route::delete(
-        '/ak1/keterampilan/{id}',
-        [KeterampilanAk1Controller::class, 'destroy']
-    )
-        ->name('ak1.keterampilan.destroy');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | UPLOAD DOKUMEN
-    |--------------------------------------------------------------------------
-    */
-
-    Route::post(
-        '/ak1/dokumen/{type}',
-        [KartuAk1Controller::class, 'uploadDokumen']
-    )
-        ->name('dokumen.upload');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | EDIT / UPDATE / DELETE AK1
-    |--------------------------------------------------------------------------
-    | Taruh PALING BAWAH supaya tidak bentrok
-    */
-
-    Route::get(
-        '/ak1/{id}/edit',
-        [KartuAk1Controller::class, 'edit']
-    )
-        ->name('ak1.edit');
-
-    Route::put(
-        '/ak1/{id}',
-        [KartuAk1Controller::class, 'update']
-    )
-        ->name('ak1.update');
-
-    Route::delete(
-        '/ak1/{id}',
-        [KartuAk1Controller::class, 'destroy']
-    )
-        ->name('ak1.destroy');
-
-    /*
-|--------------------------------------------------------------------------
-| PENGALAMAN KERJA (SEPARATE CONTROLLER)
-|--------------------------------------------------------------------------
-*/
-
-    Route::get(
-        '/ak1/formulir/pengalaman-kerja',
-        [PengalamanKerjaAk1Controller::class, 'index']
-    )
-        ->name('ak1.formulir.pengalaman-kerja');
-
-    Route::post(
-        '/ak1/pengalaman',
-        [PengalamanKerjaAk1Controller::class, 'store']
-    )
-        ->name('ak1.pengalaman.store');
-
-    Route::put(
-        '/ak1/pengalaman/{id}',
-        [PengalamanKerjaAk1Controller::class, 'update']
-    )
-        ->name('ak1.pengalaman.update');
-
-    Route::delete(
-        '/ak1/pengalaman/{id}',
-        [PengalamanKerjaAk1Controller::class, 'destroy']
-    )
-        ->name('ak1.pengalaman.destroy');
-
-    /*
-|--------------------------------------------------------------------------
-| RIWAYAT PENDIDIKAN (SEPARATE CONTROLLER)
-|--------------------------------------------------------------------------
-*/
-
-    Route::get(
-        '/ak1/formulir/riwayat-pendidikan',
-        [RiwayatPendidikanAk1Controller::class, 'index']
-    )
-        ->name('ak1.formulir.riwayat-pendidikan');
-
-    Route::post(
-        '/ak1/riwayat-pendidikan',
-        [RiwayatPendidikanAk1Controller::class, 'store']
-    )
-        ->name('ak1.riwayat-pendidikan.store');
-
-    Route::put(
-        '/ak1/riwayat-pendidikan/{id}',
-        [RiwayatPendidikanAk1Controller::class, 'update']
-    )
-        ->name('ak1.riwayat-pendidikan.update');
-
-    Route::delete(
-        '/ak1/riwayat-pendidikan/{id}',
-        [RiwayatPendidikanAk1Controller::class, 'destroy']
-    )
-        ->name('ak1.riwayat-pendidikan.destroy');
-
-    // AJUKAN AK1 PENDING (PENCAKER)
-    Route::post('/ak1/{id}/submit', [KartuAk1Controller::class, 'submit'])
-        ->name('ak1.submit');
-});
+            Route::get('/{id}', [KartuAk1Controller::class, 'show'])->name('show');
+            Route::post('/{id}/submit', [KartuAk1Controller::class, 'submit'])->name('submit');
+            Route::put('/{id}', [KartuAk1Controller::class, 'update'])->name('update');
+            Route::delete('/{id}', [KartuAk1Controller::class, 'destroy'])->name('destroy');
+        });
+    });

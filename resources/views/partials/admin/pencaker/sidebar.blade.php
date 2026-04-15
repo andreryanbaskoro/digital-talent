@@ -51,25 +51,25 @@
 
                 <!-- Dashboard -->
                 <li class="nav-item">
-                    <a href="/dashboard"
-                        class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('pencaker.dashboard') }}"
+                        class="nav-link {{ request()->is('admin/pencaker/dashboard') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-home"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
 
-                <!-- Profil Saya -->
+                <!-- Profil -->
                 <li class="nav-item">
-                    <a href="{{ route('profil.index') }}"
-                        class="nav-link {{ request()->routeIs('profil.*') ? 'active' : '' }}">
+                    <a href="{{ route('pencaker.profil.index') }}"
+                        class="nav-link {{ request()->is('admin/pencaker/profil*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user"></i>
                         <p>Profil Saya</p>
                     </a>
                 </li>
 
-                <!-- Kartu AK1 -->
-                <li class="nav-item {{ request()->is('ak1*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('ak1*') ? 'active' : '' }}">
+                <!-- AK1 -->
+                <li class="nav-item {{ request()->is('admin/pencaker/ak1*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('admin/pencaker/ak1*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-id-card"></i>
                         <p>
                             Kartu Kuning (AK1)
@@ -78,39 +78,28 @@
                     </a>
 
                     <ul class="nav nav-treeview">
-                        <!-- Menu Formulir -->
                         <li class="nav-item">
-                            <a href="{{ route('ak1.formulir') }}"
-                                class="nav-link {{ request()->is('ak1/formulir*') ? 'active' : '' }}">
+                            <a href="{{ route('pencaker.ak1.formulir') }}"
+                                class="nav-link {{ request()->is('admin/pencaker/ak1/formulir*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Isi Formulir AK1</p>
                             </a>
                         </li>
 
-
-                        <!-- Menu Status & Riwayat AK1 -->
                         <li class="nav-item">
-                            <a href="{{ route('ak1.index') }}"
-                                class="nav-link {{ request()->is('ak1') && !request()->is('ak1/create') ? 'active' : '' }}">
+                            <a href="{{ route('pencaker.ak1.index') }}"
+                                class="nav-link {{ request()->is('admin/pencaker/ak1') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Status & Riwayat AK1</p>
                             </a>
                         </li>
                     </ul>
                 </li>
-                <!-- Lowongan -->
-                <li class="nav-item">
-                    <a href="/lowongan"
-                        class="nav-link {{ request()->is('lowongan') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-briefcase"></i>
-                        <p>Lowongan Kerja</p>
-                    </a>
-                </li>
 
                 <!-- Lamaran -->
                 <li class="nav-item">
-                    <a href="/lamaran"
-                        class="nav-link {{ request()->is('lamaran') ? 'active' : '' }}">
+                    <a href="/admin/pencaker/lamaran"
+                        class="nav-link {{ request()->is('admin/pencaker/lamaran*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-file-alt"></i>
                         <p>Lamaran Saya</p>
                     </a>
@@ -118,8 +107,8 @@
 
                 <!-- Notifikasi -->
                 <li class="nav-item">
-                    <a href="/notifikasi"
-                        class="nav-link {{ request()->is('notifikasi') ? 'active' : '' }}">
+                    <a href="/admin/pencaker/notifikasi"
+                        class="nav-link {{ request()->is('admin/pencaker/notifikasi*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-bell"></i>
                         <p>Notifikasi</p>
                     </a>

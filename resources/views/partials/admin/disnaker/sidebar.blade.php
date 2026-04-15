@@ -3,7 +3,7 @@
 
     <!-- Brand Logo -->
     <!-- Brand Logo -->
-    <a href="/admin/{{ $role }}/dashboard" class="brand-link">
+    <a href="#" class="brand-link">
         <i class="fas fa-briefcase fa-lg text-warning mr-2"></i>
         <span class="brand-text font-weight-bold">Talent</span>
         <span class="brand-text font-weight-light">Hub</span>
@@ -27,8 +27,7 @@
 
                 <!-- Dashboard -->
                 <li class="nav-item">
-                    <a href="/admin/disnaker/dashboard"
-                        class="nav-link {{ request()->is('admin/disnaker/dashboard') ? 'active' : '' }}">
+                    <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-home"></i>
                         <p>Dashboard</p>
                     </a>
@@ -51,19 +50,19 @@
                     </a>
                 </li>
 
-                <!-- Verifikasi AK1 -->
+                <!-- AK1 -->
                 <li class="nav-item">
-                    <a href="#"
-                        class="nav-link">
+                    <a href="/admin/disnaker/ak1"
+                        class="nav-link {{ request()->is('admin/disnaker/ak1') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-id-card"></i>
-                        <p>Verifikasi AK1</p>
+                        <p>AK1</p>
                     </a>
                 </li>
 
                 <!-- Data Pencari Kerja -->
                 <li class="nav-item">
-                    <a href="#"
-                        class="nav-link">
+                    <a href="{{ route('pencari_kerja.index') }}"
+                        class="nav-link {{ request()->routeIs('pencari_kerja.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>Data Pencari Kerja</p>
                     </a>
@@ -71,8 +70,8 @@
 
                 <!-- Data Perusahaan -->
                 <li class="nav-item">
-                    <a href="#"
-                        class="nav-link">
+                    <a href="{{ route('perusahaan.index') }}"
+                        class="nav-link {{ request()->routeIs('perusahaan.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-building"></i>
                         <p>Data Perusahaan</p>
                     </a>

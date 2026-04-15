@@ -51,13 +51,21 @@ class ProfilPerusahaan extends Model
         parent::boot();
 
         static::creating(function ($model) {
+
+            $year = date('Y');
+
+            // Ambil nomor urut terakhir di tahun yang sama (termasuk soft delete)
             $last = self::withTrashed()
-                ->selectRaw("MAX(CAST(SUBSTRING(id_perusahaan, 5) AS UNSIGNED)) as max_id")
+                ->where('id_perusahaan', 'like', 'PER-' . $year . '-%')
+                ->selectRaw("MAX(CAST(SUBSTRING(id_perusahaan, 10) AS UNSIGNED)) as max_id")
                 ->first();
 
-            $number = $last->max_id ? $last->max_id + 1 : 1;
+            $number = $last && $last->max_id
+                ? $last->max_id + 1
+                : 1;
 
-            $model->id_perusahaan = 'PER-' . str_pad($number, 3, '0', STR_PAD_LEFT);
+            $model->id_perusahaan =
+                'PER-' . $year . '-' . str_pad($number, 5, '0', STR_PAD_LEFT);
         });
     }
 }

@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>{{ $title ?? 'Edit Lowongan' }}</h1>
+                    <h1>{{ $title ?? 'Edit Pengguna' }}</h1>
                 </div>
             </div>
         </div>
@@ -14,8 +14,8 @@
 
     <section class="content">
         <div class="container-fluid">
-             @include('admin.perusahaan.lowongan.partials.alerts')
-            @include('admin.perusahaan.lowongan.partials._form')
+            @include('admin.disnaker.pencari-kerja.partials.alerts')
+            @include('admin.disnaker.pencari-kerja.partials._form')
         </div>
     </section>
 </div>

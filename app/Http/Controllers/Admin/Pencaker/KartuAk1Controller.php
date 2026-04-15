@@ -125,10 +125,6 @@ class KartuAk1Controller extends Controller
             abort(404);
         }
 
-        $request->validate([
-            $type => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-        ]);
-
         $user = Auth::user();
 
         $profil = ProfilPencariKerja::where('id_pengguna', $user->id_pengguna)->first();
@@ -142,7 +138,17 @@ class KartuAk1Controller extends Controller
             ['status' => 'draft']
         );
 
+        // ✅ TAMBAHAN VALIDASI STATUS
+        if (in_array($kartuAk1->status, ['pending', 'disetujui'])) {
+            return back()->with('error', 'Dokumen tidak bisa diubah karena AK1 sudah ' . $kartuAk1->status . '.');
+        }
+
+        $request->validate([
+            $type => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
         $file = $request->file($type);
+
         $filePath = $file->storeAs(
             'dokumen_pribadi',
             uniqid() . '.' . $file->getClientOriginalExtension(),
@@ -158,8 +164,6 @@ class KartuAk1Controller extends Controller
 
         return back()->with('success', 'Dokumen berhasil diunggah.');
     }
-
-
 
 
     // Halaman Dokumen Pribadi

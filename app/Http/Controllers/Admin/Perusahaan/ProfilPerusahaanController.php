@@ -57,12 +57,16 @@ class ProfilPerusahaanController extends Controller
         ]);
 
         // upload logo
+        // ===================== UPLOAD LOGO =====================
         if ($request->hasFile('logo')) {
-            if ($profil->logo) {
-                Storage::delete($profil->logo);
+
+            // hapus logo lama jika ada
+            if ($profil->logo && Storage::disk('public')->exists($profil->logo)) {
+                Storage::disk('public')->delete($profil->logo);
             }
 
-            $profil->logo = $request->file('logo')->store('logo_perusahaan');
+            // simpan logo baru ke storage/app/public/logo_perusahaan
+            $profil->logo = $request->file('logo')->store('logo_perusahaan', 'public');
         }
 
         $profil->fill([
@@ -87,13 +91,11 @@ class ProfilPerusahaanController extends Controller
     // ===================== HAPUS =====================
     public function destroy()
     {
-        $profil = ProfilPerusahaan::where('id_pengguna', Auth::id())->firstOrFail();
+        $profil = ProfilPerusahaan::where('id_pengguna', Auth::id())
+            ->firstOrFail();
 
-        if ($profil->logo) {
-            Storage::delete($profil->logo);
-        }
-
-        $profil->delete();
+        // ❌ JANGAN hapus file logo di sini
+        $profil->delete(); // Soft delete saja
 
         return redirect()->route('perusahaan.profil.index')
             ->with('success', 'Profil berhasil dihapus');
@@ -119,8 +121,8 @@ class ProfilPerusahaanController extends Controller
             ->where('id_pengguna', Auth::id())
             ->firstOrFail();
 
-        if ($profil->logo) {
-            Storage::delete($profil->logo);
+        if ($profil->logo && Storage::disk('public')->exists($profil->logo)) {
+            Storage::disk('public')->delete($profil->logo);
         }
 
         $profil->forceDelete();

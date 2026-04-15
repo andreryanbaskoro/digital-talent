@@ -30,11 +30,11 @@
                             <div class="text-center mb-4">
                                 <div class="mb-2">
                                     @if($profil->logo)
-                                        <img src="{{ asset('storage/'.$profil->logo) }}"
-                                            class="img-fluid rounded-circle shadow-sm"
-                                            style="width:120px; height:120px; object-fit:cover;">
+                                    <img src="{{ asset('storage/'.$profil->logo) }}"
+                                        class="img-fluid rounded-circle shadow-sm"
+                                        style="width:120px; height:120px; object-fit:cover;">
                                     @else
-                                        <i class="fas fa-building fa-4x text-secondary"></i>
+                                    <i class="fas fa-building fa-4x text-secondary"></i>
                                     @endif
                                 </div>
 
@@ -79,11 +79,11 @@
                                 <div class="col-5 text-muted">Website</div>
                                 <div class="col-7">
                                     @if($profil->website)
-                                        <a href="{{ $profil->website }}" target="_blank">
-                                            {{ $profil->website }}
-                                        </a>
+                                    <a href="{{ $profil->website }}" target="_blank">
+                                        {{ $profil->website }}
+                                    </a>
                                     @else
-                                        -
+                                    -
                                     @endif
                                 </div>
                             </div>
@@ -111,7 +111,7 @@
 
                             {{-- KANAN --}}
                             <div class="ml-auto">
-                                <a href="{{ url('admin/perusahaan/profil-perusahaan/edit') }}"
+                                <a href="{{ url('admin/perusahaan/profil/edit') }}">
                                     class="btn btn-primary btn-submit btn-sm">
                                     <i class="fas fa-edit"></i> Edit Profil
                                 </a>

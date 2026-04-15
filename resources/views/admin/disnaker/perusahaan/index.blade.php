@@ -8,14 +8,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="d-flex align-items-center mb-2">
-
-                <h1 class="mb-0">{{ $title ?? 'Data Lowongan' }}</h1>
-
-                <a href="{{ route('perusahaan.lowongan.create') }}"
-                    class="btn btn-primary btn-sm shadow-sm ml-auto">
-                    <i class="fas fa-plus mr-1"></i> Tambah Lowongan
-                </a>
-
+                <h1 class="mb-0">{{ $title ?? 'Data Perusahaan' }}</h1>
             </div>
         </div>
     </section>
@@ -25,7 +18,7 @@
         <div class="container-fluid">
 
             {{-- Alert --}}
-            @include('admin.perusahaan.lowongan.partials.alerts')
+            @include('admin.disnaker.perusahaan.partials.alerts')
 
             <div class="card card-primary card-outline card-outline-tabs shadow-sm">
 
@@ -34,29 +27,12 @@
 
                     <div class="d-flex justify-content-between align-items-center px-3 pt-3">
 
-                        <!-- TABS FILTER -->
+                        <!-- TABS -->
                         <ul class="nav nav-tabs" role="tablist">
 
                             <li class="nav-item">
-                                <a class="nav-link filter-tab" data-filter="all" href="#">
+                                <a class="nav-link filter-tab active" data-filter="all" href="#">
                                     <i class="fas fa-list"></i> Semua
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link filter-tab" data-filter="pending" href="#">
-                                    Pending
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link filter-tab" data-filter="disetujui" href="#">
-                                    Disetujui
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link filter-tab" data-filter="ditolak" href="#">
-                                    Ditolak
                                 </a>
                             </li>
 
@@ -75,8 +51,15 @@
                 <!-- BODY -->
                 <div class="card-body pt-3">
 
-                    @include('admin.perusahaan.lowongan.partials.table', [
-                    'lowongan' => $lowongan
+                    {{-- Filter Data --}}
+                    <div id="filter-data">
+                        <div class="row">
+                            <!-- Bisa tambahkan search atau filter tambahan di sini -->
+                        </div>
+                    </div>
+
+                    @include('admin.disnaker.perusahaan.partials.table', [
+                    'perusahaan' => $perusahaan
                     ])
 
                 </div>
@@ -96,7 +79,5 @@
 @push('scripts')
 <script src="{{ asset('admin-js/alerts.js') }}"></script>
 <script src="{{ asset('admin-js/modal.js') }}"></script>
-
-{{-- nanti kamu bisa buat js khusus --}}
-<script src="{{ asset('admin-js/perusahaan-lowongan.js') }}"></script>
+<script src="{{ asset('admin-js/disnaker-perusahaan.js') }}"></script>
 @endpush

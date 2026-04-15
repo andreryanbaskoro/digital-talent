@@ -114,26 +114,23 @@
 
                 @if($item->deleted_at)
 
-                <form action="{{ route('perusahaan.lowongan.restore', $item->id_lowongan) }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="button" class="btn btn-success btn-sm btn-restore"
-                        data-url="{{ route('perusahaan.lowongan.restore', $item->id_lowongan) }}">
-                        <i class="fas fa-undo"></i>
-                    </button>
-                </form>
+                <!-- RESTORE -->
+                <button type="button"
+                    class="btn btn-success btn-sm btn-restore"
+                    data-url="{{ route('perusahaan.lowongan.restore', $item->id_lowongan) }}">
+                    <i class="fas fa-undo"></i>
+                </button>
 
-                <form action="{{ route('perusahaan.lowongan.forceDelete', $item->id_lowongan) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button" class="btn btn-danger btn-sm btn-force-delete"
-                        data-url="{{ route('perusahaan.lowongan.forceDelete', $item->id_lowongan) }}">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </form>
+                <!-- FORCE DELETE (PERMANEN) -->
+                <button type="button"
+                    class="btn btn-danger btn-sm btn-force-delete"
+                    data-url="{{ route('perusahaan.lowongan.forceDelete', $item->id_lowongan) }}">
+                    <i class="fas fa-times"></i>
+                </button>
 
                 @else
 
-                {{-- Edit hanya jika belum disetujui --}}
+                {{-- EDIT --}}
                 @if($item->status != 'disetujui')
                 <a href="{{ route('perusahaan.lowongan.edit', $item->id_lowongan) }}"
                     class="btn btn-warning btn-sm">
@@ -141,18 +138,12 @@
                 </a>
                 @endif
 
-                <form action="{{ route('perusahaan.lowongan.delete', $item->id_lowongan) }}"
-                    method="POST"
-                    class="d-inline">
-                    @csrf
-                    @method('DELETE')
-
-                    <button type="button"
-                        class="btn btn-danger btn-sm btn-hapus"
-                        data-url="{{ route('perusahaan.lowongan.delete', $item->id_lowongan) }}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </form>
+                <!-- DELETE (SOFT DELETE) -->
+                <button type="button"
+                    class="btn btn-danger btn-sm btn-hapus"
+                    data-url="{{ route('perusahaan.lowongan.destroy', $item->id_lowongan) }}">
+                    <i class="fas fa-trash"></i>
+                </button>
 
                 @endif
 

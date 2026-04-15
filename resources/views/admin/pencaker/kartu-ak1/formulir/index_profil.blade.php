@@ -101,9 +101,9 @@
 
             {{-- TOMBOL DI BAWAH TENGAH --}}
             <div class="text-center mt-4">
-                <a href="{{ route('profil.edit') }}"
+                <a href="{{ route('pencaker.profil.edit') }}"
                     class="btn btn-primary px-4">
-                    <i class="fas fa-pen me-1"></i>
+                    <i class="fas fa-pen mr-1"></i>
                     Edit Data
                 </a>
             </div>

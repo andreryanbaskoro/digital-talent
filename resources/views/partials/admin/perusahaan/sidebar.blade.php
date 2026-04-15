@@ -37,15 +37,16 @@
                     </a>
                 </li>
 
+                <!-- Profil Perusahaan -->
                 <li class="nav-item">
-                    <a href="/admin/{{ $role }}/profil-perusahaan"
-                        class="nav-link {{ request()->is('admin/'.$role.'/profil-perusahaan*') ? 'active' : '' }}">
+                    <a href="/admin/{{ $role }}/profil"
+                        class="nav-link {{ request()->is('admin/'.$role.'/profil*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-building"></i>
                         <p>Profil Perusahaan</p>
                     </a>
                 </li>
 
-                <!-- Kelola Lowongan -->
+                <!-- Lowongan -->
                 <li class="nav-item">
                     <a href="/admin/{{ $role }}/lowongan"
                         class="nav-link {{ request()->is('admin/'.$role.'/lowongan*') ? 'active' : '' }}">
@@ -56,8 +57,7 @@
 
                 <!-- Pelamar -->
                 <li class="nav-item {{ request()->is('admin/'.$role.'/pelamar*') ? 'menu-open' : '' }}">
-                    <a href="#"
-                        class="nav-link {{ request()->is('admin/'.$role.'/pelamar*') ? 'active' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('admin/'.$role.'/pelamar*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>
                             Pelamar
@@ -95,7 +95,7 @@
                 <!-- Notifikasi -->
                 <li class="nav-item">
                     <a href="/admin/{{ $role }}/notifikasi"
-                        class="nav-link {{ request()->is('admin/'.$role.'/notifikasi') ? 'active' : '' }}">
+                        class="nav-link {{ request()->is('admin/'.$role.'/notifikasi*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-bell"></i>
                         <p>Notifikasi</p>
                     </a>

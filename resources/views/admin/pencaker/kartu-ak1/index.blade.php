@@ -66,7 +66,7 @@
                         </div>
 
                         <div class="col-auto mt-3 mt-md-0">
-                            <a href="{{ route('profil.edit') }}" class="btn btn-primary">
+                            <a href="{{ route('pencaker.profil.edit') }}" class="btn btn-primary">
                                 <i class="fas fa-user-edit mr-1"></i>
                                 Perbarui Profil
                             </a>
@@ -252,19 +252,34 @@
                                 </div>
                             </div>
 
-                            {{-- CATATAN PETUGAS --}}
                             @if($item->catatan_petugas)
-                            <div class="alert alert-light border mb-0">
-                                <small class="text-muted d-block mb-1">Catatan Petugas</small>
-                                <div class="mb-1">{{ $item->catatan_petugas }}</div>
+                            <div class="bg-white border-left border-warning rounded p-2 shadow-sm">
+
+                                <div class="d-flex justify-content-between align-items-start">
+
+                                    <div>
+
+                                        <div class="font-weight-bold text-warning mb-1" style="font-size: 13px;">
+                                            📝 Catatan Petugas
+                                        </div>
+
+                                        <div class="text-secondary" style="font-size: 12.5px; line-height: 1.4;">
+                                            {{ $item->catatan_petugas }}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
                                 @if($item->nama_petugas)
-                                <small class="text-muted">
+                                <div class="text-muted mt-2" style="font-size: 11.5px;">
                                     — {{ $item->nama_petugas }}
                                     @if($item->nip_petugas)
                                     ({{ $item->nip_petugas }})
                                     @endif
-                                </small>
+                                </div>
                                 @endif
+
                             </div>
                             @endif
 
@@ -281,7 +296,7 @@
                                 </div> -->
 
                                 <div class="col-12 col-md-3 mb-2 mb-md-0">
-                                    <a href="{{ route('ak1.formulir', $item->id_kartu_ak1) }}"
+                                    <a href="{{ route('pencaker.ak1.formulir', $item->id_kartu_ak1) }}"
                                         class="btn btn-outline-primary btn-sm btn-block">
                                         <i class="fas fa-edit mr-1"></i> Edit
                                     </a>
@@ -343,7 +358,7 @@
 
                                     @case('disetujui')
                                     <span class="badge badge-success p-2 d-block">
-                                        <i class="fas fa-check mr-1"></i> Disetujui
+                                        <i class="fas fa-check mr-1"></i> Telah Disetujui
                                     </span>
                                     @break
 

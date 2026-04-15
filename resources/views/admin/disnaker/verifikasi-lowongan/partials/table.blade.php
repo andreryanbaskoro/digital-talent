@@ -105,7 +105,7 @@
             <td class="text-center">
 
                 {{-- Lihat --}}
-                <a href="{{ route('perusahaan.lowongan.show', $item->id_lowongan) }}"
+                <a href="#"
                     class="btn btn-info btn-sm">
                     <i class="fas fa-eye"></i>
                 </a>

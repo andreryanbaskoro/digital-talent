@@ -3,7 +3,7 @@ $isEdit = isset($pengguna);
 @endphp
 
 <div class="card card-primary">
-    <form action="{{ $isEdit ? route('pengguna.update', $pengguna->id_pengguna) : route('pengguna.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ $isEdit ? route('pengguna.update', $pengguna->id_pengguna) : route('pengguna.store') }}" method="POST">
         @csrf
         @if($isEdit)
         @method('PUT')

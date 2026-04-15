@@ -23,6 +23,7 @@ class Pengguna extends Authenticatable
         'kata_sandi',
         'peran',
         'status',
+        'nip',
     ];
 
     // sembunyikan saat di-return

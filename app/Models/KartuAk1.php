@@ -143,4 +143,6 @@ class KartuAk1 extends Model
     {
         return $this->hasMany(VerifikasiAk1::class, 'id_kartu_ak1');
     }
+
+    
 }

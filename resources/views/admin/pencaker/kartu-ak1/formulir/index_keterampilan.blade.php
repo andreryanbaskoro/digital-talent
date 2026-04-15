@@ -118,7 +118,7 @@
 
             {{-- TOMBOL BAWAH TENGAH --}}
             <div class="text-center mt-4">
-                <a href="{{ route('ak1.formulir.keterampilan') }}"
+                <a href="{{ route('pencaker.ak1.formulir.keterampilan') }}"
                     class="btn btn-primary px-4">
                     <i class="fas fa-plus me-2"></i>
                     Kelola Keterampilan

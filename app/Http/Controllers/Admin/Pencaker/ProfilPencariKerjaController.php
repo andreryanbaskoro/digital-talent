@@ -102,12 +102,10 @@ class ProfilPencariKerjaController extends Controller
     // ===================== HAPUS =====================
     public function destroy()
     {
-        $profil = ProfilPencariKerja::where('id_pengguna', Auth::user()->id_pengguna)->firstOrFail();
+        $profil = ProfilPencariKerja::where('id_pengguna', Auth::user()->id_pengguna)
+            ->firstOrFail();
 
-        if ($profil->foto && Storage::exists($profil->foto)) {
-            Storage::delete($profil->foto);
-        }
-
+        // ❌ Jangan hapus file saat soft delete
         $profil->delete();
 
         return redirect()->back()
