@@ -8,6 +8,7 @@
             <th>Tanggal Daftar</th>
             <th>Periode</th>
             <th>Status</th>
+            <th>Catatan</th>
             <th width="20%">Aksi</th>
         </tr>
     </thead>
@@ -50,6 +51,9 @@
                 <span class="badge badge-light">Unknown</span>
                 @endswitch
             </td>
+            <td class="text-center">
+                {{ $item->catatan_petugas ?? '-' }}
+            </td>
 
             <td class="text-center">
 
@@ -72,6 +76,7 @@
                 @endif
 
             </td>
+
         </tr>
         @empty
         <tr>

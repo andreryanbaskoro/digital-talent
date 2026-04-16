@@ -3,7 +3,7 @@ $isEdit = isset($perusahaan);
 @endphp
 
 <div class="card card-primary">
-    <form action="{{ $isEdit ? route('perusahaan.update', $perusahaan->id_perusahaan) : '#' }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ $isEdit ? route('disnaker.perusahaan.update', $perusahaan->id_perusahaan) : '#' }}" method="POST" enctype="multipart/form-data">
         @csrf
         @if($isEdit)
         @method('PUT')
@@ -106,7 +106,7 @@ $isEdit = isset($perusahaan);
                 {{-- Kabupaten --}}
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="kabupaten">Kabupaten</label>
+                        <label for="kabupaten">Kabupaten / Kota</label>
                         <input type="text" name="kabupaten" id="kabupaten"
                             class="form-control @error('kabupaten') is-invalid @enderror"
                             value="{{ old('kabupaten', $isEdit ? $perusahaan->kabupaten : '') }}">
@@ -189,7 +189,7 @@ $isEdit = isset($perusahaan);
 
         <div class="card-footer d-flex justify-content-end">
 
-            <a href="{{ route('perusahaan.index') }}" class="btn btn-outline-secondary btn-kembali btn-sm mr-2">
+            <a href="route('disnaker.perusahaan.index') }}" class="btn btn-outline-secondary btn-kembali btn-sm mr-2">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
 

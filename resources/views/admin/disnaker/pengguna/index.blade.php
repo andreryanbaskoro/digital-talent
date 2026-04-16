@@ -11,7 +11,7 @@
 
                 <h1 class="mb-0">{{ $title ?? 'Data Pengguna' }}</h1>
 
-                <a href="{{ route('pengguna.create') }}"
+                <a href="{{ route('disnaker.pengguna.create') }}"
                     class="btn btn-primary btn-sm shadow-sm ml-auto">
                     <i class="fas fa-plus mr-1"></i> Tambah
                 </a>

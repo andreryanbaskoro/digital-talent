@@ -1,77 +1,136 @@
-<table id="table-1" class="table table-responsive table-bordered table-striped table-hover">
-    <thead class="text-center">
-        <tr>
-            <th width="5%">No.</th>
-            <th>ID</th>
-            <th>Nama Lengkap</th>
-            <th>NIK</th>
-            <th>Nomor KK</th>
-            <th>Tempat Lahir</th>
-            <th>Tanggal Lahir</th>
-            <th>Jenis Kelamin</th>
-            <th>Agama</th>
-            <th>Status Perkawinan</th>
-            <th>Alamat</th>
-            <th>Nomor HP</th>
-            <th>Email</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
 
-    <tbody>
-        @forelse($pencariKerja as $kerja)
-        <tr data-status="{{ $kerja->status }}" data-deleted="{{ $kerja->deleted_at ? '1' : '0' }}">
-            <td class="text-center"></td>
-            <td>{{ $kerja->id_pencari_kerja }}</td>
-            <td>{{ $kerja->nama_lengkap }}</td>
-            <td>{{ $kerja->nik }}</td>
-            <td>{{ $kerja->nomor_kk }}</td>
-            <td>{{ $kerja->tempat_lahir }}</td>
-            <td>{{ $kerja->tanggal_lahir->format('d/m/Y') }}</td>
-            <td>{{ ucfirst($kerja->jenis_kelamin) }}</td>
-            <td>{{ $kerja->agama }}</td>
-            <td>{{ $kerja->status_perkawinan }}</td>
-            <td>{{ $kerja->alamat }}</td>
-            <td>{{ $kerja->nomor_hp }}</td>
-            <td>{{ $kerja->email }}</td>
+        <div class="table-responsive">
+            <table id="table-1" class="table table-hover table-striped mb-0">
 
-            <td class="text-center">
-                @if($kerja->deleted_at)
-                <form action="{{ route('pencari_kerja.restore', $kerja->id_pencari_kerja) }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="button" class="btn btn-success btn-sm btn-restore" data-toggle="tooltip" title="Pulihkan Data" data-url="{{ route('pencari_kerja.restore', $kerja->id_pencari_kerja) }}">
-                        <i class="fas fa-undo"></i>
-                    </button>
-                </form>
+                <thead class="bg-light text-center">
+                    <tr>
+                        <th width="5%">No</th>
+                        <th>ID</th>
+                        <th>Identitas</th>
+                        <th>TTL</th>
+                        <th>Personal</th>
+                        <th>Kontak</th>
+                        <th style="width:120px;">Aksi</th>
+                    </tr>
+                </thead>
 
-                <form action="{{ route('pencari_kerja.forceDelete', $kerja->id_pencari_kerja) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button" class="btn btn-danger btn-sm btn-force-delete" data-toggle="tooltip" title="Hapus Permanen" data-url="{{ route('pencari_kerja.forceDelete', $kerja->id_pencari_kerja) }}">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </form>
-                @else
-                <a href="{{ route('pencari_kerja.edit', $kerja->id_pencari_kerja) }}" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Edit Data">
-                    <i class="fas fa-edit"></i>
-                </a>
+                <tbody>
+                    @forelse($pencariKerja as $kerja)
+                    <tr data-status="{{ $kerja->status }}"
+                        data-deleted="{{ $kerja->deleted_at ? '1' : '0' }}">
 
-                <form action="{{ route('pencari_kerja.delete', $kerja->id_pencari_kerja) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button" class="btn btn-danger btn-sm btn-hapus" data-toggle="tooltip" title="Hapus Data" data-url="{{ route('pencari_kerja.delete', $kerja->id_pencari_kerja) }}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </form>
-                @endif
-            </td>
-        </tr>
-        @empty
-        <tr>
-            <td colspan="14" class="text-center text-muted">
-                <i class="fas fa-database"></i> Tidak ada data pencari kerja
-            </td>
-        </tr>
-        @endforelse
-    </tbody>
-</table>
+                        {{-- No --}}
+                        <td class="text-center">
+                            {{ $loop->iteration }}
+                        </td>
+
+                        {{-- ID --}}
+                        <td class="text-muted">
+                            {{ $kerja->id_pencari_kerja }}
+                        </td>
+
+                        {{-- Identitas --}}
+                        <td>
+                            <div class="font-weight-bold">
+                                {{ $kerja->nama_lengkap }}
+                            </div>
+                            <small class="text-muted">
+                                NIK: {{ $kerja->nik }} <br>
+                                KK: {{ $kerja->nomor_kk }}
+                            </small>
+                        </td>
+
+                        {{-- TTL --}}
+                        <td>
+                            {{ $kerja->tempat_lahir }},
+                            <br>
+                            <small class="text-muted">
+                                {{ $kerja->tanggal_lahir->format('d M Y') }}
+                            </small>
+                        </td>
+
+                        {{-- Personal --}}
+                        <td>
+                            <span class="badge badge-secondary">
+                                {{ $kerja->jenis_kelamin === 'L' ? 'Laki-Laki' : ($kerja->jenis_kelamin === 'P' ? 'Perempuan' : '-') }}
+                            </span> <br>
+                            <span class="badge badge-light border">
+                                {{ $kerja->status_perkawinan }}
+                            </span>
+                            <br>
+                            <small class="text-muted">
+                                {{ $kerja->agama }}
+                            </small>
+                        </td>
+
+                        {{-- Kontak --}}
+                        <td>
+                            <small>
+                                <i class="fas fa-phone"></i>
+                                {{ $kerja->nomor_hp }} <br>
+                                <i class="fas fa-envelope"></i>
+                                {{ $kerja->email }}
+                            </small>
+                        </td>
+
+                        {{-- Aksi --}}
+                        <td class="text-center">
+
+                            @if($kerja->deleted_at)
+
+                            {{-- Restore --}}
+                            <button type="button"
+                                class="btn btn-success btn-sm btn-restore"
+                                title="Pulihkan"
+                                data-url="{{ route('disnaker.pencari-kerja.restore', $kerja->id_pencari_kerja) }}">
+                                <i class="fas fa-undo"></i>
+                            </button>
+
+                            {{-- Force Delete --}}
+                            <button type="button"
+                                class="btn btn-danger btn-sm btn-force-delete"
+                                title="Hapus Permanen"
+                                data-url="{{ route('disnaker.pencari-kerja.forceDelete', $kerja->id_pencari_kerja) }}">
+                                <i class="fas fa-times"></i>
+                            </button>
+
+                            @else
+
+                            {{-- Edit --}}
+                            <a href="{{ route('disnaker.pencari-kerja.edit', $kerja->id_pencari_kerja) }}"
+                                class="btn btn-warning btn-sm"
+                                title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            {{-- Delete --}}
+                            <button type="button"
+                                class="btn btn-danger btn-sm btn-hapus"
+                                title="Hapus"
+                                data-url="{{ route('disnaker.pencari-kerja.destroy', $kerja->id_pencari_kerja) }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+                    @empty
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="fas fa-database"></i>
+                            Tidak ada data pencari kerja
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>

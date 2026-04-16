@@ -1,161 +1,182 @@
-<table id="table-1" class="table table-bordered table-responsive table-striped table-hover">
-    <thead class="text-center">
-        <tr>
-            <th>No.</th>
-            <th>ID</th>
-            <th>Judul</th>
-            <th>Deskripsi</th>
-            <th>Lokasi</th>
-            <th>Jenis</th>
-            <th>Gaji</th>
-            <th>Pendidikan</th>
-            <th>Pengalaman</th>
-            <th>Kuota</th>
-            <th>Periode</th>
-            <th>Status</th>
-            <th>Catatan</th>
-            <th width="20%">Aksi</th>
-        </tr>
-    </thead>
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
 
-    <tbody>
-        @forelse($lowongan as $item)
-        <tr
-            data-status="{{ $item->status }}"
-            data-deleted="{{ $item->deleted_at ? 1 : 0 }}">
+        <div class="table-responsive">
+            <table id="table-1" class="table table-hover table-striped mb-0">
 
-            <td class="text-center"></td>
+                <thead class="bg-light text-center">
+                    <tr>
+                        <th>No</th>
+                        <th>ID</th>
+                        <th>Lowongan</th>
+                        <th>Lokasi</th>
+                        <th>Jenis</th>
+                        <th>Gaji</th>
+                        <th>Kuota</th>
+                        <th>Periode</th>
+                        <th>Status</th>
+                        <th style="width:160px;">Aksi</th>
+                    </tr>
+                </thead>
 
-            {{-- ID --}}
-            <td>{{ $item->id_lowongan }}</td>
+                <tbody>
+                    @forelse($lowongan as $item)
+                    <tr data-status="{{ $item->status }}"
+                        data-deleted="{{ $item->deleted_at ? 1 : 0 }}">
 
-            {{-- Judul --}}
-            <td>{{ $item->judul_lowongan }}</td>
+                        {{-- No --}}
+                        <td class="text-center">
+                            {{ $loop->iteration }}
+                        </td>
 
-            {{-- Deskripsi --}}
-            <td style="max-width:200px;">
-                {{ \Illuminate\Support\Str::limit($item->deskripsi, 50) ?? '-' }}
-            </td>
+                        {{-- ID --}}
+                        <td class="text-muted">
+                            {{ $item->id_lowongan }}
+                        </td>
 
-            {{-- Lokasi --}}
-            <td>{{ $item->lokasi }}</td>
+                        {{-- Judul + Deskripsi --}}
+                        <td>
+                            <div class="font-weight-bold">
+                                {{ $item->judul_lowongan }}
+                            </div>
+                            <small class="text-muted d-block">
+                                {{ \Illuminate\Support\Str::limit($item->deskripsi, 50) ?? '-' }}
+                            </small>
+                        </td>
 
-            {{-- Jenis --}}
-            <td>{{ ucfirst($item->jenis_pekerjaan) }} {{ ucfirst($item->sistem_kerja) }}</td>
+                        {{-- Lokasi --}}
+                        <td>{{ $item->lokasi ?? '-' }}</td>
 
-            {{-- Gaji --}}
-            <td>
-                @if($item->gaji_minimum && $item->gaji_maksimum)
-                Rp{{ number_format($item->gaji_minimum) }} -
-                Rp{{ number_format($item->gaji_maksimum) }}
-                @else
-                -
-                @endif
-            </td>
+                        {{-- Jenis --}}
+                        <td>
+                            <span class="badge badge-secondary">
+                                {{ ucfirst($item->jenis_pekerjaan) }}
+                            </span>
+                            <span class="badge badge-light border">
+                                {{ ucfirst($item->sistem_kerja) }}
+                            </span>
+                        </td>
 
-            {{-- Pendidikan --}}
-            <td>{{ $item->pendidikan_minimum ?? '-' }}</td>
+                        {{-- Gaji --}}
+                        <td>
+                            @if($item->gaji_minimum && $item->gaji_maksimum)
+                            <span class="text-success font-weight-bold">
+                                Rp{{ number_format($item->gaji_minimum) }}
+                            </span>
+                            -
+                            <span class="text-success font-weight-bold">
+                                Rp{{ number_format($item->gaji_maksimum) }}
+                            </span>
+                            @else
+                            <span class="text-muted">-</span>
+                            @endif
+                        </td>
 
-            {{-- Pengalaman --}}
-            <td>{{ $item->pengalaman_minimum ?? '-' }}</td>
+                        {{-- Kuota --}}
+                        <td class="text-center">
+                            <span class="badge badge-info">
+                                {{ $item->kuota }}
+                            </span>
+                        </td>
 
-            {{-- Kuota --}}
-            <td class="text-center">{{ $item->kuota }}</td>
+                        {{-- Periode --}}
+                        <td>
+                            @if($item->tanggal_mulai && $item->tanggal_berakhir)
+                            <small class="text-success d-block">
+                                {{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d-m-Y') }}
+                            </small>
+                            <small class="text-danger">
+                                {{ \Carbon\Carbon::parse($item->tanggal_berakhir)->format('d-m-Y') }}
+                            </small>
+                            @else
+                            <span class="text-muted">-</span>
+                            @endif
+                        </td>
 
-            <td>
-                @if($item->tanggal_mulai && $item->tanggal_berakhir)
-                <small class="text-success">
-                    <i class="fas fa-play"></i>
-                    {{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d-m-Y') }}
-                </small>
-                <br>
-                <small class="text-danger">
-                    <i class="fas fa-stop"></i>
-                    {{ \Carbon\Carbon::parse($item->tanggal_berakhir)->format('d-m-Y') }}
-                </small>
-                @else
-                -
-                @endif
-            </td>
+                        {{-- Status --}}
+                        <td class="text-center">
+                            @php
+                            $badge = [
+                            'pending' => 'warning',
+                            'disetujui' => 'success',
+                            'ditolak' => 'danger',
+                            ];
+                            @endphp
 
-            @php
-            $status = $item->status;
-            $badge = [
-            'pending' => 'warning',
-            'disetujui' => 'success',
-            'ditolak' => 'danger',
-            ];
-            @endphp
+                            @if($item->deleted_at)
+                            <span class="badge badge-dark">Terhapus</span>
+                            @else
+                            <span class="badge badge-{{ $badge[$item->status] ?? 'secondary' }}">
+                                {{ ucfirst($item->status) }}
+                            </span>
+                            @endif
+                        </td>
 
+                        {{-- AKSI PERUSAHAAN --}}
+                        <td class="text-center">
 
-            {{-- Status --}}
-            <td class="text-center">
-                @if($item->deleted_at)
-                <span class="badge badge-danger">Terhapus</span>
-                @else
-                <span class="badge badge-{{ $badge[$status] ?? 'secondary' }}">
-                    {{ ucfirst($status) }}
-                </span>
-                @endif
-            </td>
+                            {{-- VIEW --}}
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-info btn-show"
+                                data-url="{{ route('perusahaan.lowongan.show', $item->id_lowongan) }}">
+                                <i class="fas fa-eye"></i>
+                            </button>
 
-            {{-- Kuota --}}
-            <td class="text-center">{{ $item->catatan }}</td>
+                            @if($item->deleted_at)
 
+                            {{-- RESTORE --}}
+                            <button type="button"
+                                class="btn btn-success btn-sm btn-restore"
+                                data-url="{{ route('perusahaan.lowongan.restore', $item->id_lowongan) }}"
+                                title="Restore">
+                                <i class="fas fa-undo"></i>
+                            </button>
 
+                            {{-- FORCE DELETE --}}
+                            <button type="button"
+                                class="btn btn-danger btn-sm btn-force-delete"
+                                data-url="{{ route('perusahaan.lowongan.forceDelete', $item->id_lowongan) }}"
+                                title="Hapus Permanen">
+                                <i class="fas fa-times"></i>
+                            </button>
 
-            {{-- Aksi --}}
-            <td class="text-center">
+                            @else
 
-                <a href="{{ route('perusahaan.lowongan.show', $item->id_lowongan) }}"
-                    class="btn btn-info btn-sm">
-                    <i class="fas fa-eye"></i>
-                </a>
+                            {{-- EDIT (kecuali sudah disetujui) --}}
+                            @if($item->status != 'disetujui')
+                            <a href="{{ route('perusahaan.lowongan.edit', $item->id_lowongan) }}"
+                                class="btn btn-warning btn-sm"
+                                title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            @endif
 
-                @if($item->deleted_at)
+                            {{-- DELETE --}}
+                            <button type="button"
+                                class="btn btn-danger btn-sm btn-hapus"
+                                data-url="{{ route('perusahaan.lowongan.destroy', $item->id_lowongan) }}"
+                                title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
 
-                <!-- RESTORE -->
-                <button type="button"
-                    class="btn btn-success btn-sm btn-restore"
-                    data-url="{{ route('perusahaan.lowongan.restore', $item->id_lowongan) }}">
-                    <i class="fas fa-undo"></i>
-                </button>
+                            @endif
 
-                <!-- FORCE DELETE (PERMANEN) -->
-                <button type="button"
-                    class="btn btn-danger btn-sm btn-force-delete"
-                    data-url="{{ route('perusahaan.lowongan.forceDelete', $item->id_lowongan) }}">
-                    <i class="fas fa-times"></i>
-                </button>
+                        </td>
 
-                @else
+                    </tr>
 
-                {{-- EDIT --}}
-                @if($item->status != 'disetujui')
-                <a href="{{ route('perusahaan.lowongan.edit', $item->id_lowongan) }}"
-                    class="btn btn-warning btn-sm">
-                    <i class="fas fa-edit"></i>
-                </a>
-                @endif
+                    @empty
+                    <tr>
+                        <td colspan="10" class="text-center text-muted py-4">
+                            Tidak ada data lowongan
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
 
-                <!-- DELETE (SOFT DELETE) -->
-                <button type="button"
-                    class="btn btn-danger btn-sm btn-hapus"
-                    data-url="{{ route('perusahaan.lowongan.destroy', $item->id_lowongan) }}">
-                    <i class="fas fa-trash"></i>
-                </button>
+            </table>
+        </div>
 
-                @endif
-
-            </td>
-        </tr>
-
-        @empty
-        <tr>
-            <td colspan="17" class="text-center text-muted">
-                Tidak ada data lowongan
-            </td>
-        </tr>
-        @endforelse
-    </tbody>
-</table>
+    </div>
+</div>

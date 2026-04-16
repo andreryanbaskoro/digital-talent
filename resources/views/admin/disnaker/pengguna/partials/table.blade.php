@@ -40,7 +40,7 @@
 
             <td class="text-center">
 
-                <a href="{{ route('pengguna.show', $user->id_pengguna) }}"
+                <a href="{{ route('disnaker.pengguna.show', $user->id_pengguna) }}"
                     class="btn btn-info btn-sm"
                     data-toggle="tooltip"
                     title="Detail">
@@ -49,34 +49,34 @@
 
                 @if($user->deleted_at)
 
-                <form action="{{ route('pengguna.restore', $user->id_pengguna) }}" method="POST" class="d-inline">
+                <form action="{{ route('disnaker.pengguna.restore', $user->id_pengguna) }}" method="POST" class="d-inline">
                     @csrf
                     <button type="button"
                         class="btn btn-success btn-sm btn-restore" data-toggle="tooltip"
                         title="Pulihkan Data"
-                        data-url="{{ route('pengguna.restore', $user->id_pengguna) }}">
+                        data-url="{{ route('disnaker.pengguna.restore', $user->id_pengguna) }}">
                         <i class="fas fa-undo"></i>
                     </button>
                 </form>
 
-                <form action="{{ route('pengguna.forceDelete', $user->id_pengguna) }}" method="POST" class="d-inline">
+                <form action="{{ route('disnaker.pengguna.forceDelete', $user->id_pengguna) }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
                     <button type="button"
                         class="btn btn-danger btn-sm btn-force-delete" data-toggle="tooltip"
                         title="Hapus Permanen"
-                        data-url="{{ route('pengguna.forceDelete', $user->id_pengguna) }}">
+                        data-url="{{ route('disnaker.pengguna.forceDelete', $user->id_pengguna) }}">
                         <i class="fas fa-times"></i>
                     </button>
                 </form>
 
                 @else
 
-                <a href="{{ route('pengguna.edit', $user->id_pengguna) }}" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Edit Data">
+                <a href="{{ route('disnaker.pengguna.edit', $user->id_pengguna) }}" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Edit Data">
                     <i class="fas fa-edit"></i>
                 </a>
 
-                <form action="{{ route('pengguna.delete', $user->id_pengguna) }}"
+                <form action="{{ route('disnaker.pengguna.destroy', $user->id_pengguna) }}"
                     method="POST"
                     class="d-inline">
                     @csrf
@@ -84,7 +84,7 @@
 
                     <button type="button"
                         class="btn btn-danger btn-sm btn-hapus" data-toggle="tooltip" title="Hapus Data"
-                        data-url="{{ route('pengguna.delete', $user->id_pengguna) }}">
+                        data-url="{{ route('disnaker.pengguna.destroy', $user->id_pengguna) }}">
                         <i class="fas fa-trash"></i>
                     </button>
                 </form>

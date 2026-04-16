@@ -90,7 +90,7 @@
                         <div class="card-footer d-flex align-items-center">
 
                             {{-- Kiri --}}
-                            <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary btn-sm">
+                            <a href="{{ route('disnaker.pengguna.index') }}" class="btn btn-outline-secondary btn-sm">
                                 <i class="fas fa-arrow-left mr-1"></i> Kembali
                             </a>
 
@@ -112,7 +112,7 @@
                                 @endif
 
                                 {{-- Tombol Edit --}}
-                                <a href="{{ route('pengguna.edit', $pengguna->id_pengguna) }}"
+                                <a href="{{ route('disnaker.pengguna.edit', $pengguna->id_pengguna) }}"
                                     class="btn btn-warning btn-sm">
                                     <i class="fas fa-edit"></i> Edit Pengguna
                                 </a>

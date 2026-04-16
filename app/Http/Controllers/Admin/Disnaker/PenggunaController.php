@@ -63,7 +63,7 @@ class PenggunaController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('pengguna.index')
+        return redirect()->route('disnaker.pengguna.index')
             ->with('success', 'Pengguna berhasil ditambahkan');
     }
 
@@ -125,7 +125,7 @@ class PenggunaController extends Controller
 
         $pengguna->update($dataUpdate);
 
-        return redirect()->route('pengguna.index')
+        return redirect()->route('disnaker.pengguna.index')
             ->with('success', 'Pengguna berhasil diperbarui');
     }
 
@@ -135,7 +135,7 @@ class PenggunaController extends Controller
         $pengguna = Pengguna::findOrFail($id);
         $pengguna->delete();
 
-        return redirect()->route('pengguna.index')
+        return redirect()->route('disnaker.pengguna.index')
             ->with('success', 'Pengguna berhasil dihapus');
     }
 
@@ -145,7 +145,7 @@ class PenggunaController extends Controller
         $pengguna = Pengguna::onlyTrashed()->findOrFail($id);
         $pengguna->restore();
 
-        return redirect()->route('pengguna.index')
+        return redirect()->route('disnaker.pengguna.index')
             ->with('success', 'Pengguna berhasil dipulihkan');
     }
 
@@ -155,7 +155,7 @@ class PenggunaController extends Controller
         $pengguna = Pengguna::onlyTrashed()->findOrFail($id);
         $pengguna->forceDelete();
 
-        return redirect()->route('pengguna.index')
+        return redirect()->route('disnaker.pengguna.index')
             ->with('success', 'Pengguna dihapus permanen');
     }
 

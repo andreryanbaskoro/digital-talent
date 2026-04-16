@@ -82,7 +82,7 @@ class ProfilPencariKerjaController extends Controller
             'foto' => $pencariKerja->foto,
         ]);
 
-        return redirect()->route('pencari_kerja.index')
+        return redirect()->route('disnaker.pencari-kerja.index')
             ->with('success', 'Pencari kerja berhasil diperbarui');
     }
 
@@ -94,7 +94,7 @@ class ProfilPencariKerjaController extends Controller
         // ❌ Jangan hapus file saat soft delete
         $pencariKerja->delete();
 
-        return redirect()->route('pencari_kerja.index')
+        return redirect()->route('disnaker.pencari-kerja.index')
             ->with('success', 'Pencari kerja berhasil dihapus');
     }
 
@@ -106,7 +106,7 @@ class ProfilPencariKerjaController extends Controller
 
         $pencariKerja->restore();
 
-        return redirect()->route('pencari_kerja.index')
+        return redirect()->route('disnaker.pencari-kerja.index')
             ->with('success', 'Pencari kerja berhasil dipulihkan');
     }
 
@@ -123,7 +123,7 @@ class ProfilPencariKerjaController extends Controller
 
         $pencariKerja->forceDelete();
 
-        return redirect()->route('pencari_kerja.index')
+        return redirect()->route('disnaker.pencari-kerja.index')
             ->with('success', 'Pencari kerja berhasil dihapus permanen');
     }
 }

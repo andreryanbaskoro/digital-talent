@@ -3,56 +3,62 @@
 
     @php
     $user = auth()->user();
+    $profil = \App\Models\ProfilPencariKerja::where('id_pengguna', $user->id_pengguna)->first();
     @endphp
 
-    <!-- Brand Logo -->
-    <a href="/dashboard" class="brand-link">
-        <i class="fas fa-briefcase fa-lg text-warning mr-2"></i>
-        <span class="brand-text font-weight-bold">Talent</span>
-        <span class="brand-text font-weight-light">Hub</span>
+    <!-- ================= BRAND ================= -->
+    <a href="{{ route('pencaker.dashboard') }}" class="brand-link">
+        <img src="{{ asset('images/Lambang_Kota_Jayapura.jpeg') }}"
+            class="brand-image img-circle elevation-3"
+            style="opacity:.9; width:35px; height:35px;">
+        <span class="brand-text font-weight-bold text-dark">
+            Digital Talent Hub
+        </span>
     </a>
+    <!-- ================= END BRAND ================= -->
 
-    <!-- Sidebar -->
+
     <div class="sidebar">
 
-        @php
-        $profil = \App\Models\ProfilPencariKerja::where('id_pengguna', $user->id_pengguna)->first();
-        @endphp
-
-        <!-- User Panel -->
+        <!-- ================= USER PANEL ================= -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
 
-            <div class="image mr-2">
+            <div class="image">
                 @if($profil && $profil->foto)
                 <img src="{{ asset('storage/'.$profil->foto) }}"
                     class="img-circle elevation-2"
-                    alt="User Image"
                     style="width:40px; height:40px; object-fit:cover;">
                 @else
-                <i class="fas fa-user-circle fa-2x text-white"></i>
+                <i class="fas fa-user-circle fa-2x text-dark"></i>
                 @endif
             </div>
 
             <div class="info">
-                <a href="#" class="d-block">
+                <a href="#" class="d-block text-dark font-weight-bold">
                     {{ $profil->nama_lengkap ?? $user->nama }}
                 </a>
-                <small class="text-light">Pencari Kerja</small>
+                <small class="text-muted d-block">
+                    ID: {{ $profil->id_pencari_kerja ?? '-' }}
+                </small>
+                <small class="text-muted d-block">
+                    Pencari Kerja
+                </small>
             </div>
 
         </div>
+        <!-- ================= END USER PANEL ================= -->
 
-        <!-- Menu -->
+
+        <!-- ================= MENU ================= -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column"
                 data-widget="treeview"
-                role="menu"
-                data-accordion="false">
+                role="menu">
 
                 <!-- Dashboard -->
                 <li class="nav-item">
                     <a href="{{ route('pencaker.dashboard') }}"
-                        class="nav-link {{ request()->is('admin/pencaker/dashboard') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('pencaker.dashboard') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-home"></i>
                         <p>Dashboard</p>
                     </a>
@@ -61,39 +67,28 @@
                 <!-- Profil -->
                 <li class="nav-item">
                     <a href="{{ route('pencaker.profil.index') }}"
-                        class="nav-link {{ request()->is('admin/pencaker/profil*') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('pencaker.profil.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user"></i>
                         <p>Profil Saya</p>
                     </a>
                 </li>
 
-                <!-- AK1 -->
-                <li class="nav-item {{ request()->is('admin/pencaker/ak1*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('admin/pencaker/ak1*') ? 'active' : '' }}">
+                <!-- Isi Formulir AK1 -->
+                <li class="nav-item">
+                    <a href="{{ route('pencaker.ak1.formulir') }}"
+                        class="nav-link {{ request()->routeIs('pencaker.ak1.formulir') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-id-card"></i>
-                        <p>
-                            Kartu Kuning (AK1)
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                        <p>Isi Formulir AK1</p>
                     </a>
+                </li>
 
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('pencaker.ak1.formulir') }}"
-                                class="nav-link {{ request()->is('admin/pencaker/ak1/formulir*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Isi Formulir AK1</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('pencaker.ak1.index') }}"
-                                class="nav-link {{ request()->is('admin/pencaker/ak1') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Status & Riwayat AK1</p>
-                            </a>
-                        </li>
-                    </ul>
+                <!-- Status & Riwayat AK1 -->
+                <li class="nav-item">
+                    <a href="{{ route('pencaker.ak1.index') }}"
+                        class="nav-link {{ request()->routeIs('pencaker.ak1.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-history"></i>
+                        <p>Status & Riwayat AK1</p>
+                    </a>
                 </li>
 
                 <!-- Lamaran -->
@@ -114,8 +109,20 @@
                     </a>
                 </li>
 
+                <!-- Logout -->
+                <li class="nav-item">
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button class="nav-link btn btn-link text-left text-danger w-100">
+                            <i class="nav-icon fas fa-sign-out-alt"></i>
+                            <p>Logout</p>
+                        </button>
+                    </form>
+                </li>
+
             </ul>
         </nav>
+        <!-- ================= END MENU ================= -->
 
     </div>
 </aside>

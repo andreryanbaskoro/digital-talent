@@ -94,7 +94,7 @@ class ProfilPerusahaanController extends Controller
             'logo' => $logoPath,
         ]);
 
-        return redirect()->route('perusahaan.index')
+       return redirect()->route('disnaker.perusahaan.index')
             ->with('success', 'Perusahaan berhasil diperbarui');
     }
 
@@ -104,7 +104,7 @@ class ProfilPerusahaanController extends Controller
         $perusahaan = ProfilPerusahaan::findOrFail($id);
         $perusahaan->delete();
 
-        return redirect()->route('perusahaan.index')
+       return redirect()->route('disnaker.perusahaan.index')
             ->with('success', 'Perusahaan berhasil dihapus');
     }
 
@@ -114,7 +114,7 @@ class ProfilPerusahaanController extends Controller
         $perusahaan = ProfilPerusahaan::onlyTrashed()->findOrFail($id);
         $perusahaan->restore();
 
-        return redirect()->route('perusahaan.index')
+       return redirect()->route('disnaker.perusahaan.index')
             ->with('success', 'Perusahaan berhasil dipulihkan');
     }
 
@@ -129,7 +129,7 @@ class ProfilPerusahaanController extends Controller
 
         $perusahaan->forceDelete();
 
-        return redirect()->route('perusahaan.index')
+       return redirect()->route('disnaker.perusahaan.index')
             ->with('success', 'Perusahaan berhasil dihapus secara permanen');
     }
 }

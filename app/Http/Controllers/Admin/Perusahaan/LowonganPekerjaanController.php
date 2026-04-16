@@ -137,9 +137,22 @@ class LowonganPekerjaanController extends Controller
     {
         $lowongan = $this->findOwnedLowongan($id, true);
 
-        return view('admin.perusahaan.lowongan.show', [
-            'title' => 'Detail Lowongan',
-            'lowongan' => $lowongan
+        return response()->json([
+            'id' => $lowongan->id_lowongan,
+            'judul_lowongan' => $lowongan->judul_lowongan,
+            'deskripsi' => $lowongan->deskripsi,
+            'lokasi' => $lowongan->lokasi,
+            'jenis_pekerjaan' => $lowongan->jenis_pekerjaan,
+            'sistem_kerja' => $lowongan->sistem_kerja,
+            'gaji_minimum' => $lowongan->gaji_minimum,
+            'gaji_maksimum' => $lowongan->gaji_maksimum,
+            'pendidikan_minimum' => $lowongan->pendidikan_minimum,
+            'pengalaman_minimum' => $lowongan->pengalaman_minimum,
+            'kuota' => $lowongan->kuota,
+            'tanggal_mulai' => optional($lowongan->tanggal_mulai)->format('d-m-Y'),
+            'tanggal_berakhir' => optional($lowongan->tanggal_berakhir)->format('d-m-Y'),
+            'status' => $lowongan->status,
+            'deleted_at' => $lowongan->deleted_at ? 1 : 0,
         ]);
     }
 

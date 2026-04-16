@@ -3,7 +3,7 @@ $isEdit = isset($pencariKerja);
 @endphp
 
 <div class="card card-primary">
-    <form action="{{ $isEdit ? route('pencari_kerja.update', $pencariKerja->id_pencari_kerja) : route('pencari_kerja.store') }}"
+    <form action="{{ $isEdit ? route('disnaker.pencari-kerja.update', $pencariKerja->id_pencari_kerja) : route('pencari_kerja.store') }}"
         method="POST"
         enctype="multipart/form-data">
         @csrf
@@ -231,7 +231,7 @@ $isEdit = isset($pencariKerja);
         </div>
 
         <div class="card-footer text-right">
-            <a href="{{ route('pencari_kerja.index') }}" class="btn btn-kembali btn-secondary btn-sm">
+            <a href="{{ route('disnaker.pencari-kerja.index') }}" class="btn btn-kembali btn-secondary btn-sm">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
 

@@ -3,7 +3,7 @@ $isEdit = isset($pengguna);
 @endphp
 
 <div class="card card-primary">
-    <form action="{{ $isEdit ? route('pengguna.update', $pengguna->id_pengguna) : route('pengguna.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ $isEdit ? route('disnaker.pengguna.update', $pengguna->id_pengguna) : route('disnaker.pengguna.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @if($isEdit)
         @method('PUT')
@@ -110,13 +110,13 @@ $isEdit = isset($pengguna);
         <div class="card-footer d-flex justify-content-end">
 
             {{-- Kembali --}}
-            <a href="{{ route('pengguna.index') }}"
+            <a href="{{ route('disnaker.pengguna.index') }}"
                 class="btn btn-outline-secondary btn-sm mr-2 btn-kembali">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
 
             {{-- Simpan / Update --}}
-            <button type="submit"
+            <button type="button"
                 class="btn btn-primary btn-submit btn-sm">
                 <i class="fas fa-save"></i> {{ $isEdit ? 'Perbarui' : 'Simpan' }}
             </button>

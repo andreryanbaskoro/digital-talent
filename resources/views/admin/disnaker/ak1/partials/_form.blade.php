@@ -110,7 +110,7 @@ $isEdit = isset($pengguna);
         <div class="card-footer d-flex justify-content-end">
 
             {{-- Kembali --}}
-            <a href="{{ route('pengguna.index') }}"
+            <a href="{{ route('disnaker.pengguna.index') }}"
                 class="btn btn-outline-secondary btn-sm mr-2 btn-kembali">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
