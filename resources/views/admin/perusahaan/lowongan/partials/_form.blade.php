@@ -61,27 +61,42 @@ $isEdit = isset($lowongan);
                         <label>Jenis Pekerjaan</label>
                         <select name="jenis_pekerjaan" class="form-control">
                             <option value="">-- Pilih Jenis Pekerjaan --</option>
-                            @foreach(['fulltime','parttime','freelance'] as $item)
-                            <option value="{{ $item }}"
-                                {{ old('jenis_pekerjaan', $lowongan->jenis_pekerjaan ?? '') == $item ? 'selected' : '' }}>
-                                {{ ucfirst($item) }}
+
+                            @foreach([
+                            'fulltime' => 'Full Time',
+                            'parttime' => 'Part Time',
+                            'freelance' => 'Freelance',
+                            'internship' => 'Internship'
+                            ] as $value => $label)
+                            <option value="{{ $value }}"
+                                {{ old('jenis_pekerjaan', $lowongan->jenis_pekerjaan ?? '') == $value ? 'selected' : '' }}>
+                                {{ $label }}
                             </option>
                             @endforeach
+
                         </select>
                     </div>
                 </div>
 
-                {{-- Sistem --}}
+                {{-- Sistem Kerja --}}
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>Sistem Kerja</label>
+                        <label>Tipe Lokasi Kerja</label>
+
                         <select name="sistem_kerja" class="form-control">
-                            <option value="">-- Pilih Sistem Kerja --</option>
-                            @foreach(['onsite','remote','hybrid'] as $item)
-                            <option value="{{ $item }}"
-                                {{ old('sistem_kerja', $lowongan->sistem_kerja ?? '') == $item ? 'selected' : '' }}>
-                                {{ ucfirst($item) }}
+                            <option value="">-- Pilih Tipe Lokasi Kerja --</option>
+
+                            @foreach([
+                            'onsite' => 'Kerja di Kantor',
+                            'remote' => 'Kerja dari Rumah',
+                            'hybrid' => 'WFO & WFH (Hybrid)'
+                            ] as $value => $label)
+
+                            <option value="{{ $value }}"
+                                {{ old('sistem_kerja', $lowongan->sistem_kerja ?? '') == $value ? 'selected' : '' }}>
+                                {{ $label }}
                             </option>
+
                             @endforeach
                         </select>
                     </div>
