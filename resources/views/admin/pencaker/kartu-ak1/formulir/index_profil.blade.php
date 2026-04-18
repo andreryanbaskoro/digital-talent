@@ -30,7 +30,7 @@
             'RT/RW' => ($profil && $profil->rt && $profil->rw) ? true : null,
             'Kelurahan' => $profil->kelurahan ?? null,
             'Kecamatan' => $profil->kecamatan ?? null,
-            'Kabupaten' => $profil->kabupaten ?? null,
+            'Kabupaten' => $profil->kab_kota ?? null,
             'Provinsi' => $profil->provinsi ?? null,
             'Kode Pos' => $profil->kode_pos ?? null,
             'Nomor HP' => $profil->nomor_hp ?? null,

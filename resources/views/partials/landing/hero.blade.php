@@ -25,21 +25,38 @@
 
         {{-- Stats --}}
         <div class="mt-10 flex flex-wrap justify-center gap-6 animate-fade-in-up" style="animation-delay:.4s">
-            @php $totalAktif = \App\Models\LowonganPekerjaan::where('status','aktif')->whereNull('deleted_at')->count(); @endphp
+
+            {{-- LOWONGAN --}}
+            {{-- PERUSAHAAN --}}
             <div class="text-center">
-                <p class="text-2xl font-bold text-white">{{ number_format($totalAktif) }}+</p>
-                <p class="text-white/60 text-sm">Lowongan Aktif</p>
-            </div>
-            <div class="h-10 w-px bg-white/20 self-center hidden sm:block"></div>
-            <div class="text-center">
-                <p class="text-2xl font-bold text-white">{{ number_format(\App\Models\ProfilPerusahaan::whereNull('deleted_at')->count()) }}+</p>
+                <p class="text-2xl font-bold text-white">
+                    {{ number_format($totalPerusahaan) }}+
+                </p>
                 <p class="text-white/60 text-sm">Perusahaan</p>
             </div>
+
             <div class="h-10 w-px bg-white/20 self-center hidden sm:block"></div>
+
+            <div class="text-center">
+                <p class="text-2xl font-bold text-white">
+                    {{ number_format($totalLowongan) }}+
+                </p>
+                <p class="text-white/60 text-sm">Lowongan Aktif</p>
+
+                <div class="flex items-center justify-center gap-1 mt-2 text-xs text-white/60">
+                    <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+                    <span>{{ $totalHariIni }} lowongan baru hari ini</span>
+                </div>
+            </div>
+
+            <div class="h-10 w-px bg-white/20 self-center hidden sm:block"></div>
+
+            {{-- GRATIS --}}
             <div class="text-center">
                 <p class="text-2xl font-bold text-white">100%</p>
                 <p class="text-white/60 text-sm">Gratis Digunakan</p>
             </div>
+
         </div>
     </div>
 </section>

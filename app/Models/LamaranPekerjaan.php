@@ -17,7 +17,7 @@ class LamaranPekerjaan extends Model
 
     protected $fillable = [
         'id_lowongan_pekerjaan',
-        'id_profil_pencari_kerja',
+        'id_pencari_kerja',
         'tanggal_lamar',
         'status_lamaran',
         'catatan_perusahaan',
@@ -33,13 +33,13 @@ class LamaranPekerjaan extends Model
     // ke lowongan
     public function lowongan()
     {
-        return $this->belongsTo(LowonganPekerjaan::class, 'id_lowongan_pekerjaan');
+        return $this->belongsTo(LowonganPekerjaan::class, 'id_lowongan', 'id_lowongan');
     }
 
     // ke profil pencari kerja
     public function pencariKerja()
     {
-        return $this->belongsTo(ProfilPencariKerja::class, 'id_profil_pencari_kerja');
+        return $this->belongsTo(ProfilPencariKerja::class, 'id_pencari_kerja');
     }
 
     // ke dokumen lamaran
@@ -53,6 +53,4 @@ class LamaranPekerjaan extends Model
     {
         return $this->hasOne(HasilPerhitungan::class, 'id_lamaran_pekerjaan');
     }
-    
-    
 }

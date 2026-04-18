@@ -49,15 +49,19 @@ class LowonganPekerjaan extends Model
     // ke kriteria lowongan
     public function kriteria()
     {
-        return $this->hasMany(KriteriaLowongan::class, 'id_lowongan_pekerjaan');
+        return $this->hasMany(KriteriaLowongan::class, 'id_lowongan', 'id_lowongan');
     }
 
     // ke lamaran pekerjaan
     public function lamaran()
     {
-        return $this->hasMany(LamaranPekerjaan::class, 'id_lowongan_pekerjaan');
+        return $this->hasMany(LamaranPekerjaan::class, 'id_lowongan', 'id_lowongan');
     }
 
+    public function subKriteriaLowongan()
+    {
+        return $this->hasMany(SubKriteriaLowongan::class, 'id_lowongan', 'id_lowongan');
+    }
 
     protected static function boot()
     {

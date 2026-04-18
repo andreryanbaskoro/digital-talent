@@ -24,6 +24,7 @@ class KartuAk1 extends Model
         'berlaku_mulai',
         'berlaku_sampai',
         'status',
+        'is_revised',
         'foto_pas',
         'scan_ktp',
         'scan_ijazah',
@@ -62,6 +63,16 @@ class KartuAk1 extends Model
         return "AK1-$tahun-" . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     }
 
+    public function markAsRevised()
+    {
+        $this->update([
+            'status' => 'pending',
+            'is_revised' => 1, // selalu revisi kalau submit ulang
+            'berlaku_mulai' => null,
+            'berlaku_sampai' => null,
+        ]);
+    }
+
     /*
     |--------------------------------------------------
     | BOOT MODEL
@@ -93,7 +104,7 @@ class KartuAk1 extends Model
         */
         static::saving(function ($model) {
 
-            if (!empty($model->id_kartu_ak1)) {
+            if (empty($model->nomor_pendaftaran) && !empty($model->id_kartu_ak1)) {
                 $parts = explode('-', $model->id_kartu_ak1);
 
                 $tahun = $parts[1] ?? now()->format('Y');
@@ -144,5 +155,9 @@ class KartuAk1 extends Model
         return $this->hasMany(VerifikasiAk1::class, 'id_kartu_ak1');
     }
 
-    
+    public function latestVerifikasi()
+    {
+        return $this->hasOne(VerifikasiAk1::class, 'id_kartu_ak1', 'id_kartu_ak1')
+            ->latestOfMany('tanggal_verifikasi');
+    }
 }

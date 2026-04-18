@@ -99,10 +99,10 @@ $isEdit = isset($profil);
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Kabupaten</label>
-                                <input type="text" name="kabupaten"
-                                    class="form-control @error('kabupaten') is-invalid @enderror"
-                                    value="{{ old('kabupaten', $profil->kabupaten ?? '') }}">
-                                @error('kabupaten')
+                                <input type="text" name="kab_kota"
+                                    class="form-control @error('kab_kota') is-invalid @enderror"
+                                    value="{{ old('kab_kota', $profil->kab_kota ?? '') }}">
+                                @error('kab_kota')
                                 <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>

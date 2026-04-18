@@ -106,11 +106,11 @@ $isEdit = isset($perusahaan);
                 {{-- Kabupaten --}}
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="kabupaten">Kabupaten / Kota</label>
-                        <input type="text" name="kabupaten" id="kabupaten"
-                            class="form-control @error('kabupaten') is-invalid @enderror"
-                            value="{{ old('kabupaten', $isEdit ? $perusahaan->kabupaten : '') }}">
-                        @error('kabupaten')
+                        <label for="kab_kota">Kabupaten / Kota</label>
+                        <input type="text" name="kab_kota" id="kab_kota"
+                            class="form-control @error('kab_kota') is-invalid @enderror"
+                            value="{{ old('kab_kota', $isEdit ? $perusahaan->kab_kota : '') }}">
+                        @error('kab_kota')
                         <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
                     </div>

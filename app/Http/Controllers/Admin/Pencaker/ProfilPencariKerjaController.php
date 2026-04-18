@@ -85,7 +85,7 @@ class ProfilPencariKerjaController extends Controller
             'rw' => $request->rw,
             'kelurahan' => $request->kelurahan,
             'kecamatan' => $request->kecamatan,
-            'kabupaten' => $request->kabupaten,
+            'kab_kota' => $request->kab_kota,
             'provinsi' => $request->provinsi,
             'kode_pos' => $request->kode_pos,
             'nomor_hp' => $request->nomor_hp,

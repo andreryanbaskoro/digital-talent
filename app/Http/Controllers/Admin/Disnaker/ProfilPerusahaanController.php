@@ -56,7 +56,7 @@ class ProfilPerusahaanController extends Controller
             'nib' => 'nullable|string|max:30',
             'npwp' => 'nullable|string|max:20',
             'alamat' => 'nullable|string',
-            'kabupaten' => 'nullable|string|max:100',
+            'kab_kota' => 'nullable|string|max:100',
             'provinsi' => 'nullable|string|max:100',
             'nomor_telepon' => 'nullable|string|max:15',
             'website' => 'nullable|string|max:150',
@@ -86,7 +86,7 @@ class ProfilPerusahaanController extends Controller
             'nib' => $request->nib,
             'npwp' => $request->npwp,
             'alamat' => $request->alamat,
-            'kabupaten' => $request->kabupaten,
+            'kab_kota' => $request->kab_kota,
             'provinsi' => $request->provinsi,
             'nomor_telepon' => $request->nomor_telepon,
             'website' => $request->website,
@@ -94,7 +94,7 @@ class ProfilPerusahaanController extends Controller
             'logo' => $logoPath,
         ]);
 
-       return redirect()->route('disnaker.perusahaan.index')
+        return redirect()->route('disnaker.perusahaan.index')
             ->with('success', 'Perusahaan berhasil diperbarui');
     }
 
@@ -104,7 +104,7 @@ class ProfilPerusahaanController extends Controller
         $perusahaan = ProfilPerusahaan::findOrFail($id);
         $perusahaan->delete();
 
-       return redirect()->route('disnaker.perusahaan.index')
+        return redirect()->route('disnaker.perusahaan.index')
             ->with('success', 'Perusahaan berhasil dihapus');
     }
 
@@ -114,7 +114,7 @@ class ProfilPerusahaanController extends Controller
         $perusahaan = ProfilPerusahaan::onlyTrashed()->findOrFail($id);
         $perusahaan->restore();
 
-       return redirect()->route('disnaker.perusahaan.index')
+        return redirect()->route('disnaker.perusahaan.index')
             ->with('success', 'Perusahaan berhasil dipulihkan');
     }
 
@@ -129,7 +129,7 @@ class ProfilPerusahaanController extends Controller
 
         $perusahaan->forceDelete();
 
-       return redirect()->route('disnaker.perusahaan.index')
+        return redirect()->route('disnaker.perusahaan.index')
             ->with('success', 'Perusahaan berhasil dihapus secara permanen');
     }
 }

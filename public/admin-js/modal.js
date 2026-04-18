@@ -92,13 +92,14 @@ $(document).on("click", ".btn-submit", function () {
     }
 
     showConfirm(config, function () {
+        console.log("MASUK CALLBACK"); // 🔥 TEST
         showLoading("Menyimpan...");
 
         btn.prop("disabled", true).html(
             '<i class="fas fa-spinner fa-spin"></i> Loading...',
         );
 
-        form.submit();
+        form[0].submit();
     });
 });
 

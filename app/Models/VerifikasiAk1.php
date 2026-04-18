@@ -12,10 +12,12 @@ class VerifikasiAk1 extends Model
     protected $table = 'verifikasi_ak1';
     protected $primaryKey = 'id_verifikasi_ak1';
 
-    public $incrementing = true;
-    protected $keyType = 'int';
+    // karena PK bukan auto increment
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
+        'id_verifikasi_ak1',
         'id_kartu_ak1',
         'id_pengguna',
         'status_verifikasi',
@@ -29,6 +31,42 @@ class VerifikasiAk1 extends Model
 
     /*
     |--------------------------------------------------------------------------
+    | AUTO GENERATE ID
+    |--------------------------------------------------------------------------
+    */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->id_verifikasi_ak1) {
+                $model->id_verifikasi_ak1 = self::generateId();
+            }
+        });
+    }
+
+    public static function generateId(): string
+    {
+        $year = now()->format('Y');
+
+        $last = self::where('id_verifikasi_ak1', 'like', "VRF-$year-%")
+            ->orderBy('id_verifikasi_ak1', 'desc')
+            ->first();
+
+        if ($last) {
+            $lastNumber = (int) substr($last->id_verifikasi_ak1, -5);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        $number = str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
+        return "VRF-$year-$number";
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | RELATIONSHIPS
     |--------------------------------------------------------------------------
     */
@@ -39,7 +77,7 @@ class VerifikasiAk1 extends Model
         return $this->belongsTo(KartuAk1::class, 'id_kartu_ak1', 'id_kartu_ak1');
     }
 
-    // ke pengguna (petugas)
+    // ke petugas / pengguna
     public function pengguna()
     {
         return $this->belongsTo(Pengguna::class, 'id_pengguna', 'id_pengguna');

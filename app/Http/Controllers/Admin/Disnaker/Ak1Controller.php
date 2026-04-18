@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\KartuAk1;
 use App\Models\Pengguna;
+use Illuminate\Support\Facades\DB;
+use App\Models\VerifikasiAk1;
 
 class Ak1Controller extends Controller
 {
@@ -16,12 +18,10 @@ class Ak1Controller extends Controller
         $item = KartuAk1::findOrFail($id);
         $user = Auth::user();
 
-        // ================= VALIDASI DINAMIS =================
         $rules = [
             'status' => 'required|in:draft,pending,disetujui,ditolak',
         ];
 
-        // Kalau disetujui atau ditolak → catatan wajib
         if (in_array($request->status, ['disetujui', 'ditolak'])) {
             $rules['catatan_petugas'] = 'required|string|min:5|max:1000';
         } else {
@@ -36,27 +36,36 @@ class Ak1Controller extends Controller
             'catatan_petugas.max' => 'Catatan maksimal 1000 karakter.',
         ]);
 
-        // ================= SIAPKAN DATA =================
-        $data = [
-            'status' => $request->status,
-            'catatan_petugas' => $request->catatan_petugas,
-            'nama_petugas' => $user?->nama ?? '-',
-            'nip_petugas'  => $user?->nip ?? $user?->id_pengguna ?? '-',
-            'berlaku_mulai' => null,
-            'berlaku_sampai' => null,
-        ];
-
-        // ================= LOGIC KHUSUS =================
-        if ($request->status === 'disetujui') {
-            $data['berlaku_mulai'] = now();
-            $data['berlaku_sampai'] = now()->addYears(2);
-        }
-
         if ($request->status === 'disetujui' && !$item->profilPencariKerja) {
             return back()->with('error', 'Profil pencari kerja belum lengkap.');
         }
 
-        $item->update($data);
+        DB::transaction(function () use ($request, $item, $user) {
+            $data = [
+                'status' => $request->status,
+                'catatan_petugas' => $request->catatan_petugas,
+                'nama_petugas' => $user?->nama ?? '-',
+                'nip_petugas' => $user?->nip ?? $user?->id_pengguna ?? '-',
+                'berlaku_mulai' => null,
+                'berlaku_sampai' => null,
+            ];
+
+            if ($request->status === 'disetujui') {
+                $data['berlaku_mulai'] = now();
+                $data['berlaku_sampai'] = now()->addYears(2);
+                $data['is_revised'] = 0; // 🔥 penting
+            }
+
+            $item->update($data);
+
+            VerifikasiAk1::create([
+                'id_kartu_ak1' => $item->id_kartu_ak1,
+                'id_pengguna' => $user?->id_pengguna,
+                'status_verifikasi' => $request->status,
+                'tanggal_verifikasi' => now(),
+                'catatan' => $request->catatan_petugas,
+            ]);
+        });
 
         return back()->with('success', 'Status AK1 berhasil diperbarui.');
     }
@@ -70,6 +79,7 @@ class Ak1Controller extends Controller
         $profilLengkap = $this->cekProfilLengkap($profil);
         $dokumenLengkap = $this->cekDokumenLengkap($item);
 
+        $verifikasiTerakhir = $item->latestVerifikasi;
 
         return response()->json([
             'id' => $item->id_kartu_ak1,
@@ -78,28 +88,33 @@ class Ak1Controller extends Controller
             'no' => $item->nomor_ak1 ?? $item->nomor_pendaftaran ?? $item->id_kartu_ak1 ?? '-',
             'tanggal' => optional($item->created_at)->format('d-m-Y'),
             'status' => $item->status,
+            'is_revised' => $item->is_revised ?? 0,
 
             'profil_lengkap' => $profilLengkap,
             'dokumen_lengkap' => $dokumenLengkap,
 
-            // ✅ INI TAMBAHAN PENTING (URL FILE)
             'foto_pas_url' => $item->foto_pas ? asset('storage/' . $item->foto_pas) : null,
             'ktp_url' => $item->scan_ktp ? asset('storage/' . $item->scan_ktp) : null,
             'ijazah_url' => $item->scan_ijazah ? asset('storage/' . $item->scan_ijazah) : null,
             'kk_url' => $item->scan_kk ? asset('storage/' . $item->scan_kk) : null,
-            'foto_url' => $profil->foto
-                ? asset('storage/' . $profil->foto)
-                : null,
+            'foto_url' => $profil->foto ? asset('storage/' . $profil->foto) : null,
 
             'nama_petugas' => $item->nama_petugas ?? '-',
             'nip_petugas' => $item->nip_petugas ?? '-',
             'berlaku_mulai' => $item->berlaku_mulai
                 ? \Carbon\Carbon::parse($item->berlaku_mulai)->format('d-m-Y')
                 : null,
-
             'berlaku_sampai' => $item->berlaku_sampai
                 ? \Carbon\Carbon::parse($item->berlaku_sampai)->format('d-m-Y')
                 : null,
+
+            'verifikasi_terakhir' => $verifikasiTerakhir ? [
+                'id_verifikasi_ak1' => $verifikasiTerakhir->id_verifikasi_ak1,
+                'status_verifikasi' => $verifikasiTerakhir->status_verifikasi,
+                'tanggal_verifikasi' => optional($verifikasiTerakhir->tanggal_verifikasi)->format('d-m-Y'),
+                'catatan' => $verifikasiTerakhir->catatan,
+                'petugas' => $verifikasiTerakhir->pengguna->nama ?? '-',
+            ] : null,
         ]);
     }
 
@@ -119,7 +134,7 @@ class Ak1Controller extends Controller
             'agama',
             'status_perkawinan',
             'alamat',
-            'kabupaten',
+            'kab_kota',
             'provinsi',
             'kode_pos',
             'nomor_hp',
@@ -166,6 +181,7 @@ class Ak1Controller extends Controller
             'riwayatPendidikan',
             'laporan',
             'verifikasi',
+            'latestVerifikasi.pengguna',
         ]);
     }
 
@@ -269,12 +285,13 @@ class Ak1Controller extends Controller
      */
     public function show($id)
     {
-        $item = $this->baseWithTrash()->findOrFail($id);
+        $item = $this->baseWithTrash()
+            ->with(['latestVerifikasi.pengguna'])
+            ->findOrFail($id);
 
         return view('admin.disnaker.ak1.show', [
             'title' => 'Detail AK1',
             'item'  => $item,
         ]);
     }
-
 }

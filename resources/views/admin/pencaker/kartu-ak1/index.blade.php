@@ -42,7 +42,7 @@
                             <h5 class="mb-1">{{ $profil->nama_lengkap }}</h5>
                             <div class="text-muted mb-2">
                                 <i class="fas fa-map-marker-alt mr-1"></i>
-                                {{ $profil->kabupaten ?? '-' }}, {{ $profil->provinsi ?? '-' }}
+                                {{ $profil->kab_kota ?? '-' }}, {{ $profil->provinsi ?? '-' }}
                             </div>
 
                             <div class="d-flex flex-wrap">
@@ -351,9 +351,15 @@
                                     @switch($item->status)
 
                                     @case('pending')
-                                    <button class="btn btn-warning btn-sm btn-block" disabled>
-                                        <i class="fas fa-clock mr-1"></i> Menunggu Verifikasi
-                                    </button>
+                                    @if($item->status === 'pending' && $item->is_revised)
+                                    <span class="badge badge-info">
+                                        Menunggu Revisi
+                                    </span>
+                                    @elseif($item->status === 'pending')
+                                    <span class="badge badge-warning">
+                                        Menunggu Verifikasi
+                                    </span>
+                                    @endif
                                     @break
 
                                     @case('disetujui')

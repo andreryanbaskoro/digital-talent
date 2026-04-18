@@ -41,7 +41,7 @@ class KeterampilanAk1Controller extends Controller
     {
         $request->validate([
             'nama_keterampilan' => 'required|string|max:255',
-            'tingkat' => 'required|in:Pemula,Menengah,Mahir',
+           'tingkat' => 'required|in:Sangat ahli,Mahir,Cukup mahir,Dasar,Tidak relevan',
             'sertifikat' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 

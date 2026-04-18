@@ -34,22 +34,28 @@
             </td>
 
             <td class="text-center">
-                @switch($item->status)
-                @case('draft')
+                @if($item->status === 'pending' && $item->is_revised)
+                <span class="badge badge-warning">
+                    <i class="fas fa-redo mr-1"></i> Pending - Revisi
+                </span>
+
+                @elseif($item->status === 'pending')
+                <span class="badge badge-warning text-white">
+                    Pending
+                </span>
+
+                @elseif($item->status === 'draft')
                 <span class="badge badge-secondary">Draft</span>
-                @break
-                @case('pending')
-                <span class="badge badge-warning text-white">Pending</span>
-                @break
-                @case('disetujui')
+
+                @elseif($item->status === 'disetujui')
                 <span class="badge badge-success">Disetujui</span>
-                @break
-                @case('ditolak')
+
+                @elseif($item->status === 'ditolak')
                 <span class="badge badge-danger">Ditolak</span>
-                @break
-                @default
+
+                @else
                 <span class="badge badge-light">Unknown</span>
-                @endswitch
+                @endif
             </td>
             <td class="text-center">
                 {{ $item->catatan_petugas ?? '-' }}

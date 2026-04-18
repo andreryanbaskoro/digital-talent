@@ -22,7 +22,7 @@ class ProfilPerusahaan extends Model
         'nib',
         'npwp',
         'alamat',
-        'kabupaten',
+        'kab_kota',
         'provinsi',
         'nomor_telepon',
         'website',

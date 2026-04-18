@@ -77,7 +77,11 @@
             {{-- 📊 Total --}}
             <span class="ml-auto text-sm text-gray-500">
                 <span class="font-semibold text-gray-800">
+                    @if($lowongan instanceof \Illuminate\Pagination\LengthAwarePaginator)
                     {{ $lowongan->total() }}
+                    @else
+                    1
+                    @endif
                 </span>
                 lowongan ditemukan
             </span>

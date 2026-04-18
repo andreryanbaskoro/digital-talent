@@ -41,7 +41,7 @@
 
                 {{-- LOKASI --}}
                 <td>
-                    <div>{{ $item->kabupaten ?? '-' }}</div>
+                    <div>{{ $item->kab_kota ?? '-' }}</div>
                     <small class="text-muted">
                         {{ $item->provinsi ?? '-' }}
                     </small>

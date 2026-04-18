@@ -144,13 +144,18 @@
                             @else
 
                             {{-- EDIT (kecuali sudah disetujui) --}}
-                            @if($item->status != 'disetujui')
+                            <!-- @if($item->status != 'disetujui')
                             <a href="{{ route('perusahaan.lowongan.edit', $item->id_lowongan) }}"
                                 class="btn btn-warning btn-sm"
                                 title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            @endif
+                            @endif -->
+                            <a href="{{ route('perusahaan.lowongan.edit', $item->id_lowongan) }}"
+                                class="btn btn-warning btn-sm"
+                                title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
 
                             {{-- DELETE --}}
                             <button type="button"

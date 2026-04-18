@@ -29,8 +29,8 @@
 
                         <div class="card-body">
                             <form action="{{ $editData 
-                                ? route('ak1.riwayat-pendidikan.update', $editData->id_riwayat_pendidikan) 
-                                : route('ak1.riwayat-pendidikan.store') }}"
+                                ? route('pencaker.ak1.riwayat.update', $editData->id_riwayat_pendidikan) 
+                                : route('pencaker.ak1.riwayat.store') }}"
                                 method="POST">
 
                                 @csrf
@@ -190,7 +190,7 @@
                                                 </button>
 
                                                 {{-- Hapus --}}
-                                                <form action="{{ route('ak1.riwayat-pendidikan.destroy', $item->id_riwayat_pendidikan) }}"
+                                                <form action="{{ route('pencaker.ak1.riwayat.destroy', $item->id_riwayat_pendidikan) }}"
                                                     method="POST"
                                                     class="form-hapus">
                                                     @csrf
@@ -198,7 +198,7 @@
 
                                                     <button type="button"
                                                         class="btn btn-hapus btn-sm btn-danger"
-                                                        data-url="{{ route('ak1.riwayat-pendidikan.destroy', $item->id_riwayat_pendidikan) }}">
+                                                        data-url="{{ route('pencaker.ak1.riwayat.destroy', $item->id_riwayat_pendidikan) }}">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>

@@ -74,7 +74,7 @@ class ProfilPerusahaanController extends Controller
             'nib' => $request->nib,
             'npwp' => $request->npwp,
             'alamat' => $request->alamat,
-            'kabupaten' => $request->kabupaten,
+            'kab_kota' => $request->kab_kota,
             'provinsi' => $request->provinsi,
             'nomor_telepon' => $request->nomor_telepon,
             'website' => $request->website,

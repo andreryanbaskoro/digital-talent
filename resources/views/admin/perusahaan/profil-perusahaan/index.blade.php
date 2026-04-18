@@ -40,7 +40,7 @@
 
                                 <h4 class="mb-0">{{ $profil->nama_perusahaan }}</h4>
                                 <small class="text-muted">
-                                    {{ $profil->kabupaten }}, {{ $profil->provinsi }}
+                                    {{ $profil->kab_kota }}, {{ $profil->provinsi }}
                                 </small>
                             </div>
 

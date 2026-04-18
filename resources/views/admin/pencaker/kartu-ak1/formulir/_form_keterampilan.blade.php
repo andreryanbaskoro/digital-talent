@@ -26,7 +26,7 @@
                         </div>
 
                         <div class="card-body">
-                            <form action="{{ route('ak1.keterampilan.store') }}"
+                            <form action="{{ route('pencaker.ak1.keterampilan.store') }}"
                                 method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
@@ -49,13 +49,37 @@
                                 <div class="mb-3">
                                     <label class="form-label">Tingkat Keahlian</label>
                                     <select name="tingkat"
-                                        class="form-control @error('tingkat') is-invalid @enderror"
-                                        required>
-                                        <option value="">-- Pilih Tingkat --</option>
-                                        <option value="Pemula" {{ old('tingkat') == 'Pemula' ? 'selected' : '' }}>Pemula</option>
-                                        <option value="Menengah" {{ old('tingkat') == 'Menengah' ? 'selected' : '' }}>Menengah</option>
-                                        <option value="Mahir" {{ old('tingkat') == 'Mahir' ? 'selected' : '' }}>Mahir</option>
+                                        class="form-control @error('tingkat') is-invalid @enderror">
+
+                                        <option value="">-- Pilih Tingkat Keahlian --</option>
+
+                                        <option value="Sangat ahli"
+                                            {{ old('tingkat', $editData->tingkat ?? '') == 'Sangat ahli' ? 'selected' : '' }}>
+                                            Sangat ahli (tersertifikasi & mahir penuh)
+                                        </option>
+
+                                        <option value="Mahir"
+                                            {{ old('tingkat', $editData->tingkat ?? '') == 'Mahir' ? 'selected' : '' }}>
+                                            Mahir (bisa bekerja mandiri)
+                                        </option>
+
+                                        <option value="Cukup mahir"
+                                            {{ old('tingkat', $editData->tingkat ?? '') == 'Cukup mahir' ? 'selected' : '' }}>
+                                            Cukup mahir (sedikit bimbingan)
+                                        </option>
+
+                                        <option value="Dasar"
+                                            {{ old('tingkat', $editData->tingkat ?? '') == 'Dasar' ? 'selected' : '' }}>
+                                            Dasar (mengetahui konsep)
+                                        </option>
+
+                                        <option value="Tidak relevan"
+                                            {{ old('tingkat', $editData->tingkat ?? '') == 'Tidak relevan' ? 'selected' : '' }}>
+                                            Tidak memiliki skill relevan
+                                        </option>
+
                                     </select>
+
                                     @error('tingkat')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -138,7 +162,7 @@
                                         </td>
 
                                         <td class="text-center">
-                                            <form action="{{ route('ak1.keterampilan.destroy', $item->id_keterampilan) }}"
+                                            <form action="{{ route('pencaker.ak1.keterampilan.destroy', $item->id_keterampilan) }}"
                                                 method="POST"
                                                 class="form-hapus">
                                                 @csrf
@@ -146,7 +170,7 @@
 
                                                 <button type="button"
                                                     class="btn btn-hapus btn-sm btn-danger"
-                                                    data-url="{{ route('ak1.keterampilan.destroy', $item->id_keterampilan) }}">
+                                                    data-url="{{ route('pencaker.ak1.keterampilan.destroy', $item->id_keterampilan) }}">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>

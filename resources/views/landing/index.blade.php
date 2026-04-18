@@ -1,5 +1,7 @@
 @extends('layouts.app-landing')
 
+@include('partials.landing.hero')
+
 @section('content')
 
 {{-- ==================== JOB LISTING ==================== --}}
@@ -85,23 +87,35 @@
         </div>
 
         {{-- Badges --}}
-        <div class="flex flex-wrap gap-1.5">
+        <div class="flex flex-wrap gap-2">
+
             @if($item->jenis_pekerjaan)
-            <span class="badge {{ $jenisColor }}">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium {{ $jenisColor }} transition hover:scale-105">
+
+                {{-- ICON BRIEFCASE --}}
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20 13V7a2 2 0 00-2-2h-3V4a2 2 0 00-2-2h-2a2 2 0 00-2 2v1H6a2 2 0 00-2 2v6m16 0a22 22 0 01-16 0m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5" />
                 </svg>
+
                 {{ $item->jenis_pekerjaan }}
             </span>
             @endif
+
+
             @if($item->sistem_kerja)
-            <span class="badge {{ $sistemColor }}">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" />
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium {{ $sistemColor }} transition hover:scale-105">
+
+                {{-- ICON MONITOR / REMOTE --}}
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" />
                 </svg>
+
                 {{ $item->sistem_kerja }}
             </span>
             @endif
+
         </div>
 
         {{-- Details --}}
@@ -140,7 +154,7 @@
 
         {{-- CTA --}}
         <div class="mt-auto pt-2 border-t border-gray-100">
-            <a href="{{ route('login') }}"
+            <a href="{{ route('landing.lowongan.detail', $item->id_lowongan) }}"
                 class="w-full inline-flex items-center justify-center gap-1.5 bg-primary/5 hover:bg-primary text-primary hover:text-white border border-primary/20 hover:border-transparent text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200"
                 id="btn-lihat-detail-{{ $item->id_lowongan }}">
                 Lihat Detail

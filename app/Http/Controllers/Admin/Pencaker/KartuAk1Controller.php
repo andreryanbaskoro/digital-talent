@@ -39,7 +39,7 @@ class KartuAk1Controller extends Controller
             'rw',
             'kelurahan',
             'kecamatan',
-            'kabupaten',
+            'kab_kota',
             'provinsi',
             'kode_pos',
             'nomor_hp',
@@ -90,7 +90,7 @@ class KartuAk1Controller extends Controller
             'rw',
             'kelurahan',
             'kecamatan',
-            'kabupaten',
+            'kab_kota',
             'provinsi',
             'kode_pos',
             'nomor_hp',
@@ -205,19 +205,13 @@ class KartuAk1Controller extends Controller
         // VALIDASI STATUS
         // =====================
         if ($kartuAk1->status === 'pending') {
-            return back()->with('warning', 'AK1 sudah dalam proses verifikasi.');
-        }
-
-        if ($kartuAk1->status === 'disetujui') {
-            return back()->with('error', 'AK1 sudah disetujui dan tidak bisa diajukan ulang.');
+            return back()->with('warning', 'AK1 sedang diverifikasi.');
         }
 
         // =====================
         // UPDATE SAJA
         // =====================
-        $kartuAk1->update([
-            'status' => 'pending',
-        ]);
+        $kartuAk1->markAsRevised();
 
         return redirect()->route('ak1.index')
             ->with('success', 'AK1 berhasil diajukan dan menunggu verifikasi.');

@@ -182,9 +182,9 @@ $isEdit = isset($profil);
                         </div>
 
                         <div class="col-md-6">
-                            <label>Kabupaten</label>
-                            <input type="text" name="kabupaten" class="form-control"
-                                value="{{ old('kabupaten', $profil->kabupaten ?? '') }}">
+                            <label>Kabupaten / Kota</label>
+                            <input type="text" name="kab_kota" class="form-control"
+                                value="{{ old('kab_kota', $profil->kab_kota ?? '') }}">
                         </div>
 
                         <div class="col-md-4">

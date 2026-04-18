@@ -30,7 +30,7 @@ class ProfilPencariKerja extends Model
         'rw',
         'kelurahan',
         'kecamatan',
-        'kabupaten',
+        'kab_kota',
         'provinsi',
         'kode_pos',
         'nomor_hp',
@@ -57,13 +57,13 @@ class ProfilPencariKerja extends Model
     // ke lamaran pekerjaan
     public function lamaranPekerjaan()
     {
-        return $this->hasMany(LamaranPekerjaan::class, 'id_profil_pencari_kerja', 'id_profil_pencari_kerja');
+        return $this->hasMany(LamaranPekerjaan::class, 'id_pencari_kerja', 'id_pencari_kerja');
     }
 
     // ke kartu AK1
     public function kartuAk1()
     {
-        return $this->hasOne(KartuAk1::class, 'id_profil_pencari_kerja', 'id_profil_pencari_kerja');
+        return $this->hasOne(KartuAk1::class, 'id_pencari_kerja', 'id_pencari_kerja');
     }
 
     protected static function boot()

@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\Pencaker\RiwayatPendidikanAk1Controller;
 
 // Landing Page (public)
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
+Route::get('/lowongan/{id_lowongan}', [LandingPageController::class, 'detail'])->name('landing.lowongan.detail');
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
@@ -107,32 +108,47 @@ Route::middleware(['auth', 'cekrole:disnaker'])
             Route::delete('/{id}/force', [DisnakerProfilPerusahaanController::class, 'forceDelete'])->name('forceDelete');
         });
     });
-
 Route::middleware(['auth', 'cekrole:perusahaan'])
     ->prefix('admin/perusahaan')
     ->name('perusahaan.')
     ->group(function () {
 
-        Route::get('/dashboard', [PerusahaanDashboardController::class, 'index'])->name('dashboard');
+        // ================= DASHBOARD =================
+        Route::get('/dashboard', [PerusahaanDashboardController::class, 'index'])
+            ->name('dashboard');
 
+        // ================= PROFIL =================
         Route::prefix('profil')->name('profil.')->group(function () {
             Route::get('/', [PerusahaanProfilPerusahaanController::class, 'index'])->name('index');
             Route::get('/show', [PerusahaanProfilPerusahaanController::class, 'show'])->name('show');
             Route::get('/edit', [PerusahaanProfilPerusahaanController::class, 'edit'])->name('edit');
             Route::put('/', [PerusahaanProfilPerusahaanController::class, 'update'])->name('update');
+
+            // soft delete
             Route::delete('/', [PerusahaanProfilPerusahaanController::class, 'destroy'])->name('destroy');
+
+            // restore & force delete
             Route::post('/restore', [PerusahaanProfilPerusahaanController::class, 'restore'])->name('restore');
             Route::delete('/force', [PerusahaanProfilPerusahaanController::class, 'forceDelete'])->name('forceDelete');
         });
 
+        // ================= LOWONGAN =================
         Route::prefix('lowongan')->name('lowongan.')->group(function () {
-            Route::get('/', [LowonganPekerjaanController::class, 'index'])->name('index');
+
+            // penting: create HARUS di atas {id}
             Route::get('/create', [LowonganPekerjaanController::class, 'create'])->name('create');
+
+            Route::get('/', [LowonganPekerjaanController::class, 'index'])->name('index');
             Route::post('/', [LowonganPekerjaanController::class, 'store'])->name('store');
+
             Route::get('/{id}', [LowonganPekerjaanController::class, 'show'])->name('show');
             Route::get('/{id}/edit', [LowonganPekerjaanController::class, 'edit'])->name('edit');
             Route::put('/{id}', [LowonganPekerjaanController::class, 'update'])->name('update');
+
+            // soft delete
             Route::delete('/{id}', [LowonganPekerjaanController::class, 'destroy'])->name('destroy');
+
+            // restore & force delete
             Route::post('/{id}/restore', [LowonganPekerjaanController::class, 'restore'])->name('restore');
             Route::delete('/{id}/force', [LowonganPekerjaanController::class, 'forceDelete'])->name('forceDelete');
         });
