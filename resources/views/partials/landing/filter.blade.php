@@ -1,6 +1,8 @@
+{{-- ==================== ANCHOR ==================== --}}
+<div id="lowongan" class="scroll-mt-24"></div>
+
 {{-- ==================== FILTER BAR ==================== --}}
-<div id="lowongan"
-    class="scroll-mt-[60px] sticky top-16 z-40 bg-white border-b border-gray-200 shadow-sm">
+<div class="z-40 bg-white border-b border-gray-200 shadow-sm">
 
     <form action="/" method="GET">
 

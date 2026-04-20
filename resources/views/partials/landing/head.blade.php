@@ -2,11 +2,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+
     <meta name="description" content="Digital Talent Hub – Temukan ribuan lowongan pekerjaan terbaik di seluruh Indonesia. Cari pekerjaan impianmu sekarang.">
     <title>Digital Talent Hub – Disnaker Jayapura</title>
 
-
-    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -123,8 +124,6 @@
         .badge {
             @apply inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full;
         }
-
-       
     </style>
 
     @stack('styles')

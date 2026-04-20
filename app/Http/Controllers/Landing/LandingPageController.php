@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Landing;
 
 use App\Http\Controllers\Controller;
 use App\Models\LowonganPekerjaan;
-use App\Models\ProfilPerusahaan; // tambah ini
+use App\Models\ProfilPerusahaan;
+use Illuminate\Support\Facades\Auth;
+use App\Models\LamaranPekerjaan;
 use Illuminate\Http\Request;
 
 class LandingPageController extends Controller
@@ -87,6 +89,7 @@ class LandingPageController extends Controller
         ));
     }
 
+
     public function detail($id_lowongan)
     {
         $lowongan = LowonganPekerjaan::with([
@@ -99,22 +102,45 @@ class LandingPageController extends Controller
             ->whereNull('deleted_at')
             ->firstOrFail();
 
-        // ✅ TAMBAHKAN INI
-        $totalLowongan = LowonganPekerjaan::where('status', 'disetujui')
-            ->whereNull('deleted_at')
-            ->count();
+        // ================= CEK SUDAH LAMAR =================
+        $sudahMelamar = false;
+        $lamaranUser = null;
 
-        $totalPerusahaan = \App\Models\ProfilPerusahaan::whereNull('deleted_at')->count();
+        if (Auth::check() && Auth::user()->peran === 'pencaker') {
+            $pencakerId = Auth::user()->profilPencariKerja->id_pencari_kerja ?? null;
 
-        $totalHariIni = LowonganPekerjaan::where('status', 'disetujui')
-            ->whereDate('created_at', today())
-            ->count();
+            if ($pencakerId) {
+                $lamaranUser = LamaranPekerjaan::where('id_lowongan', $id_lowongan)
+                    ->where('id_pencari_kerja', $pencakerId)
+                    ->first();
+
+                $sudahMelamar = $lamaranUser ? true : false;
+            }
+        }
+
+
+        // statistik tetap
+        $totalLowongan = LowonganPekerjaan::where('status', 'disetujui')->count();
+        $totalPerusahaan = \App\Models\ProfilPerusahaan::count();
+        $totalHariIni = LowonganPekerjaan::whereDate('created_at', today())->count();
+
+        $isExpired = $lowongan->tanggal_berakhir
+            ? \Carbon\Carbon::parse($lowongan->tanggal_berakhir)->isPast()
+            : false;
+
+        $isNotStarted = $lowongan->tanggal_mulai
+            ? \Carbon\Carbon::parse($lowongan->tanggal_mulai)->isFuture()
+            : false;
 
         return view('landing.detail-lowongan', compact(
             'lowongan',
             'totalLowongan',
             'totalPerusahaan',
-            'totalHariIni'
+            'totalHariIni',
+            'sudahMelamar',
+            'lamaranUser',
+            'isExpired',
+            'isNotStarted'
         ));
     }
 }

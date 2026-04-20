@@ -113,7 +113,7 @@
 
             {{-- TOMBOL BAWAH TENGAH --}}
             <div class="text-center mt-4">
-                <a href="{{ route('pencaker.ak1.formulir.riwayat-pendidikan') }}"
+                <a href="{{ route('pencaker.ak1.pendidikan.index') }}"
                     class="btn btn-primary px-4">
                     <i class="fas fa-graduation-cap me-2"> </i>
                     Kelola Riwayat Pendidikan

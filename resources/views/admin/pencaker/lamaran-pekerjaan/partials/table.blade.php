@@ -1,104 +1,139 @@
-<table id="table-1" class="table table-bordered table-striped table-hover">
-    <thead class="text-center">
-        <tr>
-            <th width="5%">No.</th>
-            <th>ID</th>
-            <th>Nama</th>
-            <th>Email</th>
-            <th>Peran</th>
-            <th>Status</th>
-            <th width="20%">Aksi</th>
-        </tr>
-    </thead>
+<div class="card">
 
-    <tbody>
-        @forelse($pengguna as $user)
-        <tr
-            data-status="{{ $user->status }}"
-            data-deleted="{{ $user->deleted_at ? '1' : '0' }}">
-            <td class="text-center"></td>
-            <td>#{{ $user->id_pengguna }}</td>
-            <td>{{ $user->nama }}</td>
+    <div class="card-header d-flex justify-content-between align-items-center">
 
-            <td>{{ $user->email }}</td>
+        <h5 class="mb-0">
+            <i class="fas fa-briefcase"></i> Data Lamaran Pekerjaan
+        </h5>
+    </div>
 
-            <td class="text-center">
-                {{ ucfirst($user->peran) }}
-            </td>
+    <div class="card-body">
 
-            <td class="text-center">
-                @if($user->deleted_at)
-                <span class="badge badge-danger">
-                    <i class="fas fa-trash"></i> Terhapus
-                </span>
-                @else
-                <span class="badge badge-{{ $user->status == 'aktif' ? 'success' : 'secondary' }}">
-                    <i class="fas fa-circle"></i> {{ ucfirst($user->status) }}
-                </span>
-                @endif
-            </td>
+        <table id="table-1" class="table table-bordered table-striped table-hover">
 
-            <td class="text-center">
+            <thead class="text-center bg-light">
+                <tr>
+                    <th width="5%">No.</th>
+                    <th>ID Lamaran</th>
+                    <th>Lowongan</th>
+                    <th>Pelamar</th>
+                    <th>Tanggal Lamar</th>
+                    <th>Status</th>
+                    <th width="18%">Aksi</th>
+                </tr>
+            </thead>
 
-                <a href="{{ route('disnaker.pengguna.show', $user->id_pengguna) }}"
-                    class="btn btn-info btn-sm"
-                    data-toggle="tooltip"
-                    title="Detail">
-                    <i class="fas fa-eye"></i>
-                </a>
+            <tbody>
+                @forelse($lamaran as $index => $item)
+                <tr data-status="{{ $item->status_lamaran }}">
 
-                @if($user->deleted_at)
+                    {{-- NO --}}
+                    <td class="text-center">
+                        {{ $index + 1 }}
+                    </td>
 
-                <form action="{{ route('disnaker.pengguna.restore', $user->id_pengguna) }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="button"
-                        class="btn btn-success btn-sm btn-restore" data-toggle="tooltip"
-                        title="Pulihkan Data"
-                        data-url="{{ route('disnaker.pengguna.restore', $user->id_pengguna) }}">
-                        <i class="fas fa-undo"></i>
-                    </button>
-                </form>
+                    {{-- ID LAMARAN --}}
+                    <td class="text-center">
+                        <code>{{ $item->id_lamaran }}</code>
+                    </td>
 
-                <form action="{{ route('disnaker.pengguna.forceDelete', $user->id_pengguna) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button"
-                        class="btn btn-danger btn-sm btn-force-delete" data-toggle="tooltip"
-                        title="Hapus Permanen"
-                        data-url="{{ route('disnaker.pengguna.forceDelete', $user->id_pengguna) }}">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </form>
+                    {{-- LOWONGAN --}}
+                    <td>
+                        <strong>{{ $item->lowongan->judul_lowongan ?? '-' }}</strong>
+                        <br>
+                        <small class="text-muted">
+                            {{ $item->lowongan->lokasi ?? '' }}
+                        </small>
+                    </td>
 
-                @else
+                    {{-- PELAMAR --}}
+                    <td>
+                        {{ $item->pencariKerja->nama ?? '-' }}
+                        <br>
+                        <small class="text-muted">
+                            {{ $item->pencariKerja->email ?? '' }}
+                        </small>
+                    </td>
 
-                <a href="{{ route('disnaker.pengguna.edit', $user->id_pengguna) }}" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Edit Data">
-                    <i class="fas fa-edit"></i>
-                </a>
+                    {{-- TANGGAL --}}
+                    <td class="text-center">
+                        {{ $item->tanggal_lamar ? \Carbon\Carbon::parse($item->tanggal_lamar)->format('d M Y') : '-' }}
+                    </td>
 
-                <form action="{{ route('disnaker.pengguna.destroy', $user->id_pengguna) }}"
-                    method="POST"
-                    class="d-inline">
-                    @csrf
-                    @method('DELETE')
+                    {{-- STATUS --}}
+                    <td class="text-center">
 
-                    <button type="button"
-                        class="btn btn-danger btn-sm btn-hapus" data-toggle="tooltip" title="Hapus Data"
-                        data-url="{{ route('disnaker.pengguna.destroy', $user->id_pengguna) }}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </form>
+                        @php
+                        $status = $item->status_lamaran;
+                        @endphp
 
-                @endif
+                        <span class="badge
+                            {{ $status == 'diterima' ? 'badge-success' : '' }}
+                            {{ $status == 'ditolak' ? 'badge-danger' : '' }}
+                            {{ $status == 'diproses' ? 'badge-warning' : '' }}
+                            {{ $status == 'dikirim' ? 'badge-primary' : '' }}">
 
-            </td>
-        </tr>
-        @empty
-        <tr>
-            <td colspan="6" class="text-center text-muted">
-                <i class="fas fa-database"></i> Tidak ada data pengguna
-            </td>
-        </tr>
-        @endforelse
-    </tbody>
-</table>
+                            <i class="fas fa-circle"></i>
+                            {{ ucfirst($status) }}
+                        </span>
+
+                    </td>
+
+                    {{-- AKSI --}}
+                    <td class="text-center">
+
+                        {{-- DETAIL --}}
+                        <a href="{{ route('pencaker.lamaran.show', $item->id_lamaran) }}"
+                            class="btn btn-info btn-sm"
+                            data-toggle="tooltip"
+                            title="Detail">
+                            <i class="fas fa-eye"></i>
+                        </a>
+
+                        {{-- EDIT STATUS (opsional HR) --}}
+                        @php
+                        $expired = $item->lowongan->tanggal_berakhir
+                        && \Carbon\Carbon::parse($item->lowongan->tanggal_berakhir)->lt(now());
+                        @endphp
+
+                        @if(!$expired)
+                        <a href="{{ route('pencaker.lamaran.edit', $item->id_lamaran) }}"
+                            class="btn btn-warning btn-sm"
+                            data-toggle="tooltip"
+                            title="Edit Lamaran">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        @else
+                        <button class="btn btn-secondary btn-sm" disabled title="Lowongan sudah berakhir">
+                            <i class="fas fa-lock"></i>
+                        </button>
+                        @endif
+
+                        {{-- DELETE --}}
+                        <button type="button"
+                            class="btn btn-danger btn-sm btn-hapus"
+                            data-url="{{ route('pencaker.lamaran.cancel', $item->id_lamaran) }}"
+                            data-toggle="tooltip"
+                            title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+
+                    </td>
+
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        <i class="fas fa-folder-open fa-2x"></i>
+                        <br>
+                        Belum ada data lamaran
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

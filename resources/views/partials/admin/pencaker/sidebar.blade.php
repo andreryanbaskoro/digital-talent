@@ -93,13 +93,12 @@
 
                 <!-- Lamaran -->
                 <li class="nav-item">
-                    <a href="/admin/pencaker/lamaran"
-                        class="nav-link {{ request()->is('admin/pencaker/lamaran*') ? 'active' : '' }}">
+                    <a href="{{ route('pencaker.lamaran.index') }}"
+                        class="nav-link {{ request()->is('pencaker/lamaran*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-file-alt"></i>
                         <p>Lamaran Saya</p>
                     </a>
                 </li>
-
                 <!-- Notifikasi -->
                 <li class="nav-item">
                     <a href="/admin/pencaker/notifikasi"

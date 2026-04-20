@@ -96,7 +96,7 @@
 
             {{-- TOMBOL DI BAWAH TENGAH --}}
             <div class="text-center mt-4">
-                <a href="{{ route('pencaker.ak1.formulir.dokumen-pribadi') }}"
+                <a href="{{ route('pencaker.ak1.dokumen-pribadi') }}"
                     class="btn btn-primary px-4">
                     <i class="fas fa-upload mr-1"></i>
                     Unggah Dokumen

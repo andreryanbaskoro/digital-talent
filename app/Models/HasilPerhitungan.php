@@ -16,7 +16,7 @@ class HasilPerhitungan extends Model
     protected $keyType = 'int';
 
     protected $fillable = [
-        'id_lamaran_pekerjaan',
+        'id_lamaran',
         'nilai_faktor_inti',
         'nilai_faktor_pendukung',
         'nilai_total',
@@ -31,7 +31,7 @@ class HasilPerhitungan extends Model
     // ke lamaran pekerjaan
     public function lamaran()
     {
-        return $this->belongsTo(LamaranPekerjaan::class, 'id_lamaran_pekerjaan');
+        return $this->belongsTo(LamaranPekerjaan::class, 'id_lamaran');
     }
 
     // ke detail perhitungan
@@ -39,5 +39,4 @@ class HasilPerhitungan extends Model
     {
         return $this->hasMany(DetailPerhitungan::class, 'id_hasil_perhitungan');
     }
-    
 }

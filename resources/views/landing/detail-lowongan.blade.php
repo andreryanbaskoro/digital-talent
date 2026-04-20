@@ -352,21 +352,55 @@ $levelText = [
                     @auth
                     @php $user = Auth::user(); @endphp
 
-                    {{-- ================= PENCARI KERJA ================= --}}
                     @if($user->peran === 'pencaker')
-                    <a href="#"
+
+                    @if($sudahMelamar)
+
+                    {{-- SUDAH MELAMAR (selalu bisa lihat) --}}
+                    <a href="{{ route('pencaker.lamaran.show', $lamaranUser->id_lamaran) }}"
+                        class="w-full inline-flex items-center justify-center gap-2 bg-green-600 text-white text-sm font-semibold px-4 py-3 rounded-xl hover:bg-green-700 transition-all shadow">
+
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+
+                        Lihat Lamaran Kamu
+                    </a>
+
+                    @else
+
+                    @if($isExpired)
+
+                    {{-- ❌ SUDAH HABIS --}}
+                    <div class="w-full text-center p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm font-medium">
+                        Lowongan sudah ditutup
+                    </div>
+
+                    @elseif($isNotStarted)
+
+                    {{-- ⏳ BELUM MULAI --}}
+                    <div class="w-full text-center p-4 rounded-xl bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm font-medium">
+                        Lowongan belum dibuka
+                    </div>
+
+                    @else
+
+                    {{-- ✅ AKTIF --}}
+                    <a href="{{ route('pencaker.lamaran.create', $lowongan->id_lowongan) }}"
                         class="w-full inline-flex items-center justify-center gap-2 bg-primary text-white text-sm font-semibold px-4 py-3 rounded-xl hover:bg-primary-600 transition-all shadow">
 
-                        {{-- ICON LAMAR --}}
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M5 13l4 4L19 7" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
 
                         Lamar Sekarang
                     </a>
+
+                    @endif
+
+                    @endif
+
                     @else
-                    {{-- selain pencaker --}}
                     <div class="w-full text-center text-sm text-gray-400 italic">
                         Hanya pencari kerja yang dapat melamar
                     </div>
@@ -376,13 +410,6 @@ $levelText = [
                     {{-- BELUM LOGIN --}}
                     <a href="{{ route('login') }}"
                         class="w-full inline-flex items-center justify-center gap-2 bg-primary text-white text-sm font-semibold px-4 py-3 rounded-xl hover:bg-primary-600 transition-all shadow">
-
-                        {{-- ICON LOGIN --}}
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M5.121 17.804A4 4 0 017 17h10a4 4 0 011.879.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-
                         Login untuk Melamar
                     </a>
                     @endauth

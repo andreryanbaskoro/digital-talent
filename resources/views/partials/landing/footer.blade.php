@@ -11,13 +11,8 @@
                 <span class="font-bold text-white">Digital Talent Hub</span>
             </div>
             <p class="text-gray-500 text-sm text-center">
-                &copy; {{ date('Y') }} Digital Talent Hub. All rights reserved.
+                &copy; {{ date('Y') }} ARB. All rights reserved.
             </p>
-            <div class="flex items-center gap-4 text-sm text-gray-500">
-                <a href="{{ route('login') }}" class="hover:text-white transition-colors">Masuk</a>
-                <span class="text-gray-700">·</span>
-                <a href="{{ route('login') }}" class="hover:text-white transition-colors">Daftar</a>
-            </div>
         </div>
     </div>
 </footer>
