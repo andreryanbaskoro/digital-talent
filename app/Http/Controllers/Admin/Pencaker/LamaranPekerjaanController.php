@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Notifikasi;
+use Illuminate\Support\Str;
 
 class LamaranPekerjaanController extends Controller
 {
@@ -64,49 +66,67 @@ class LamaranPekerjaanController extends Controller
     // ================= STORE =================
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'id_lowongan' => 'required|exists:lowongan_pekerjaan,id_lowongan',
 
-            'sub_kriteria' => 'required|array|min:1',
-            'sub_kriteria.*.id_sub_kriteria' => 'required|exists:sub_kriteria,id_sub_kriteria',
-            'sub_kriteria.*.nilai' => 'required|integer|between:1,5',
+            // OPTIONAL skill
+            'sub_kriteria' => 'nullable|array',
+            'sub_kriteria.*.id_sub_kriteria' => 'required_with:sub_kriteria|exists:sub_kriteria,id_sub_kriteria',
+            'sub_kriteria.*.nilai' => 'required_with:sub_kriteria|integer|between:1,5',
 
+            // OPTIONAL dokumen
             'jenis_dokumen.*' => 'nullable|string|max:100',
             'jenis_dokumen_custom.*' => 'nullable|string|max:100',
             'lokasi_file.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
+        $user = Auth::user();
         $userId = $this->userId();
 
-        $exists = LamaranPekerjaan::where('id_lowongan', $request->id_lowongan)
+        // ================= CEK SUDAH MELAMAR =================
+        $exists = LamaranPekerjaan::where('id_lowongan', $validated['id_lowongan'])
             ->where('id_pencari_kerja', $userId)
             ->exists();
 
         if ($exists) {
-            return back()->with('error', 'Sudah melamar');
+            return back()->with('error', 'Anda sudah melamar pada lowongan ini.');
         }
 
-        $id = LamaranPekerjaan::generateId($request->id_lowongan);
+        // ================= AMBIL LOWONGAN =================
+        $lowongan = LowonganPekerjaan::with('profilPerusahaan')
+            ->findOrFail($validated['id_lowongan']);
 
-        DB::transaction(function () use ($request, $userId, $id) {
+        if (!$lowongan->profilPerusahaan) {
+            return back()->with('error', 'Profil perusahaan pemilik lowongan tidak ditemukan.');
+        }
+
+        $idLamaran = LamaranPekerjaan::generateId($validated['id_lowongan']);
+
+        DB::transaction(function () use ($validated, $request, $user, $userId, $idLamaran, $lowongan) {
+
+            // ================= SIMPAN LAMARAN =================
             LamaranPekerjaan::create([
-                'id_lamaran' => $id,
-                'id_lowongan' => $request->id_lowongan,
+                'id_lamaran' => $idLamaran,
+                'id_lowongan' => $validated['id_lowongan'],
                 'id_pencari_kerja' => $userId,
                 'tanggal_lamar' => now(),
                 'status_lamaran' => 'dikirim'
             ]);
 
-            foreach ($request->sub_kriteria as $item) {
+            // ================= SIMPAN SUB KRITERIA (OPTIONAL) =================
+            foreach ($validated['sub_kriteria'] ?? [] as $item) {
                 SubKriteriaLamaran::create([
-                    'id_lamaran' => $id,
+                    'id_lamaran' => $idLamaran,
                     'id_sub_kriteria' => $item['id_sub_kriteria'],
                     'nilai' => $item['nilai']
                 ]);
             }
 
+            // ================= SIMPAN DOKUMEN (OPTIONAL) =================
             if ($request->hasFile('lokasi_file')) {
+
                 foreach ($request->file('lokasi_file') as $i => $file) {
+
                     if (!$file) continue;
 
                     $jenis = $request->jenis_dokumen[$i] ?? '';
@@ -123,16 +143,27 @@ class LamaranPekerjaanController extends Controller
                     $path = $file->store('lamaran', 'public');
 
                     DokumenLamaran::create([
-                        'id_lamaran' => $id,
+                        'id_lamaran' => $idLamaran,
                         'jenis_dokumen' => $jenis,
                         'lokasi_file' => $path
                     ]);
                 }
             }
+
+            // ================= NOTIFIKASI KE PERUSAHAAN =================
+            $namaPencari = $user->profilPencariKerja->nama_lengkap ?? $user->nama;
+
+            Notifikasi::create([
+                'id_pengguna' => $lowongan->profilPerusahaan->id_pengguna,
+                'judul' => 'Lamaran Baru Masuk',
+                'isi_pesan' => $namaPencari . ' telah melamar pada lowongan "' . $lowongan->judul_lowongan . '".',
+                'tipe' => 'lamaran',
+                'status_baca' => false,
+            ]);
         });
 
         return redirect()->route('pencaker.lamaran.index')
-            ->with('success', 'Lamaran berhasil dikirim');
+            ->with('success', 'Lamaran berhasil dikirim.');
     }
 
     // ================= EDIT =================
@@ -157,7 +188,7 @@ class LamaranPekerjaanController extends Controller
             'lowongan' => $lamaran->lowongan
         ]);
     }
-    // ================= UPDATE =================
+    
     public function update(Request $request, $id)
     {
         $lamaran = LamaranPekerjaan::with([
@@ -168,29 +199,40 @@ class LamaranPekerjaanController extends Controller
 
         $this->authorizeOwner($lamaran);
 
-        // 🔥 CEK EXPIRED HARUS DI AWAL
+        // 🔥 CEK EXPIRED DI AWAL
         if ($this->isLowonganExpired($lamaran->lowongan)) {
             abort(403, 'Lowongan sudah berakhir, lamaran tidak bisa diedit');
         }
 
-        $request->validate([
-            'sub_kriteria' => 'required|array|min:1',
-            'sub_kriteria.*.id_sub_kriteria' => 'required|exists:sub_kriteria,id_sub_kriteria',
-            'sub_kriteria.*.nilai' => 'required|integer|between:1,5',
+        $validated = $request->validate([
+            // OPTIONAL skill
+            'sub_kriteria' => 'nullable|array',
+            'sub_kriteria.*.id_sub_kriteria' => 'required_with:sub_kriteria|exists:sub_kriteria,id_sub_kriteria',
+            'sub_kriteria.*.nilai' => 'required_with:sub_kriteria|integer|between:1,5',
 
+            // Dokumen lama
             'id_dokumen_existing.*' => 'nullable|string',
             'jenis_dokumen_existing.*' => 'nullable|string|max:100',
             'jenis_dokumen_custom_existing.*' => 'nullable|string|max:100',
 
+            // Dokumen baru
             'jenis_dokumen.*' => 'nullable|string|max:100',
             'jenis_dokumen_custom.*' => 'nullable|string|max:100',
             'lokasi_file.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
-        DB::transaction(function () use ($request, $lamaran) {
+        DB::transaction(function () use ($validated, $request, $lamaran) {
 
-            // ================= UPDATE SKILL =================
-            foreach ($request->sub_kriteria as $item) {
+            /*
+        |--------------------------------------------------------------------------
+        | 1️⃣ UPDATE / SYNC SKILL (OPTIONAL)
+        |--------------------------------------------------------------------------
+        */
+
+            $newSkillIds = [];
+
+            foreach ($validated['sub_kriteria'] ?? [] as $item) {
+
                 SubKriteriaLamaran::updateOrCreate(
                     [
                         'id_lamaran' => $lamaran->id_lamaran,
@@ -200,12 +242,31 @@ class LamaranPekerjaanController extends Controller
                         'nilai' => $item['nilai']
                     ]
                 );
+
+                $newSkillIds[] = $item['id_sub_kriteria'];
             }
 
-            // ================= UPDATE DOKUMEN LAMA =================
+            // 🔥 Hapus skill lama yang tidak dikirim lagi
+            if (empty($newSkillIds)) {
+                // kalau kosong semua → hapus semua skill lama
+                SubKriteriaLamaran::where('id_lamaran', $lamaran->id_lamaran)->delete();
+            } else {
+                SubKriteriaLamaran::where('id_lamaran', $lamaran->id_lamaran)
+                    ->whereNotIn('id_sub_kriteria', $newSkillIds)
+                    ->delete();
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | 2️⃣ UPDATE DOKUMEN LAMA
+        |--------------------------------------------------------------------------
+        */
+
             $existingDocs = $lamaran->dokumen()->orderBy('created_at')->get();
 
             foreach ($existingDocs as $i => $dok) {
+
                 $jenis = $request->jenis_dokumen_existing[$i] ?? $dok->jenis_dokumen;
 
                 if ($jenis === 'lainnya') {
@@ -218,9 +279,17 @@ class LamaranPekerjaanController extends Controller
                 ]);
             }
 
-            // ================= TAMBAH DOKUMEN BARU =================
+
+            /*
+        |--------------------------------------------------------------------------
+        | 3️⃣ TAMBAH DOKUMEN BARU (OPTIONAL)
+        |--------------------------------------------------------------------------
+        */
+
             if ($request->hasFile('lokasi_file')) {
+
                 foreach ($request->file('lokasi_file') as $i => $file) {
+
                     if (!$file) continue;
 
                     $jenis = $request->jenis_dokumen[$i] ?? '';

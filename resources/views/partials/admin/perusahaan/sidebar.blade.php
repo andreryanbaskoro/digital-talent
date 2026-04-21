@@ -117,8 +117,8 @@
                 </li>
                 <!-- Notifikasi -->
                 <li class="nav-item">
-                    <a href="/admin/{{ $role }}/notifikasi"
-                        class="nav-link {{ request()->is('admin/'.$role.'/notifikasi*') ? 'active' : '' }}">
+                    <a href="{{ route($role . '.notifikasi.index') }}"
+                        class="nav-link {{ request()->routeIs($role . '.notifikasi.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-bell"></i>
                         <p>Notifikasi</p>
                     </a>

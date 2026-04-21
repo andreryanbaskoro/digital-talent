@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\Disnaker\ProfilPerusahaanController as DisnakerPr
 use App\Http\Controllers\Admin\Perusahaan\DashboardController as PerusahaanDashboardController;
 use App\Http\Controllers\Admin\Perusahaan\ProfilPerusahaanController as PerusahaanProfilPerusahaanController;
 use App\Http\Controllers\Admin\Perusahaan\LowonganPekerjaanController;
+use App\Http\Controllers\Admin\Perusahaan\NotifikasiController;
 use App\Http\Controllers\Admin\Perusahaan\LamaranPekerjaanController as PerusahaanLamaranPekerjaanController;
 
 // PENCAKER
@@ -165,6 +166,27 @@ Route::middleware(['auth', 'cekrole:perusahaan'])
 
             Route::post('/{id}/restore', [PerusahaanLamaranPekerjaanController::class, 'restore'])->name('restore');
             Route::delete('/{id}/force', [PerusahaanLamaranPekerjaanController::class, 'forceDelete'])->name('forceDelete');
+        });
+
+        // ================= NOTIFIKASI =================
+        Route::prefix('notifikasi')->name('notifikasi.')->group(function () {
+
+            Route::get('/', [NotifikasiController::class, 'index'])->name('index');
+            Route::get('/{id}', [NotifikasiController::class, 'show'])->name('show');
+
+            Route::delete('/{id}', [NotifikasiController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [NotifikasiController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force', [NotifikasiController::class, 'forceDelete'])->name('forceDelete');
+
+            Route::post('/mark-selected', [NotifikasiController::class, 'markSelected'])->name('markSelected');
+            Route::post('/mark-all', [NotifikasiController::class, 'markAll'])->name('markAll');
+            Route::post('/delete-selected', [NotifikasiController::class, 'deleteSelected'])->name('deleteSelected');
+            Route::delete('/delete-all', [NotifikasiController::class, 'deleteAll'])->name('deleteAll');
+
+            // tambahan untuk tab terhapus
+            Route::post('/restore-selected', [NotifikasiController::class, 'restoreSelected'])->name('restoreSelected');
+            Route::delete('/force-delete-selected', [NotifikasiController::class, 'forceDeleteSelected'])->name('forceDeleteSelected');
+            Route::delete('/force-delete-all', [NotifikasiController::class, 'forceDeleteAll'])->name('forceDeleteAll');
         });
     });
 
