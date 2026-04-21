@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\Disnaker\ProfilPerusahaanController as DisnakerPr
 use App\Http\Controllers\Admin\Perusahaan\DashboardController as PerusahaanDashboardController;
 use App\Http\Controllers\Admin\Perusahaan\ProfilPerusahaanController as PerusahaanProfilPerusahaanController;
 use App\Http\Controllers\Admin\Perusahaan\LowonganPekerjaanController;
+use App\Http\Controllers\Admin\Perusahaan\LamaranPekerjaanController as PerusahaanLamaranPekerjaanController;
 
 // PENCAKER
 use App\Http\Controllers\Admin\Pencaker\DashboardController as PencakerDashboardController;
@@ -109,6 +110,7 @@ Route::middleware(['auth', 'cekrole:disnaker'])
             Route::delete('/{id}/force', [DisnakerProfilPerusahaanController::class, 'forceDelete'])->name('forceDelete');
         });
     });
+
 Route::middleware(['auth', 'cekrole:perusahaan'])
     ->prefix('admin/perusahaan')
     ->name('perusahaan.')
@@ -153,8 +155,19 @@ Route::middleware(['auth', 'cekrole:perusahaan'])
             Route::post('/{id}/restore', [LowonganPekerjaanController::class, 'restore'])->name('restore');
             Route::delete('/{id}/force', [LowonganPekerjaanController::class, 'forceDelete'])->name('forceDelete');
         });
+
+        Route::prefix('lamaran-pekerjaan')->name('lamaran-pekerjaan.')->group(function () {
+            Route::get('/', [PerusahaanLamaranPekerjaanController::class, 'index'])->name('index');
+
+            Route::get('/{id}', [PerusahaanLamaranPekerjaanController::class, 'show'])->name('show');
+
+            Route::delete('/{id}', [PerusahaanLamaranPekerjaanController::class, 'destroy'])->name('destroy');
+
+            Route::post('/{id}/restore', [PerusahaanLamaranPekerjaanController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force', [PerusahaanLamaranPekerjaanController::class, 'forceDelete'])->name('forceDelete');
+        });
     });
-    
+
 Route::middleware(['auth', 'cekrole:pencaker'])
     ->prefix('pencaker')
     ->name('pencaker.')
@@ -208,25 +221,25 @@ Route::middleware(['auth', 'cekrole:pencaker'])
             Route::delete('/{id}', [KartuAk1Controller::class, 'destroy'])->name('destroy');
         });
 
-    Route::prefix('lamaran')->name('lamaran.')->group(function () {
+        Route::prefix('lamaran')->name('lamaran.')->group(function () {
 
-        Route::get('/', [LamaranPekerjaanController::class, 'index'])->name('index');
+            Route::get('/', [LamaranPekerjaanController::class, 'index'])->name('index');
 
-        Route::get('/{id_lowongan}/create', [LamaranPekerjaanController::class, 'create'])->name('create');
+            Route::get('/{id_lowongan}/create', [LamaranPekerjaanController::class, 'create'])->name('create');
 
-        Route::post('/', [LamaranPekerjaanController::class, 'store'])->name('store');
+            Route::post('/', [LamaranPekerjaanController::class, 'store'])->name('store');
 
-        Route::get('/{id}', [LamaranPekerjaanController::class, 'show'])->name('show');
+            Route::get('/{id}', [LamaranPekerjaanController::class, 'show'])->name('show');
 
-        Route::get('/{id}/edit', [LamaranPekerjaanController::class, 'edit'])->name('edit');
+            Route::get('/{id}/edit', [LamaranPekerjaanController::class, 'edit'])->name('edit');
 
-        Route::put('/{id}', [LamaranPekerjaanController::class, 'update'])->name('update');
+            Route::put('/{id}', [LamaranPekerjaanController::class, 'update'])->name('update');
 
-        // ================= ACTION =================
-        Route::delete('/{id}/cancel', [LamaranPekerjaanController::class, 'cancel'])->name('cancel');
+            // ================= ACTION =================
+            Route::delete('/{id}/cancel', [LamaranPekerjaanController::class, 'cancel'])->name('cancel');
 
-        Route::delete('/{id}/force', [LamaranPekerjaanController::class, 'forceDelete'])->name('forceDelete');
+            Route::delete('/{id}/force', [LamaranPekerjaanController::class, 'forceDelete'])->name('forceDelete');
 
-        Route::post('/{id}/restore', [LamaranPekerjaanController::class, 'restore'])->name('restore');
-    });
+            Route::post('/{id}/restore', [LamaranPekerjaanController::class, 'restore'])->name('restore');
+        });
     });

@@ -87,12 +87,14 @@
                     </a>
                 </li>
 
-                <!-- Daftar Pelamar -->
+                <!-- Daftar Lamaran Kerja -->
                 <li class="nav-item">
-                    <a href="/admin/{{ $role }}/pelamar"
-                        class="nav-link {{ request()->is('admin/'.$role.'/pelamar') ? 'active' : '' }}">
+                    <a href="{{ route('perusahaan.lamaran-pekerjaan.index') }}"
+                        class="nav-link {{ request()->routeIs('perusahaan.lamaran-pekerjaan.*') ? 'active' : '' }}">
+
                         <i class="nav-icon fas fa-users"></i>
-                        <p>Daftar Pelamar</p>
+                        <p>Daftar Lamaran Kerja</p>
+
                     </a>
                 </li>
 
