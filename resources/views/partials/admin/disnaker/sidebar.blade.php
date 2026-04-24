@@ -100,33 +100,37 @@
                     </a>
                 </li>
 
+                <!-- Laporan Lowongan -->
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('disnaker.laporan-lowongan.index') }}"
+                        class="nav-link {{ request()->routeIs('disnaker.laporan-lowongan.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-file-alt"></i>
                         <p>Laporan Lowongan</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('disnaker.laporan-pencari-kerja.index') }}"
+                        class="nav-link {{ request()->routeIs('disnaker.laporan-pencari-kerja.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-file-alt"></i>
                         <p>Laporan Pencari Kerja</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('disnaker.laporan-penempatan.index') }}"
+                        class="nav-link {{ request()->routeIs('disnaker.laporan-penempatan.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-file-alt"></i>
                         <p>Laporan Penempatan</p>
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>
                         <p>Pengaturan Sistem</p>
                     </a>
-                </li>
+                </li> -->
 
                 <!-- Logout -->
                 <li class="nav-item">

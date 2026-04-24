@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Pencaker;
 use App\Http\Controllers\Controller;
 use App\Models\KartuAk1;
 use App\Models\ProfilPencariKerja;
+use App\Models\LamaranPekerjaan;
 use App\Models\LogAktivitas;
 use App\Models\PengalamanKerjaAk1;
 use App\Models\RiwayatPendidikanAk1;
@@ -213,7 +214,66 @@ class KartuAk1Controller extends Controller
         // =====================
         $kartuAk1->markAsRevised();
 
-        return redirect()->route('ak1.index')
+        return redirect()->route('pencaker.ak1.index')
             ->with('success', 'AK1 berhasil diajukan dan menunggu verifikasi.');
+    }
+
+    // Halaman untuk mencetak AK1
+    public function cetak($id)
+    {
+        $user = Auth::user();
+
+        $profil = ProfilPencariKerja::where('id_pengguna', $user->id_pengguna)->firstOrFail();
+
+        $kartuAk1 = KartuAk1::with([
+            'profilPencariKerja',
+            'riwayatPendidikan',
+            'pengalamanKerja',
+            'keterampilan',
+            'latestVerifikasi'
+        ])
+            ->where('id_kartu_ak1', $id)
+            ->where('id_pencari_kerja', $profil->id_pencari_kerja)
+            ->firstOrFail();
+
+        if ($kartuAk1->status !== 'disetujui') {
+            abort(403, 'AK1 hanya bisa dicetak setelah disetujui.');
+        }
+
+        // ============================
+        // AMBIL DATA "DITERIMA KERJA"
+        // ============================
+        $lamaranDiterima = LamaranPekerjaan::with([
+            'lowongan.profilPerusahaan'
+        ])
+            ->where('id_pencari_kerja', $profil->id_pencari_kerja)
+            ->whereIn('status_lamaran', ['diterima', 'disetujui', 'accepted'])
+            ->orderByDesc('updated_at')
+            ->first();
+
+        $diterimaKerjaText = '-';
+        $terhitungTanggalText = '-';
+
+        if ($lamaranDiterima) {
+            $namaPerusahaan = optional(optional($lamaranDiterima->lowongan)->profilPerusahaan)->nama_perusahaan
+                ?? optional($lamaranDiterima->lowongan)->judul_lowongan
+                ?? '-';
+
+            $diterimaKerjaText = $namaPerusahaan;
+
+            if (!empty($lamaranDiterima->tanggal_lamar)) {
+                $terhitungTanggalText = \Carbon\Carbon::parse($lamaranDiterima->tanggal_lamar)->format('d/m/Y');
+            } elseif (!empty($lamaranDiterima->updated_at)) {
+                $terhitungTanggalText = \Carbon\Carbon::parse($lamaranDiterima->updated_at)->format('d/m/Y');
+            }
+        }
+
+        return view('admin.pencaker.kartu-ak1.cetak', [
+            'title' => 'Kartu Kuning (AK1) Digital',
+            'profil' => $profil,
+            'kartuAk1' => $kartuAk1,
+            'diterimaKerjaText' => $diterimaKerjaText,
+            'terhitungTanggalText' => $terhitungTanggalText,
+        ]);
     }
 }

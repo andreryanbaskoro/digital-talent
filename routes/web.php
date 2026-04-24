@@ -12,6 +12,9 @@ use App\Http\Controllers\Admin\Disnaker\DashboardController as DisnakerDashboard
 use App\Http\Controllers\Admin\Disnaker\VerifikasiLowonganController;
 use App\Http\Controllers\Admin\Disnaker\PenggunaController;
 use App\Http\Controllers\Admin\Disnaker\Ak1Controller;
+use App\Http\Controllers\Admin\Disnaker\LaporanLowonganController;
+use App\Http\Controllers\Admin\Disnaker\LaporanPencariKerjaController;
+use App\Http\Controllers\Admin\Disnaker\LaporanPenempatanController;
 use App\Http\Controllers\Admin\Disnaker\ProfilPencariKerjaController as DisnakerProfilPencariKerjaController;
 use App\Http\Controllers\Admin\Disnaker\ProfilPerusahaanController as DisnakerProfilPerusahaanController;
 
@@ -112,6 +115,29 @@ Route::middleware(['auth', 'cekrole:disnaker'])
             Route::delete('/{id}', [DisnakerProfilPerusahaanController::class, 'destroy'])->name('destroy');
             Route::post('/{id}/restore', [DisnakerProfilPerusahaanController::class, 'restore'])->name('restore');
             Route::delete('/{id}/force', [DisnakerProfilPerusahaanController::class, 'forceDelete'])->name('forceDelete');
+        });
+
+        Route::prefix('laporan-lowongan')->name('laporan-lowongan.')->group(function () {
+            Route::get('/', [LaporanLowonganController::class, 'index'])->name('index');
+
+            Route::get('/export/excel', [LaporanLowonganController::class, 'exportExcel'])->name('excel');
+            Route::get('/export/pdf', [LaporanLowonganController::class, 'exportPdf'])->name('pdf');
+            Route::get('/print', [LaporanLowonganController::class, 'print'])->name('print');
+        });
+
+        Route::prefix('laporan-pencari-kerja')->name('laporan-pencari-kerja.')->group(function () {
+            Route::get('/', [LaporanPencariKerjaController::class, 'index'])->name('index');
+
+            Route::get('/export/excel', [LaporanPencariKerjaController::class, 'exportExcel'])->name('excel');
+            Route::get('/export/pdf', [LaporanPencariKerjaController::class, 'exportPdf'])->name('pdf');
+            Route::get('/print', [LaporanPencariKerjaController::class, 'print'])->name('print');
+        });
+        // ================= 🔥 LAPORAN PENEMPATAN =================
+        Route::prefix('laporan-penempatan')->name('laporan-penempatan.')->group(function () {
+            Route::get('/', [LaporanPenempatanController::class, 'index'])->name('index');
+            Route::get('/export/excel', [LaporanPenempatanController::class, 'exportExcel'])->name('excel');
+            Route::get('/export/pdf', [LaporanPenempatanController::class, 'exportPdf'])->name('pdf');
+            Route::get('/print', [LaporanPenempatanController::class, 'print'])->name('print');
         });
     });
 
@@ -222,26 +248,26 @@ Route::middleware(['auth', 'cekrole:pencaker'])
         Route::get('/dashboard', [PencakerDashboardController::class, 'index'])
             ->name('dashboard');
 
-    // ================= NOTIFIKASI =================
-    Route::prefix('notifikasi')->name('notifikasi.')->group(function () {
+        // ================= NOTIFIKASI =================
+        Route::prefix('notifikasi')->name('notifikasi.')->group(function () {
 
-        // static routes dulu
-        Route::post('/mark-selected', [PencakerNotifikasiController::class, 'markSelected'])->name('markSelected');
-        Route::post('/mark-all', [PencakerNotifikasiController::class, 'markAll'])->name('markAll');
-        Route::post('/delete-selected', [PencakerNotifikasiController::class, 'deleteSelected'])->name('deleteSelected');
-        Route::delete('/delete-all', [PencakerNotifikasiController::class, 'deleteAll'])->name('deleteAll');
+            // static routes dulu
+            Route::post('/mark-selected', [PencakerNotifikasiController::class, 'markSelected'])->name('markSelected');
+            Route::post('/mark-all', [PencakerNotifikasiController::class, 'markAll'])->name('markAll');
+            Route::post('/delete-selected', [PencakerNotifikasiController::class, 'deleteSelected'])->name('deleteSelected');
+            Route::delete('/delete-all', [PencakerNotifikasiController::class, 'deleteAll'])->name('deleteAll');
 
-        Route::post('/restore-selected', [PencakerNotifikasiController::class, 'restoreSelected'])->name('restoreSelected');
-        Route::delete('/force-delete-selected', [PencakerNotifikasiController::class, 'forceDeleteSelected'])->name('forceDeleteSelected');
-        Route::delete('/force-delete-all', [PencakerNotifikasiController::class, 'forceDeleteAll'])->name('forceDeleteAll');
+            Route::post('/restore-selected', [PencakerNotifikasiController::class, 'restoreSelected'])->name('restoreSelected');
+            Route::delete('/force-delete-selected', [PencakerNotifikasiController::class, 'forceDeleteSelected'])->name('forceDeleteSelected');
+            Route::delete('/force-delete-all', [PencakerNotifikasiController::class, 'forceDeleteAll'])->name('forceDeleteAll');
 
-        // baru route dinamis terakhir
-        Route::get('/', [PencakerNotifikasiController::class, 'index'])->name('index');
-        Route::get('/{id}', [PencakerNotifikasiController::class, 'show'])->name('show');
-        Route::delete('/{id}', [PencakerNotifikasiController::class, 'destroy'])->name('destroy');
-        Route::post('/{id}/restore', [PencakerNotifikasiController::class, 'restore'])->name('restore');
-        Route::delete('/{id}/force', [PencakerNotifikasiController::class, 'forceDelete'])->name('forceDelete');
-    });
+            // baru route dinamis terakhir
+            Route::get('/', [PencakerNotifikasiController::class, 'index'])->name('index');
+            Route::get('/{id}', [PencakerNotifikasiController::class, 'show'])->name('show');
+            Route::delete('/{id}', [PencakerNotifikasiController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [PencakerNotifikasiController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force', [PencakerNotifikasiController::class, 'forceDelete'])->name('forceDelete');
+        });
 
         // ================= PROFIL =================
         Route::prefix('profil')->name('profil.')->group(function () {
@@ -258,13 +284,13 @@ Route::middleware(['auth', 'cekrole:pencaker'])
         Route::prefix('ak1')->name('ak1.')->group(function () {
 
             Route::get('/', [KartuAk1Controller::class, 'index'])->name('index');
-
             Route::get('/formulir', [KartuAk1Controller::class, 'formulir'])->name('formulir');
-
             Route::get('/dokumen-pribadi', [KartuAk1Controller::class, 'dokumenPribadi'])->name('dokumen-pribadi');
 
             Route::post('/dokumen/upload/{type}', [KartuAk1Controller::class, 'uploadDokumen'])
                 ->name('dokumen.upload');
+
+            Route::get('/{id}/cetak', [KartuAk1Controller::class, 'cetak'])->name('cetak');
 
             // pengalaman
             Route::get('/pengalaman', [PengalamanKerjaAk1Controller::class, 'index'])->name('pengalaman.index');
