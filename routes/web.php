@@ -18,9 +18,11 @@ use App\Http\Controllers\Admin\Disnaker\ProfilPerusahaanController as DisnakerPr
 // PERUSAHAAN
 use App\Http\Controllers\Admin\Perusahaan\DashboardController as PerusahaanDashboardController;
 use App\Http\Controllers\Admin\Perusahaan\ProfilPerusahaanController as PerusahaanProfilPerusahaanController;
+use App\Http\Controllers\Admin\Perusahaan\LamaranPekerjaanController as PerusahaanLamaranPekerjaanController;
 use App\Http\Controllers\Admin\Perusahaan\LowonganPekerjaanController;
 use App\Http\Controllers\Admin\Perusahaan\NotifikasiController;
-use App\Http\Controllers\Admin\Perusahaan\LamaranPekerjaanController as PerusahaanLamaranPekerjaanController;
+use App\Http\Controllers\Admin\Perusahaan\HasilRankingController;
+use App\Http\Controllers\Admin\Perusahaan\KeputusanSeleksiController;
 
 // PENCAKER
 use App\Http\Controllers\Admin\Pencaker\DashboardController as PencakerDashboardController;
@@ -30,6 +32,7 @@ use App\Http\Controllers\Admin\Pencaker\KeterampilanAk1Controller;
 use App\Http\Controllers\Admin\Pencaker\PengalamanKerjaAk1Controller;
 use App\Http\Controllers\Admin\Pencaker\RiwayatPendidikanAk1Controller;
 use App\Http\Controllers\Admin\Pencaker\LamaranPekerjaanController;
+use App\Http\Controllers\Admin\Pencaker\NotifikasiController as PencakerNotifikasiController;
 
 // Landing Page (public)
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
@@ -188,6 +191,26 @@ Route::middleware(['auth', 'cekrole:perusahaan'])
             Route::delete('/force-delete-selected', [NotifikasiController::class, 'forceDeleteSelected'])->name('forceDeleteSelected');
             Route::delete('/force-delete-all', [NotifikasiController::class, 'forceDeleteAll'])->name('forceDeleteAll');
         });
+
+        Route::prefix('ranking')->name('ranking.')->group(function () {
+
+            Route::get('/', [HasilRankingController::class, 'index'])->name('index');
+
+            Route::get('/{idLowongan}', [HasilRankingController::class, 'show'])->name('show');
+
+            Route::get('/{idLowongan}/{idLamaran}/detail', [HasilRankingController::class, 'detail'])
+                ->name('detail');
+
+            Route::post('/{idLowongan}/calculate', [HasilRankingController::class, 'calculate'])->name('calculate');
+        });
+
+        Route::prefix('keputusan-seleksi')->name('keputusan-seleksi.')->group(function () {
+            Route::get('/', [KeputusanSeleksiController::class, 'index'])->name('index');
+            Route::get('/{idLowongan}', [KeputusanSeleksiController::class, 'show'])->name('show');
+
+            Route::post('/{idLamaran}/terima', [KeputusanSeleksiController::class, 'terima'])->name('terima');
+            Route::post('/{idLamaran}/tolak', [KeputusanSeleksiController::class, 'tolak'])->name('tolak');
+        });
     });
 
 Route::middleware(['auth', 'cekrole:pencaker'])
@@ -198,6 +221,27 @@ Route::middleware(['auth', 'cekrole:pencaker'])
         // ================= DASHBOARD =================
         Route::get('/dashboard', [PencakerDashboardController::class, 'index'])
             ->name('dashboard');
+
+    // ================= NOTIFIKASI =================
+    Route::prefix('notifikasi')->name('notifikasi.')->group(function () {
+
+        // static routes dulu
+        Route::post('/mark-selected', [PencakerNotifikasiController::class, 'markSelected'])->name('markSelected');
+        Route::post('/mark-all', [PencakerNotifikasiController::class, 'markAll'])->name('markAll');
+        Route::post('/delete-selected', [PencakerNotifikasiController::class, 'deleteSelected'])->name('deleteSelected');
+        Route::delete('/delete-all', [PencakerNotifikasiController::class, 'deleteAll'])->name('deleteAll');
+
+        Route::post('/restore-selected', [PencakerNotifikasiController::class, 'restoreSelected'])->name('restoreSelected');
+        Route::delete('/force-delete-selected', [PencakerNotifikasiController::class, 'forceDeleteSelected'])->name('forceDeleteSelected');
+        Route::delete('/force-delete-all', [PencakerNotifikasiController::class, 'forceDeleteAll'])->name('forceDeleteAll');
+
+        // baru route dinamis terakhir
+        Route::get('/', [PencakerNotifikasiController::class, 'index'])->name('index');
+        Route::get('/{id}', [PencakerNotifikasiController::class, 'show'])->name('show');
+        Route::delete('/{id}', [PencakerNotifikasiController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [PencakerNotifikasiController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force', [PencakerNotifikasiController::class, 'forceDelete'])->name('forceDelete');
+    });
 
         // ================= PROFIL =================
         Route::prefix('profil')->name('profil.')->group(function () {

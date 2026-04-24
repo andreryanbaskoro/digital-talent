@@ -99,12 +99,35 @@
                         <p>Lamaran Saya</p>
                     </a>
                 </li>
+
                 <!-- Notifikasi -->
                 <li class="nav-item">
-                    <a href="/admin/pencaker/notifikasi"
-                        class="nav-link {{ request()->is('admin/pencaker/notifikasi*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-bell"></i>
-                        <p>Notifikasi</p>
+                    <a href="{{ route('pencaker.notifikasi.index') }}"
+                        class="nav-link {{ request()->routeIs('pencaker.notifikasi.*') ? 'active' : '' }}">
+
+                        <div class="bell-wrapper">
+
+                            <i id="notifBell"
+                                class="nav-icon fas fa-bell 
+               {{ isset($globalUnreadNotif) && $globalUnreadNotif > 0 ? 'bell-animate' : '' }}">
+                            </i>
+
+                            @if(isset($globalUnreadNotif) && $globalUnreadNotif > 0)
+                            <span class="bell-dot"></span>
+                            @endif
+
+                        </div>
+
+                        <p>
+                            Notifikasi
+
+                            @if(isset($globalUnreadNotif) && $globalUnreadNotif > 0)
+                            <span class="badge badge-danger right badge-modern">
+                                {{ $globalUnreadNotif }}
+                            </span>
+                            @endif
+                        </p>
+
                     </a>
                 </li>
 

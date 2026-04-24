@@ -25,3 +25,15 @@
 
 <!-- AdminLTE -->
 <script src="{{ asset('AdminLTE-3.2.0/dist/js/adminlte.min.js') }}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const bell = document.getElementById("notifBell");
+
+        if (bell) {
+            setTimeout(() => {
+                bell.classList.remove("bell-animate");
+            }, 6000);
+        }
+    });
+</script>

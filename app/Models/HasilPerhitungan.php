@@ -10,12 +10,13 @@ class HasilPerhitungan extends Model
     use SoftDeletes;
 
     protected $table = 'hasil_perhitungan';
-    protected $primaryKey = 'id_hasil_perhitungan';
+    protected $primaryKey = 'id_hasil';
 
-    public $incrementing = true;
-    protected $keyType = 'int';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
+        'id_hasil',
         'id_lamaran',
         'nilai_faktor_inti',
         'nilai_faktor_pendukung',
@@ -24,19 +25,65 @@ class HasilPerhitungan extends Model
         'rekomendasi',
     ];
 
+    protected $casts = [
+        'nilai_faktor_inti' => 'decimal:2',
+        'nilai_faktor_pendukung' => 'decimal:2',
+        'nilai_total' => 'decimal:2',
+        'peringkat' => 'integer',
+    ];
+
     protected $dates = ['deleted_at'];
+
+    /*
+    |--------------------------------------------------------------------------
+    | AUTO GENERATE ID
+    |--------------------------------------------------------------------------
+    */
+
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            if (empty($model->id_hasil)) {
+                $model->id_hasil = self::generateId();
+            }
+        });
+    }
+
+    public static function generateId()
+    {
+        $year = date('Y');
+
+        $count = self::whereYear('created_at', $year)->count();
+        $urut = str_pad($count + 1, 6, '0', STR_PAD_LEFT);
+
+        $id = "HSL-{$year}-{$urut}";
+
+        while (self::where('id_hasil', $id)->exists()) {
+            $count++;
+            $urut = str_pad($count + 1, 6, '0', STR_PAD_LEFT);
+            $id = "HSL-{$year}-{$urut}";
+        }
+
+        return $id;
+    }
 
     // ================= RELASI =================
 
-    // ke lamaran pekerjaan
     public function lamaran()
     {
-        return $this->belongsTo(LamaranPekerjaan::class, 'id_lamaran');
+        return $this->belongsTo(
+            LamaranPekerjaan::class,
+            'id_lamaran',
+            'id_lamaran'
+        );
     }
 
-    // ke detail perhitungan
     public function detail()
     {
-        return $this->hasMany(DetailPerhitungan::class, 'id_hasil_perhitungan');
+        return $this->hasMany(
+            DetailPerhitungan::class,
+            'id_hasil',   // foreign key di tabel detail
+            'id_hasil'    // primary key di tabel hasil
+        );
     }
 }

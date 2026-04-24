@@ -72,7 +72,7 @@ class LamaranPekerjaanController extends Controller
             // OPTIONAL skill
             'sub_kriteria' => 'nullable|array',
             'sub_kriteria.*.id_sub_kriteria' => 'required_with:sub_kriteria|exists:sub_kriteria,id_sub_kriteria',
-            'sub_kriteria.*.nilai' => 'required_with:sub_kriteria|integer|between:1,5',
+            'sub_kriteria.*.nilai' => 'nullable|integer|between:1,5',
 
             // OPTIONAL dokumen
             'jenis_dokumen.*' => 'nullable|string|max:100',
@@ -114,11 +114,23 @@ class LamaranPekerjaanController extends Controller
             ]);
 
             // ================= SIMPAN SUB KRITERIA (OPTIONAL) =================
+            $no = 1;
+
+            // ambil bagian LMR saja
+            $baseId = explode('-LMR-', $idLamaran)[1] ?? null;
+
+            if (!$baseId) {
+                throw new \Exception('Format ID lamaran tidak valid');
+            }
+
+            $prefix = 'LMR-' . $baseId;
+
             foreach ($validated['sub_kriteria'] ?? [] as $item) {
                 SubKriteriaLamaran::create([
+                    'id_sub_kriteria_lamaran' => $prefix . '-SKL-' . str_pad($no++, 2, '0', STR_PAD_LEFT),
                     'id_lamaran' => $idLamaran,
                     'id_sub_kriteria' => $item['id_sub_kriteria'],
-                    'nilai' => $item['nilai']
+                    'nilai' => $item['nilai'] ?? 1
                 ]);
             }
 
@@ -188,7 +200,7 @@ class LamaranPekerjaanController extends Controller
             'lowongan' => $lamaran->lowongan
         ]);
     }
-    
+
     public function update(Request $request, $id)
     {
         $lamaran = LamaranPekerjaan::with([
@@ -208,7 +220,7 @@ class LamaranPekerjaanController extends Controller
             // OPTIONAL skill
             'sub_kriteria' => 'nullable|array',
             'sub_kriteria.*.id_sub_kriteria' => 'required_with:sub_kriteria|exists:sub_kriteria,id_sub_kriteria',
-            'sub_kriteria.*.nilai' => 'required_with:sub_kriteria|integer|between:1,5',
+            'sub_kriteria.*.nilai' => 'nullable|integer|between:1,5',
 
             // Dokumen lama
             'id_dokumen_existing.*' => 'nullable|string',
@@ -229,7 +241,17 @@ class LamaranPekerjaanController extends Controller
         |--------------------------------------------------------------------------
         */
 
+            $no = 1;
             $newSkillIds = [];
+
+            // ambil bagian LMR saja
+            $baseId = explode('-LMR-', $lamaran->id_lamaran)[1] ?? null;
+
+            if (!$baseId) {
+                throw new \Exception('Format ID lamaran tidak valid');
+            }
+
+            $prefix = 'LMR-' . $baseId;
 
             foreach ($validated['sub_kriteria'] ?? [] as $item) {
 
@@ -239,16 +261,16 @@ class LamaranPekerjaanController extends Controller
                         'id_sub_kriteria' => $item['id_sub_kriteria'],
                     ],
                     [
-                        'nilai' => $item['nilai']
+                        'id_sub_kriteria_lamaran' => $prefix . '-SKL-' . str_pad($no++, 2, '0', STR_PAD_LEFT),
+                        'nilai' => $item['nilai'] ?? 1
                     ]
                 );
 
                 $newSkillIds[] = $item['id_sub_kriteria'];
             }
 
-            // 🔥 Hapus skill lama yang tidak dikirim lagi
+            // 🔥 Hapus yang tidak dipakai
             if (empty($newSkillIds)) {
-                // kalau kosong semua → hapus semua skill lama
                 SubKriteriaLamaran::where('id_lamaran', $lamaran->id_lamaran)->delete();
             } else {
                 SubKriteriaLamaran::where('id_lamaran', $lamaran->id_lamaran)

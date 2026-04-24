@@ -100,8 +100,8 @@
 
                 <!-- Hasil Ranking / Matching -->
                 <li class="nav-item">
-                    <a href="/admin/{{ $role }}/matching"
-                        class="nav-link {{ request()->is('admin/'.$role.'/matching') ? 'active' : '' }}">
+                    <a href="{{ route('perusahaan.ranking.index') }}"
+                        class="nav-link {{ request()->routeIs('perusahaan.ranking.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-line"></i>
                         <p>Hasil Ranking / Matching</p>
                     </a>
@@ -109,18 +109,41 @@
 
                 <!-- Keputusan Seleksi -->
                 <li class="nav-item">
-                    <a href="/admin/{{ $role }}/seleksi"
-                        class="nav-link {{ request()->is('admin/'.$role.'/seleksi') ? 'active' : '' }}">
+                    <a href="{{ route('perusahaan.keputusan-seleksi.index') }}"
+                        class="nav-link {{ request()->routeIs('perusahaan.keputusan-seleksi.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-check-circle"></i>
                         <p>Keputusan Seleksi</p>
                     </a>
                 </li>
+                
                 <!-- Notifikasi -->
                 <li class="nav-item">
                     <a href="{{ route($role . '.notifikasi.index') }}"
                         class="nav-link {{ request()->routeIs($role . '.notifikasi.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-bell"></i>
-                        <p>Notifikasi</p>
+
+                        <div class="bell-wrapper">
+
+                            <i id="notifBell"
+                                class="nav-icon fas fa-bell 
+               {{ isset($globalUnreadNotif) && $globalUnreadNotif > 0 ? 'bell-animate' : '' }}">
+                            </i>
+
+                            @if(isset($globalUnreadNotif) && $globalUnreadNotif > 0)
+                            <span class="bell-dot"></span>
+                            @endif
+
+                        </div>
+
+                        <p>
+                            Notifikasi
+
+                            @if(isset($globalUnreadNotif) && $globalUnreadNotif > 0)
+                            <span class="badge badge-danger right badge-modern">
+                                {{ $globalUnreadNotif }}
+                            </span>
+                            @endif
+                        </p>
+
                     </a>
                 </li>
 

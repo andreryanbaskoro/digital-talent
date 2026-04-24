@@ -12,11 +12,12 @@ class DetailPerhitungan extends Model
     protected $table = 'detail_perhitungan';
     protected $primaryKey = 'id_detail_perhitungan';
 
-    public $incrementing = true;
-    protected $keyType = 'int';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
-        'id_hasil_perhitungan',
+        'id_detail_perhitungan',
+        'id_hasil',
         'nama_kriteria',
         'nilai_pelamar',
         'nilai_target',
@@ -27,11 +28,36 @@ class DetailPerhitungan extends Model
 
     protected $dates = ['deleted_at'];
 
-    // ================= RELASI =================
+    protected static function boot()
+    {
+        parent::boot();
 
-    // ke hasil perhitungan
+        static::creating(function ($model) {
+            if (!$model->id_detail_perhitungan) {
+                $year = date('Y');
+
+                $last = self::whereYear('created_at', $year)
+                    ->orderBy('id_detail_perhitungan', 'desc')
+                    ->first();
+
+                if ($last) {
+                    $lastNumber = (int) substr($last->id_detail_perhitungan, -5);
+                    $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
+                } else {
+                    $newNumber = '00001';
+                }
+
+                $model->id_detail_perhitungan = 'DTL-' . $year . '-' . $newNumber;
+            }
+        });
+    }
+
     public function hasil()
     {
-        return $this->belongsTo(HasilPerhitungan::class, 'id_hasil_perhitungan');
+        return $this->belongsTo(
+            HasilPerhitungan::class,
+            'id_hasil',   // foreign key di tabel detail
+            'id_hasil'    // primary key di tabel hasil
+        );
     }
 }

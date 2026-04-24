@@ -12,17 +12,36 @@ class BobotSelisih extends Model
     protected $table = 'bobot_selisih';
     protected $primaryKey = 'id_bobot_selisih';
 
-    public $incrementing = true;
-    protected $keyType = 'int';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
+        'id_bobot_selisih',
         'selisih',
         'bobot_nilai',
         'keterangan',
     ];
 
     protected $casts = [
-        'selisih' => 'decimal:2',
+        'selisih' => 'integer',
         'bobot_nilai' => 'decimal:2',
     ];
+
+    public static function generateId()
+    {
+        $year = date('Y');
+
+        $count = self::whereYear('created_at', $year)->count();
+        $urut = str_pad($count + 1, 6, '0', STR_PAD_LEFT);
+
+        $id = "BS-{$year}-{$urut}";
+
+        while (self::where('id_bobot_selisih', $id)->exists()) {
+            $count++;
+            $urut = str_pad($count + 1, 6, '0', STR_PAD_LEFT);
+            $id = "BS-{$year}-{$urut}";
+        }
+
+        return $id;
+    }
 }
