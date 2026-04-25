@@ -47,6 +47,19 @@ Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
+Route::get('/register', [LoginController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [LoginController::class, 'register'])->name('register.post');
+
+// LUPA PASSWORD / EMAIL
+Route::get('/forgot', [LoginController::class, 'showForgotForm'])->name('forgot.form');
+Route::post('/forgot', [LoginController::class, 'processForgot'])->name('forgot.process');
+
+Route::get('/reset-password/{token}', [LoginController::class, 'showResetForm'])->name('reset.form');
+Route::post('/reset-password', [LoginController::class, 'processReset'])->name('reset.process');
+
+Route::get('/forgot-email', [LoginController::class, 'showForgotEmailForm'])->name('forgot.email.form');
+Route::post('/forgot-email', [LoginController::class, 'processForgotEmail'])->name('forgot.email.process');
+
 Route::middleware(['auth'])->get('/dashboard', function () {
     return match (Auth::user()->peran) {
         'disnaker' => redirect()->route('disnaker.dashboard'),

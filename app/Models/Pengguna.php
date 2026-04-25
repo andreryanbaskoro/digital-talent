@@ -84,10 +84,4 @@ class Pengguna extends Authenticatable
     {
         return $this->hasMany(Notifikasi::class, 'id_pengguna');
     }
-
-    // ke log aktivitas
-    public function logAktivitas()
-    {
-        return $this->hasMany(LogAktivitas::class, 'id_pengguna');
-    }
 }

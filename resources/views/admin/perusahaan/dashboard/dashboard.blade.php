@@ -1,611 +1,482 @@
 @extends('layouts.app-admin')
 
 @section('content')
+@php
+$statusBadge = function ($status) {
+return match (strtolower($status ?? '')) {
+'diterima', 'disetujui' => 'success',
+'ditolak' => 'danger',
+'pending', 'menunggu' => 'warning',
+default => 'secondary',
+};
+};
+@endphp
 
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-  <!-- Content Header (Page header) -->
-  <div class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1 class="m-0">Dashboard</h1>
-        </div><!-- /.col -->
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active">Dashboard v1</li>
-          </ol>
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
-  <!-- /.content-header -->
 
-  <!-- Main content -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+          <h1 class="mb-1 font-weight-bold">{{ $title ?? 'Dashboard Perusahaan' }}</h1>
+          <small class="text-muted">
+            Ringkasan aktivitas perusahaan dan akses cepat
+          </small>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="content">
     <div class="container-fluid">
-      <!-- Small boxes (Stat box) -->
+
+      @if(!$profilPerusahaan)
+      <div class="alert alert-warning shadow-sm">
+        Profil perusahaan belum ditemukan. Silakan lengkapi profil terlebih dahulu.
+        <a href="{{ route('perusahaan.profil.index') }}" class="btn btn-sm btn-dark ml-2">
+          Buka Profil
+        </a>
+      </div>
+      @else
+      <div class="card shadow-sm border-0 mb-3">
+        <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+          <div class="mb-2 mb-md-0">
+            <h4 class="mb-1">{{ $profilPerusahaan->nama_perusahaan }}</h4>
+            <div class="text-muted">
+              {{ $profilPerusahaan->kab_kota ?? '-' }} , {{ $profilPerusahaan->provinsi ?? '-' }}
+            </div>
+          </div>
+          <div class="text-md-right">
+            <a href="{{ route('perusahaan.profil.index') }}" class="btn btn-outline-secondary btn-sm">
+              <i class="fas fa-id-card mr-1"></i> Profil
+            </a>
+            <a href="{{ route('perusahaan.lowongan.create') }}" class="btn btn-primary btn-sm">
+              <i class="fas fa-plus mr-1"></i> Buat Lowongan
+            </a>
+          </div>
+        </div>
+      </div>
+      @endif
+
       <div class="row">
         <div class="col-lg-3 col-6">
-          <!-- small box -->
-          <div class="small-box bg-info">
+          <div class="small-box bg-primary shadow-sm">
             <div class="inner">
-              <h3>150</h3>
-
-              <p>New Orders</p>
+              <h3>{{ number_format($totalLowongan, 0, ',', '.') }}</h3>
+              <p>Total Lowongan</p>
             </div>
             <div class="icon">
-              <i class="ion ion-bag"></i>
+              <i class="fas fa-briefcase"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="{{ route('perusahaan.lowongan.index') }}" class="small-box-footer">
+              Lihat lowongan <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
         </div>
-        <!-- ./col -->
+
         <div class="col-lg-3 col-6">
-          <!-- small box -->
-          <div class="small-box bg-success">
+          <div class="small-box bg-success shadow-sm">
             <div class="inner">
-              <h3>53<sup style="font-size: 20px">%</sup></h3>
-
-              <p>Bounce Rate</p>
+              <h3>{{ number_format($lowonganAktif, 0, ',', '.') }}</h3>
+              <p>Lowongan Aktif</p>
             </div>
             <div class="icon">
-              <i class="ion ion-stats-bars"></i>
+              <i class="fas fa-check-circle"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="{{ route('perusahaan.lowongan.index') }}" class="small-box-footer">
+              Pantau lowongan <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
         </div>
-        <!-- ./col -->
+
         <div class="col-lg-3 col-6">
-          <!-- small box -->
-          <div class="small-box bg-warning">
+          <div class="small-box bg-warning shadow-sm">
             <div class="inner">
-              <h3>44</h3>
-
-              <p>User Registrations</p>
+              <h3>{{ number_format($totalLamaran, 0, ',', '.') }}</h3>
+              <p>Total Lamaran</p>
             </div>
             <div class="icon">
-              <i class="ion ion-person-add"></i>
+              <i class="fas fa-file-signature"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="{{ route('perusahaan.lamaran-pekerjaan.index') }}" class="small-box-footer">
+              Lihat lamaran <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
         </div>
-        <!-- ./col -->
+
         <div class="col-lg-3 col-6">
-          <!-- small box -->
-          <div class="small-box bg-danger">
+          <div class="small-box bg-danger shadow-sm">
             <div class="inner">
-              <h3>65</h3>
-
-              <p>Unique Visitors</p>
+              <h3>{{ number_format($lamaranBulanIni, 0, ',', '.') }}</h3>
+              <p>Lamaran Bulan Ini</p>
             </div>
             <div class="icon">
-              <i class="ion ion-pie-graph"></i>
+              <i class="fas fa-calendar-check"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="{{ route('perusahaan.lamaran-pekerjaan.index') }}" class="small-box-footer">
+              Detail lamaran <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
         </div>
-        <!-- ./col -->
       </div>
-      <!-- /.row -->
-      <!-- Main row -->
+
       <div class="row">
-        <!-- Left col -->
-        <section class="col-lg-7 connectedSortable">
-          <!-- Custom tabs (Charts with tabs)-->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">
-                <i class="fas fa-chart-pie mr-1"></i>
-                Sales
-              </h3>
-              <div class="card-tools">
-                <ul class="nav nav-pills ml-auto">
-                  <li class="nav-item">
-                    <a class="nav-link active" href="#revenue-chart" data-toggle="tab">Area</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#sales-chart" data-toggle="tab">Donut</a>
-                  </li>
-                </ul>
-              </div>
-            </div><!-- /.card-header -->
-            <div class="card-body">
-              <div class="tab-content p-0">
-                <!-- Morris chart - Sales -->
-                <div class="chart tab-pane active" id="revenue-chart"
-                  style="position: relative; height: 300px;">
-                  <canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>
-                </div>
-                <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
-                  <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>
-                </div>
-              </div>
-            </div><!-- /.card-body -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-info shadow-sm">
+            <div class="inner">
+              <h3>{{ number_format($lowonganSelesai, 0, ',', '.') }}</h3>
+              <p>Lowongan Selesai</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-flag-checkered"></i>
+            </div>
+            <a href="{{ route('perusahaan.lowongan.index') }}" class="small-box-footer">
+              Arsip lowongan <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
-          <!-- /.card -->
+        </div>
 
-          <!-- DIRECT CHAT -->
-          <div class="card direct-chat direct-chat-primary">
-            <div class="card-header">
-              <h3 class="card-title">Direct Chat</h3>
-
-              <div class="card-tools">
-                <span title="3 New Messages" class="badge badge-primary">3</span>
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
-                  <i class="fas fa-comments"></i>
-                </button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-secondary shadow-sm">
+            <div class="inner">
+              <h3>{{ count($lamaranStatus) }}</h3>
+              <p>Status Lamaran</p>
             </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-              <!-- Conversations are loaded here -->
-              <div class="direct-chat-messages">
-                <!-- Message. Default to the left -->
-                <div class="direct-chat-msg">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-left">Alexander Pierce</span>
-                    <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="dist/img/user1-128x128.jpg" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    Is this template really for free? That's unbelievable!
-                  </div>
-                  <!-- /.direct-chat-text -->
-                </div>
-                <!-- /.direct-chat-msg -->
-
-                <!-- Message to the right -->
-                <div class="direct-chat-msg right">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-right">Sarah Bullock</span>
-                    <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="dist/img/user3-128x128.jpg" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    You better believe it!
-                  </div>
-                  <!-- /.direct-chat-text -->
-                </div>
-                <!-- /.direct-chat-msg -->
-
-                <!-- Message. Default to the left -->
-                <div class="direct-chat-msg">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-left">Alexander Pierce</span>
-                    <span class="direct-chat-timestamp float-right">23 Jan 5:37 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="dist/img/user1-128x128.jpg" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    Working with AdminLTE on a great new app! Wanna join?
-                  </div>
-                  <!-- /.direct-chat-text -->
-                </div>
-                <!-- /.direct-chat-msg -->
-
-                <!-- Message to the right -->
-                <div class="direct-chat-msg right">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-right">Sarah Bullock</span>
-                    <span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="dist/img/user3-128x128.jpg" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    I would love to.
-                  </div>
-                  <!-- /.direct-chat-text -->
-                </div>
-                <!-- /.direct-chat-msg -->
-
-              </div>
-              <!--/.direct-chat-messages-->
-
-              <!-- Contacts are loaded here -->
-              <div class="direct-chat-contacts">
-                <ul class="contacts-list">
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="dist/img/user1-128x128.jpg" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Count Dracula
-                          <small class="contacts-list-date float-right">2/28/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">How have you been? I was...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="dist/img/user7-128x128.jpg" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Sarah Doe
-                          <small class="contacts-list-date float-right">2/23/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">I will be waiting for...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="dist/img/user3-128x128.jpg" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Nadia Jolie
-                          <small class="contacts-list-date float-right">2/20/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">I'll call you back at...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="dist/img/user5-128x128.jpg" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Nora S. Vans
-                          <small class="contacts-list-date float-right">2/10/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">Where is your new...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="dist/img/user6-128x128.jpg" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          John K.
-                          <small class="contacts-list-date float-right">1/27/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">Can I take a look at...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="dist/img/user8-128x128.jpg" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Kenneth M.
-                          <small class="contacts-list-date float-right">1/4/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">Never mind I found...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                </ul>
-                <!-- /.contacts-list -->
-              </div>
-              <!-- /.direct-chat-pane -->
+            <div class="icon">
+              <i class="fas fa-layer-group"></i>
             </div>
-            <!-- /.card-body -->
-            <div class="card-footer">
-              <form action="#" method="post">
-                <div class="input-group">
-                  <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-                  <span class="input-group-append">
-                    <button type="button" class="btn btn-primary">Send</button>
-                  </span>
-                </div>
-              </form>
-            </div>
-            <!-- /.card-footer-->
+            <a href="{{ route('perusahaan.lamaran-pekerjaan.index') }}" class="small-box-footer">
+              Lihat status <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
-          <!--/.direct-chat -->
+        </div>
 
-          <!-- TO DO List -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">
-                <i class="ion ion-clipboard mr-1"></i>
-                To Do List
-              </h3>
-
-              <div class="card-tools">
-                <ul class="pagination pagination-sm">
-                  <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
-                  <li class="page-item"><a href="#" class="page-link">1</a></li>
-                  <li class="page-item"><a href="#" class="page-link">2</a></li>
-                  <li class="page-item"><a href="#" class="page-link">3</a></li>
-                  <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
-                </ul>
-              </div>
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-dark shadow-sm">
+            <div class="inner">
+              <h3>Menu</h3>
+              <p>Keputusan Seleksi</p>
             </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-              <ul class="todo-list" data-widget="todo-list">
-                <li>
-                  <!-- drag handle -->
-                  <span class="handle">
-                    <i class="fas fa-ellipsis-v"></i>
-                    <i class="fas fa-ellipsis-v"></i>
-                  </span>
-                  <!-- checkbox -->
-                  <div class="icheck-primary d-inline ml-2">
-                    <input type="checkbox" value="" name="todo1" id="todoCheck1">
-                    <label for="todoCheck1"></label>
-                  </div>
-                  <!-- todo text -->
-                  <span class="text">Design a nice theme</span>
-                  <!-- Emphasis label -->
-                  <small class="badge badge-danger"><i class="far fa-clock"></i> 2 mins</small>
-                  <!-- General tools such as edit or delete-->
-                  <div class="tools">
-                    <i class="fas fa-edit"></i>
-                    <i class="fas fa-trash-o"></i>
-                  </div>
-                </li>
-                <li>
-                  <span class="handle">
-                    <i class="fas fa-ellipsis-v"></i>
-                    <i class="fas fa-ellipsis-v"></i>
-                  </span>
-                  <div class="icheck-primary d-inline ml-2">
-                    <input type="checkbox" value="" name="todo2" id="todoCheck2" checked>
-                    <label for="todoCheck2"></label>
-                  </div>
-                  <span class="text">Make the theme responsive</span>
-                  <small class="badge badge-info"><i class="far fa-clock"></i> 4 hours</small>
-                  <div class="tools">
-                    <i class="fas fa-edit"></i>
-                    <i class="fas fa-trash-o"></i>
-                  </div>
-                </li>
-                <li>
-                  <span class="handle">
-                    <i class="fas fa-ellipsis-v"></i>
-                    <i class="fas fa-ellipsis-v"></i>
-                  </span>
-                  <div class="icheck-primary d-inline ml-2">
-                    <input type="checkbox" value="" name="todo3" id="todoCheck3">
-                    <label for="todoCheck3"></label>
-                  </div>
-                  <span class="text">Let theme shine like a star</span>
-                  <small class="badge badge-warning"><i class="far fa-clock"></i> 1 day</small>
-                  <div class="tools">
-                    <i class="fas fa-edit"></i>
-                    <i class="fas fa-trash-o"></i>
-                  </div>
-                </li>
-                <li>
-                  <span class="handle">
-                    <i class="fas fa-ellipsis-v"></i>
-                    <i class="fas fa-ellipsis-v"></i>
-                  </span>
-                  <div class="icheck-primary d-inline ml-2">
-                    <input type="checkbox" value="" name="todo4" id="todoCheck4">
-                    <label for="todoCheck4"></label>
-                  </div>
-                  <span class="text">Let theme shine like a star</span>
-                  <small class="badge badge-success"><i class="far fa-clock"></i> 3 days</small>
-                  <div class="tools">
-                    <i class="fas fa-edit"></i>
-                    <i class="fas fa-trash-o"></i>
-                  </div>
-                </li>
-                <li>
-                  <span class="handle">
-                    <i class="fas fa-ellipsis-v"></i>
-                    <i class="fas fa-ellipsis-v"></i>
-                  </span>
-                  <div class="icheck-primary d-inline ml-2">
-                    <input type="checkbox" value="" name="todo5" id="todoCheck5">
-                    <label for="todoCheck5"></label>
-                  </div>
-                  <span class="text">Check your messages and notifications</span>
-                  <small class="badge badge-primary"><i class="far fa-clock"></i> 1 week</small>
-                  <div class="tools">
-                    <i class="fas fa-edit"></i>
-                    <i class="fas fa-trash-o"></i>
-                  </div>
-                </li>
-                <li>
-                  <span class="handle">
-                    <i class="fas fa-ellipsis-v"></i>
-                    <i class="fas fa-ellipsis-v"></i>
-                  </span>
-                  <div class="icheck-primary d-inline ml-2">
-                    <input type="checkbox" value="" name="todo6" id="todoCheck6">
-                    <label for="todoCheck6"></label>
-                  </div>
-                  <span class="text">Let theme shine like a star</span>
-                  <small class="badge badge-secondary"><i class="far fa-clock"></i> 1 month</small>
-                  <div class="tools">
-                    <i class="fas fa-edit"></i>
-                    <i class="fas fa-trash-o"></i>
-                  </div>
-                </li>
-              </ul>
+            <div class="icon">
+              <i class="fas fa-clipboard-check"></i>
             </div>
-            <!-- /.card-body -->
-            <div class="card-footer clearfix">
-              <button type="button" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add item</button>
-            </div>
+            <a href="{{ route('perusahaan.keputusan-seleksi.index') }}" class="small-box-footer">
+              Buka halaman <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
-          <!-- /.card -->
-        </section>
-        <!-- /.Left col -->
-        <!-- right col (We are only adding the ID to make the widgets sortable)-->
-        <section class="col-lg-5 connectedSortable">
+        </div>
 
-          <!-- Map card -->
-          <div class="card bg-gradient-primary">
-            <div class="card-header border-0">
-              <h3 class="card-title">
-                <i class="fas fa-map-marker-alt mr-1"></i>
-                Visitors
-              </h3>
-              <!-- card tools -->
-              <div class="card-tools">
-                <button type="button" class="btn btn-primary btn-sm daterange" title="Date range">
-                  <i class="far fa-calendar-alt"></i>
-                </button>
-                <button type="button" class="btn btn-primary btn-sm" data-card-widget="collapse" title="Collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-              <!-- /.card-tools -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-indigo shadow-sm">
+            <div class="inner">
+              <h3>Rank</h3>
+              <p>Hasil Ranking</p>
             </div>
-            <div class="card-body">
-              <div id="world-map" style="height: 250px; width: 100%;"></div>
+            <div class="icon">
+              <i class="fas fa-trophy"></i>
             </div>
-            <!-- /.card-body-->
-            <div class="card-footer bg-transparent">
-              <div class="row">
-                <div class="col-4 text-center">
-                  <div id="sparkline-1"></div>
-                  <div class="text-white">Visitors</div>
-                </div>
-                <!-- ./col -->
-                <div class="col-4 text-center">
-                  <div id="sparkline-2"></div>
-                  <div class="text-white">Online</div>
-                </div>
-                <!-- ./col -->
-                <div class="col-4 text-center">
-                  <div id="sparkline-3"></div>
-                  <div class="text-white">Sales</div>
-                </div>
-                <!-- ./col -->
-              </div>
-              <!-- /.row -->
-            </div>
+            <a href="{{ route('perusahaan.ranking.index') }}" class="small-box-footer">
+              Lihat ranking <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
-          <!-- /.card -->
-
-          <!-- solid sales graph -->
-          <div class="card bg-gradient-info">
-            <div class="card-header border-0">
-              <h3 class="card-title">
-                <i class="fas fa-th mr-1"></i>
-                Sales Graph
-              </h3>
-
-              <div class="card-tools">
-                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <canvas class="chart" id="line-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-            </div>
-            <!-- /.card-body -->
-            <div class="card-footer bg-transparent">
-              <div class="row">
-                <div class="col-4 text-center">
-                  <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60"
-                    data-fgColor="#39CCCC">
-
-                  <div class="text-white">Mail-Orders</div>
-                </div>
-                <!-- ./col -->
-                <div class="col-4 text-center">
-                  <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60"
-                    data-fgColor="#39CCCC">
-
-                  <div class="text-white">Online</div>
-                </div>
-                <!-- ./col -->
-                <div class="col-4 text-center">
-                  <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60"
-                    data-fgColor="#39CCCC">
-
-                  <div class="text-white">In-Store</div>
-                </div>
-                <!-- ./col -->
-              </div>
-              <!-- /.row -->
-            </div>
-            <!-- /.card-footer -->
-          </div>
-          <!-- /.card -->
-
-          <!-- Calendar -->
-          <div class="card bg-gradient-success">
-            <div class="card-header border-0">
-
-              <h3 class="card-title">
-                <i class="far fa-calendar-alt"></i>
-                Calendar
-              </h3>
-              <!-- tools card -->
-              <div class="card-tools">
-                <!-- button with a dropdown -->
-                <div class="btn-group">
-                  <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" data-offset="-52">
-                    <i class="fas fa-bars"></i>
-                  </button>
-                  <div class="dropdown-menu" role="menu">
-                    <a href="#" class="dropdown-item">Add new event</a>
-                    <a href="#" class="dropdown-item">Clear events</a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">View calendar</a>
-                  </div>
-                </div>
-                <button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-              <!-- /. tools -->
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body pt-0">
-              <!--The calendar -->
-              <div id="calendar" style="width: 100%"></div>
-            </div>
-            <!-- /.card-body -->
-          </div>
-          <!-- /.card -->
-        </section>
-        <!-- right col -->
+        </div>
       </div>
-      <!-- /.row (main row) -->
-    </div><!-- /.container-fluid -->
+
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="card shadow-sm">
+            <div class="card-header border-0">
+              <h3 class="card-title mb-0">
+                <i class="fas fa-chart-line mr-1"></i> Tren Lowongan & Lamaran
+              </h3>
+            </div>
+            <div class="card-body">
+              <div style="height: 320px;">
+                <canvas id="trendChart"></canvas>
+              </div>
+            </div>
+            <div class="card-footer bg-white border-0">
+              <a href="{{ route('perusahaan.lowongan.index') }}" class="btn btn-sm btn-outline-primary">
+                Detail lowongan
+              </a>
+              <a href="{{ route('perusahaan.lamaran-pekerjaan.index') }}" class="btn btn-sm btn-outline-secondary ml-1">
+                Detail lamaran
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="card shadow-sm">
+            <div class="card-header border-0">
+              <h3 class="card-title mb-0">
+                <i class="fas fa-chart-pie mr-1"></i> Status Lamaran
+              </h3>
+            </div>
+            <div class="card-body">
+              <div style="height: 320px;">
+                <canvas id="statusChart"></canvas>
+              </div>
+            </div>
+            <div class="card-footer bg-white border-0">
+              <a href="{{ route('perusahaan.lamaran-pekerjaan.index') }}" class="btn btn-sm btn-outline-info">
+                Buka daftar lamaran
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="card shadow-sm">
+            <div class="card-header border-0 d-flex justify-content-between align-items-center">
+              <h3 class="card-title mb-0">
+                <i class="fas fa-briefcase mr-1"></i> Lowongan Terbaru
+              </h3>
+              <a href="{{ route('perusahaan.lowongan.index') }}" class="btn btn-sm btn-outline-primary">
+                Semua
+              </a>
+            </div>
+            <div class="card-body table-responsive p-0">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Judul</th>
+                    <th>Periode</th>
+                    <th class="text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @forelse($lowonganTerbaru as $item)
+                  <tr>
+                    <td class="align-middle">
+                      <div class="font-weight-bold">{{ $item->judul_lowongan }}</div>
+                      <small class="text-muted">{{ $item->lokasi ?? '-' }}</small>
+                    </td>
+                    <td class="align-middle">
+                      <small class="text-muted">
+                        {{ $item->tanggal_mulai ? \Carbon\Carbon::parse($item->tanggal_mulai)->format('d-m-Y') : '-' }}
+                        s/d
+                        {{ $item->tanggal_berakhir ? \Carbon\Carbon::parse($item->tanggal_berakhir)->format('d-m-Y') : '-' }}
+                      </small>
+                    </td>
+                    <td class="align-middle text-right">
+                      <a href="{{ route('perusahaan.lowongan.index') }}" class="btn btn-sm btn-outline-info">
+                        Detail
+                      </a>
+                    </td>
+                  </tr>
+                  @empty
+                  <tr>
+                    <td colspan="3" class="text-center text-muted py-4">Belum ada lowongan.</td>
+                  </tr>
+                  @endforelse
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="card shadow-sm">
+            <div class="card-header border-0 d-flex justify-content-between align-items-center">
+              <h3 class="card-title mb-0">
+                <i class="fas fa-file-signature mr-1"></i> Lamaran Terbaru
+              </h3>
+              <a href="{{ route('perusahaan.lamaran-pekerjaan.index') }}" class="btn btn-sm btn-outline-success">
+                Semua
+              </a>
+            </div>
+            <div class="card-body table-responsive p-0">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Pencari Kerja</th>
+                    <th>Lowongan</th>
+                    <th>Status</th>
+                    <th class="text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @forelse($lamaranTerbaru as $item)
+                  <tr>
+                    <td class="align-middle">
+                      {{ $item->pencariKerja->nama_lengkap ?? '-' }}
+                    </td>
+                    <td class="align-middle">
+                      {{ $item->lowongan->judul_lowongan ?? '-' }}
+                    </td>
+                    <td class="align-middle">
+                      <span class="badge badge-{{ $statusBadge($item->status_lamaran) }}">
+                        {{ $item->status_lamaran ?? 'Unknown' }}
+                      </span>
+                    </td>
+                    <td class="align-middle text-right">
+                      <a href="{{ route('perusahaan.lamaran-pekerjaan.index') }}" class="btn btn-sm btn-outline-primary">
+                        Detail
+                      </a>
+                    </td>
+                  </tr>
+                  @empty
+                  <tr>
+                    <td colspan="4" class="text-center text-muted py-4">Belum ada lamaran.</td>
+                  </tr>
+                  @endforelse
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header border-0">
+              <h3 class="card-title mb-0">
+                <i class="fas fa-layer-group mr-1"></i> Ringkasan Status Lamaran
+              </h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                @forelse($lamaranStatus as $status => $total)
+                <div class="col-md-3 col-6 mb-3">
+                  <div class="card border shadow-sm mb-0">
+                    <div class="card-body py-3">
+                      <div class="text-muted small">Status</div>
+                      <div class="font-weight-bold text-capitalize">{{ $status ?? 'Unknown' }}</div>
+                      <div class="mt-2">
+                        <span class="badge badge-{{ $statusBadge($status) }}">
+                          {{ number_format($total, 0, ',', '.') }} data
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                @empty
+                <div class="col-12 text-muted">Belum ada data status lamaran.</div>
+                @endforelse
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header border-0">
+              <h3 class="card-title mb-0">
+                <i class="fas fa-bolt mr-1"></i> Akses Cepat
+              </h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3 col-6 mb-2">
+                  <a href="{{ route('perusahaan.lowongan.create') }}" class="btn btn-outline-primary btn-block">
+                    <i class="fas fa-plus mr-1"></i> Buat Lowongan
+                  </a>
+                </div>
+                <div class="col-md-3 col-6 mb-2">
+                  <a href="{{ route('perusahaan.lowongan.index') }}" class="btn btn-outline-success btn-block">
+                    <i class="fas fa-briefcase mr-1"></i> Data Lowongan
+                  </a>
+                </div>
+                <div class="col-md-3 col-6 mb-2">
+                  <a href="{{ route('perusahaan.lamaran-pekerjaan.index') }}" class="btn btn-outline-warning btn-block">
+                    <i class="fas fa-file-signature mr-1"></i> Lamaran Masuk
+                  </a>
+                </div>
+                <div class="col-md-3 col-6 mb-2">
+                  <a href="{{ route('perusahaan.keputusan-seleksi.index') }}" class="btn btn-outline-dark btn-block">
+                    <i class="fas fa-clipboard-check mr-1"></i> Keputusan Seleksi
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </section>
-  <!-- /.content -->
 </div>
-<!-- /.content-wrapper -->
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const labels = @json($bulanLabels);
+    const lowonganData = @json($lowonganBulanan);
+    const lamaranData = @json($lamaranBulanan);
+
+    const trendCanvas = document.getElementById('trendChart');
+    if (trendCanvas) {
+      new Chart(trendCanvas.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+              label: 'Lowongan',
+              data: lowonganData,
+              tension: 0.35,
+              borderWidth: 2,
+              fill: false
+            },
+            {
+              label: 'Lamaran',
+              data: lamaranData,
+              tension: 0.35,
+              borderWidth: 2,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0
+              }
+            }
+          }
+        }
+      });
+    }
+
+    const statusLabels = @json(array_keys($lamaranStatus));
+    const statusValues = @json(array_values($lamaranStatus));
+
+    const statusCanvas = document.getElementById('statusChart');
+    if (statusCanvas) {
+      new Chart(statusCanvas.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: statusLabels.length ? statusLabels : ['Belum ada data'],
+          datasets: [{
+            data: statusValues.length ? statusValues : [1],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
 @endsection
