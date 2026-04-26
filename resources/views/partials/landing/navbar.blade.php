@@ -12,7 +12,8 @@
                     </svg>
                 </div>
                 <span class="font-bold text-lg text-gray-900">
-                    Digital <span class="text-primary">Talent Hub</span>
+                    Dinas Tenaga Kerja Kota Jayapura <br>
+                    <span class="text-primary">Digital Talent Hub</span>
                 </span>
             </a>
 
