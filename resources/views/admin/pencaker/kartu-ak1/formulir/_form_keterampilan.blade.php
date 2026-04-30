@@ -99,7 +99,7 @@
                                     @enderror
                                 </div>
 
-                                <button type="submit" class="btn btn-warning w-100">
+                                <button type="button" class="btn btn-warning btn-submit w-100">
                                     <i class="fas fa-save"></i> Simpan Keterampilan
                                 </button>
                             </form>

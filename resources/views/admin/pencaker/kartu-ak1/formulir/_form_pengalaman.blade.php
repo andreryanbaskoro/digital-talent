@@ -30,8 +30,8 @@
 
                         <div class="card-body">
                             <form action="{{ $editData 
-                                ? route('ak1.pengalaman.update', $editData->id_pengalaman_kerja) 
-                                : route('ak1.pengalaman.store') }}"
+                                ? route('pencaker.ak1.pengalaman.update', $editData->id_pengalaman_kerja) 
+                                : route('pencaker.ak1.pengalaman.store') }}"
                                 method="POST">
 
                                 @csrf
@@ -102,7 +102,7 @@
                                     @enderror
                                 </div>
 
-                                <button type="submit" class="btn btn-warning w-100">
+                                <button type="button" class="btn btn-warning btn-submit w-100">
                                     <i class="fas fa-save"></i>
                                     {{ $editData ? 'Update Pengalaman' : 'Simpan Pengalaman' }}
                                 </button>
@@ -163,7 +163,7 @@
 
                                                 {{-- Hapus --}}
 
-                                                <form action="{{ route('ak1.pengalaman.destroy', $item->id_pengalaman_kerja) }}"
+                                                <form action="{{ route('pencaker.ak1.pengalaman.destroy', $item->id_pengalaman_kerja) }}"
                                                     method="POST"
                                                     class="form-hapus">
                                                     @csrf
@@ -171,7 +171,7 @@
 
                                                     <button type="button"
                                                         class="btn btn-hapus btn-sm btn-danger"
-                                                        data-url="{{ route('ak1.pengalaman.destroy', $item->id_pengalaman_kerja) }}">
+                                                        data-url="{{ route('pencaker.ak1.pengalaman.destroy', $item->id_pengalaman_kerja) }}">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>

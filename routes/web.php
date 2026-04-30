@@ -308,22 +308,27 @@ Route::middleware(['auth', 'cekrole:pencaker'])
             // pengalaman
             Route::get('/pengalaman', [PengalamanKerjaAk1Controller::class, 'index'])->name('pengalaman.index');
             Route::post('/pengalaman', [PengalamanKerjaAk1Controller::class, 'store'])->name('pengalaman.store');
+            Route::put('/pengalaman/{id}', [PengalamanKerjaAk1Controller::class, 'update'])
+                ->name('pengalaman.update');
             Route::delete('/pengalaman/{id}', [PengalamanKerjaAk1Controller::class, 'destroy'])->name('pengalaman.destroy');
 
             // pendidikan
             Route::get('/pendidikan', [RiwayatPendidikanAk1Controller::class, 'index'])->name('pendidikan.index');
             Route::post('/pendidikan', [RiwayatPendidikanAk1Controller::class, 'store'])->name('pendidikan.store');
+            Route::put('/pendidikan/{id}', [RiwayatPendidikanAk1Controller::class, 'update'])
+                ->name('pendidikan.update');
             Route::delete('/pendidikan/{id}', [RiwayatPendidikanAk1Controller::class, 'destroy'])->name('pendidikan.destroy');
 
             // keterampilan
             Route::get('/keterampilan', [KeterampilanAk1Controller::class, 'index'])->name('keterampilan.index');
             Route::post('/keterampilan', [KeterampilanAk1Controller::class, 'store'])->name('keterampilan.store');
+            Route::put('/keterampilan/{id}', [KeterampilanAk1Controller::class, 'update'])
+                ->name('keterampilan.update');
             Route::delete('/keterampilan/{id}', [KeterampilanAk1Controller::class, 'destroy'])->name('keterampilan.destroy');
 
-            Route::get('/{id}', [KartuAk1Controller::class, 'show'])->name('show');
             Route::post('/{id}/submit', [KartuAk1Controller::class, 'submit'])->name('submit');
-            Route::put('/{id}', [KartuAk1Controller::class, 'update'])->name('update');
-            Route::delete('/{id}', [KartuAk1Controller::class, 'destroy'])->name('destroy');
+            Route::put('/detail/{id}', [KartuAk1Controller::class, 'update'])->name('update');
+            Route::delete('/detail/{id}', [KartuAk1Controller::class, 'destroy'])->name('destroy');
         });
 
         Route::prefix('lamaran')->name('lamaran.')->group(function () {

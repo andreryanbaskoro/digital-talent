@@ -1,12 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-
     /* =====================================================
        EDIT DATA (SWEETALERT MODAL)
     ====================================================== */
 
     document.querySelectorAll(".btn-edit").forEach((button) => {
         button.addEventListener("click", function () {
-
             let id = this.dataset.id;
             let nama = this.dataset.nama || "";
             let jabatan = this.dataset.jabatan || "";
@@ -14,17 +12,17 @@ document.addEventListener("DOMContentLoaded", function () {
             let selesai = this.dataset.selesai || "";
             let deskripsi = this.dataset.deskripsi || "";
 
-         Swal.fire({
-    title: 'Edit Pengalaman Kerja',
-    width: 650,
-    showCancelButton: true,
-    confirmButtonText: '<i class="fas fa-save me-1"></i> Update',
-    cancelButtonText: 'Batal',
-    confirmButtonColor: '#0d6efd',
-    cancelButtonColor: '#6c757d',
-    focusConfirm: false,
+            Swal.fire({
+                title: "Edit Pengalaman Kerja",
+                width: 650,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-save me-1"></i> Update',
+                cancelButtonText: "Batal",
+                confirmButtonColor: "#0d6efd",
+                cancelButtonColor: "#6c757d",
+                focusConfirm: false,
 
-    html: `
+                html: `
         <div class="container-fluid text-start mt-2">
 
             <div class="mb-3">
@@ -85,13 +83,18 @@ document.addEventListener("DOMContentLoaded", function () {
     `,
 
                 preConfirm: () => {
-
-                    let namaVal = document.getElementById("swal_nama").value.trim();
-                    let jabatanVal = document.getElementById("swal_jabatan").value.trim();
+                    let namaVal = document
+                        .getElementById("swal_nama")
+                        .value.trim();
+                    let jabatanVal = document
+                        .getElementById("swal_jabatan")
+                        .value.trim();
                     let mulaiVal = document.getElementById("swal_mulai").value;
 
                     if (!namaVal || !jabatanVal || !mulaiVal) {
-                        Swal.showValidationMessage("Nama Perusahaan, Jabatan, dan Tanggal Mulai wajib diisi!");
+                        Swal.showValidationMessage(
+                            "Nama Perusahaan, Jabatan, dan Tanggal Mulai wajib diisi!",
+                        );
                         return false;
                     }
 
@@ -99,26 +102,26 @@ document.addEventListener("DOMContentLoaded", function () {
                         nama_perusahaan: namaVal,
                         jabatan: jabatanVal,
                         mulai_bekerja: mulaiVal,
-                        selesai_bekerja: document.getElementById("swal_selesai").value,
-                        deskripsi: document.getElementById("swal_deskripsi").value,
+                        selesai_bekerja:
+                            document.getElementById("swal_selesai").value,
+                        deskripsi:
+                            document.getElementById("swal_deskripsi").value,
                     };
-                }
+                },
             }).then((result) => {
-
                 if (result.isConfirmed) {
-
                     Swal.fire({
                         title: "Menyimpan...",
                         text: "Mohon tunggu sebentar",
                         allowOutsideClick: false,
                         didOpen: () => {
                             Swal.showLoading();
-                        }
+                        },
                     });
 
                     let form = document.createElement("form");
                     form.method = "POST";
-                    form.action = `/ak1/pengalaman/${id}`;
+                    form.action = `/pencaker/ak1/pengalaman/${id}`;
 
                     let csrf = document
                         .querySelector('meta[name="csrf-token"]')
@@ -141,11 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-
     /* =====================================================
        DELETE CONFIRM
     ====================================================== */
-
-   
-
 });

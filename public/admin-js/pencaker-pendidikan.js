@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     let form = document.createElement("form");
                     form.method = "POST";
-                    form.action = `/ak1/riwayat-pendidikan/${id}`;
+                    form.action = `/pencaker/ak1/pendidikan/${id}`;
 
                     let csrf = document
                         .querySelector('meta[name="csrf-token"]')

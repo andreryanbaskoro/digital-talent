@@ -76,7 +76,7 @@
                 <!-- Isi Formulir AK1 -->
                 <li class="nav-item">
                     <a href="{{ route('pencaker.ak1.formulir') }}"
-                        class="nav-link {{ request()->routeIs('pencaker.ak1.formulir') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('pencaker.ak1.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-id-card"></i>
                         <p>Isi Formulir AK1</p>
                     </a>
