@@ -309,15 +309,17 @@ $subKriteria = $isEdit ? $lowongan->subKriteriaLowongan->values() : collect();
                     </button>
                 </div>
 
-                <div id="skill-wrapper"
-                    data-count="{{ old('sub_kriteria') ? count(old('sub_kriteria')) : $subKriteria->count() }}">
-                    @forelse($subKriteria as $i => $item)
+                <div id="skill-wrapper">
+                    @forelse(old('sub_kriteria', $subKriteria) as $i => $item)
+
                     <div class="row mb-2 skill-item align-items-center">
                         <div class="col-md-6">
                             <input type="text"
                                 name="sub_kriteria[{{ $i }}][nama]"
                                 class="form-control"
-                                value="{{ old("sub_kriteria.$i.nama", $item->subKriteria->nama_sub_kriteria ?? '') }}"
+                                value="{{ is_array($item) 
+                        ? $item['nama'] 
+                        : ($item->subKriteria->nama_sub_kriteria ?? '') }}"
                                 placeholder="Skill">
                         </div>
 
@@ -326,7 +328,9 @@ $subKriteria = $isEdit ? $lowongan->subKriteriaLowongan->values() : collect();
                                 <option value="">-- Pilih Level --</option>
                                 @for ($j = 5; $j >= 1; $j--)
                                 <option value="{{ $j }}"
-                                    {{ old("sub_kriteria.$i.nilai_target", $item->nilai_target) == $j ? 'selected' : '' }}>
+                                    {{ (is_array($item) 
+                                ? $item['nilai_target'] 
+                                : $item->nilai_target) == $j ? 'selected' : '' }}>
                                     {{ $j }} - {{ ['Tidak bisa','Dasar','Cukup','Mahir','Sangat ahli'][$j-1] }}
                                 </option>
                                 @endfor
@@ -339,30 +343,34 @@ $subKriteria = $isEdit ? $lowongan->subKriteriaLowongan->values() : collect();
                             </button>
                         </div>
                     </div>
+
                     @empty
-                    <div class="row mb-2 skill-item">
+                    {{-- default 1 baris --}}
+                    <div class="row mb-2 skill-item align-items-center">
                         <div class="col-md-6">
                             <input type="text"
                                 name="sub_kriteria[0][nama]"
                                 class="form-control"
-                                value="{{ old('sub_kriteria.0.nama') }}"
                                 placeholder="Skill">
                         </div>
                         <div class="col-md-4">
                             <select name="sub_kriteria[0][nilai_target]" class="form-control">
                                 <option value="">-- Pilih Level --</option>
                                 @for ($j = 5; $j >= 1; $j--)
-                                <option value="{{ $j }}"
-                                    {{ old('sub_kriteria.0.nilai_target') == $j ? 'selected' : '' }}>
+                                <option value="{{ $j }}">
                                     {{ $j }} - {{ ['Tidak bisa','Dasar','Cukup','Mahir','Sangat ahli'][$j-1] }}
                                 </option>
                                 @endfor
                             </select>
                         </div>
+                        <div class="col-md-2 text-right">
+                            <button type="button" class="btn btn-danger btn-remove">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                     @endforelse
                 </div>
-
             </div>
         </div>
 

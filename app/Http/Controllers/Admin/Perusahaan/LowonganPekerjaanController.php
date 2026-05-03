@@ -101,14 +101,15 @@ class LowonganPekerjaanController extends Controller
      */
     private function syncSubKriteria(LowonganPekerjaan $lowongan, array $validated)
     {
-        $items = $validated['sub_kriteria'] ?? [];
+        // 🔥 reset index biar rapi
+        $items = array_values($validated['sub_kriteria'] ?? []);
 
         $skillKriteria = KriteriaLowongan::where('id_lowongan', $lowongan->id_lowongan)
             ->where('nama_kriteria', 'skill')
             ->first();
 
         if (!$skillKriteria) {
-            throw new \Exception('Kriteria skill untuk lowongan ini belum ditemukan.');
+            throw new \Exception('Kriteria skill belum ada.');
         }
 
         $usedSubIds = [];
@@ -117,11 +118,17 @@ class LowonganPekerjaanController extends Controller
             $nama = trim($item['nama'] ?? '');
             $nilaiTarget = $item['nilai_target'] ?? null;
 
-            if ($nama === '' || $nilaiTarget === null || $nilaiTarget === '') {
+            // 🔥 SKIP hanya kalau benar-benar kosong semua
+            if ($nama === '' && ($nilaiTarget === null || $nilaiTarget === '')) {
                 continue;
             }
 
-            // Master sub kriteria
+            // 🔥 VALIDASI tambahan (biar tidak setengah kosong)
+            if ($nama === '' || $nilaiTarget === null || $nilaiTarget === '') {
+                throw new \Exception('Semua skill harus diisi lengkap.');
+            }
+
+            // ================= MASTER =================
             $sub = SubKriteria::withTrashed()->firstOrNew([
                 'id_kriteria' => $skillKriteria->id_kriteria,
                 'nama_sub_kriteria' => $nama,
@@ -132,28 +139,24 @@ class LowonganPekerjaanController extends Controller
             $sub->deleted_at = null;
             $sub->save();
 
-            // Relasi lowongan - sub kriteria
-            $row = SubKriteriaLowongan::firstOrNew([
-                'id_lowongan' => $lowongan->id_lowongan,
-                'id_sub_kriteria' => $sub->id_sub_kriteria,
-            ]);
-
-            $row->id_lowongan = $lowongan->id_lowongan;
-            $row->id_sub_kriteria = $sub->id_sub_kriteria;
-            $row->nilai_target = $nilaiTarget;
-            $row->save();
+            // ================= RELASI =================
+            $row = SubKriteriaLowongan::updateOrCreate(
+                [
+                    'id_lowongan' => $lowongan->id_lowongan,
+                    'id_sub_kriteria' => $sub->id_sub_kriteria,
+                ],
+                [
+                    'nilai_target' => $nilaiTarget
+                ]
+            );
 
             $usedSubIds[] = $sub->id_sub_kriteria;
         }
 
-        // Hapus relasi yang tidak dipakai lagi
-        $query = SubKriteriaLowongan::where('id_lowongan', $lowongan->id_lowongan);
-
-        if (!empty($usedSubIds)) {
-            $query->whereNotIn('id_sub_kriteria', $usedSubIds);
-        }
-
-        $query->delete();
+        // 🔥 Hapus yang tidak dipakai
+        SubKriteriaLowongan::where('id_lowongan', $lowongan->id_lowongan)
+            ->whereNotIn('id_sub_kriteria', $usedSubIds)
+            ->delete();
     }
 
     // ===================== LIST DATA =====================
