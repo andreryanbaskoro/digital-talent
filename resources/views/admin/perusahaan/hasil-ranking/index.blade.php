@@ -90,20 +90,25 @@
                             {{-- ACTION BUTTONS --}}
                             <div class="mt-auto">
 
+                                {{-- PRIMARY BUTTON --}}
                                 <a href="{{ route('perusahaan.ranking.show', $item->id_lowongan) }}"
-                                    class="btn btn-outline-primary btn-sm w-100 mb-2">
-                                    📊 Lihat Hasil Ranking
+                                    class="btn btn-primary w-100 mb-3 fw-bold text-uppercase shadow">
+
+                                    🚀 Lihat Detail Ranking
                                 </a>
 
-                                <form action="{{ route('perusahaan.ranking.calculate', $item->id_lowongan) }}"
+                                {{-- SECONDARY BUTTON --}}
+                                <!-- <form action="{{ route('perusahaan.ranking.calculate', $item->id_lowongan) }}"
                                     method="POST"
                                     class="form-hitung-ranking">
                                     @csrf
+
                                     <button type="submit"
-                                        class="btn btn-primary btn-sm w-100">
+                                        class="btn btn-outline-secondary w-100 fw-semibold">
+
                                         🔄 Hitung / Perbarui Ranking
                                     </button>
-                                </form>
+                                </form> -->
 
                             </div>
 

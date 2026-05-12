@@ -145,11 +145,6 @@ class KartuAk1 extends Model
         return $this->hasMany(RiwayatPendidikanAk1::class, 'id_kartu_ak1');
     }
 
-    public function laporan()
-    {
-        return $this->hasMany(LaporanAk1::class, 'id_kartu_ak1');
-    }
-
     public function verifikasi()
     {
         return $this->hasMany(VerifikasiAk1::class, 'id_kartu_ak1');

@@ -61,7 +61,7 @@ class LamaranPekerjaanController extends Controller
             ->get();
 
         return view('admin.perusahaan.lamaran-pekerjaan.index', [
-            'title' => 'Data Lamaran Pencari Kerja',
+            'title' => 'Daftar Pencari Kerja',
             'lamaran' => $lamaran,
         ]);
     }

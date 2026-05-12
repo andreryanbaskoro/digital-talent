@@ -27,32 +27,32 @@ class KartuAk1Controller extends Controller
         }
 
         $requiredFields = [
-            'nik',
-            'nomor_kk',
-            'nama_lengkap',
-            'tempat_lahir',
-            'tanggal_lahir',
-            'jenis_kelamin',
-            'agama',
-            'status_perkawinan',
-            'alamat',
-            'rt',
-            'rw',
-            'kelurahan',
-            'kecamatan',
-            'kab_kota',
-            'provinsi',
-            'kode_pos',
-            'nomor_hp',
-            'email',
-            'foto',
+            'nik' => 'NIK',
+            'nomor_kk' => 'Nomor KK',
+            'nama_lengkap' => 'Nama Lengkap',
+            'tempat_lahir' => 'Tempat Lahir',
+            'tanggal_lahir' => 'Tanggal Lahir',
+            'jenis_kelamin' => 'Jenis Kelamin',
+            'agama' => 'Agama',
+            'status_perkawinan' => 'Status Perkawinan',
+            'alamat' => 'Alamat',
+            'rt' => 'RT',
+            'rw' => 'RW',
+            'kelurahan' => 'Kelurahan',
+            'kecamatan' => 'Kecamatan',
+            'kab_kota' => 'Kabupaten/Kota',
+            'provinsi' => 'Provinsi',
+            'kode_pos' => 'Kode Pos',
+            'nomor_hp' => 'Nomor HP',
+            'email' => 'Email',
+            'foto' => 'Foto',
         ];
 
         $kekuranganProfil = [];
 
-        foreach ($requiredFields as $field) {
+        foreach ($requiredFields as $field => $label) {
             if (empty($profil->$field)) {
-                $kekuranganProfil[] = $field;
+                $kekuranganProfil[] = $label;
             }
         }
 
@@ -65,7 +65,8 @@ class KartuAk1Controller extends Controller
         return view('admin.pencaker.kartu-ak1.index', compact(
             'profil',
             'daftarAk1',
-            'profilLengkap'
+            'profilLengkap',
+            'kekuranganProfil'
         ))->with('title', 'Status & Riwayat AK1');
     }
 

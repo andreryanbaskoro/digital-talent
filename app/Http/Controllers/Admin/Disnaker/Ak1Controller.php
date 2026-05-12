@@ -23,7 +23,7 @@ class Ak1Controller extends Controller
         ];
 
         if (in_array($request->status, ['disetujui', 'ditolak'])) {
-            $rules['catatan_petugas'] = 'required|string|min:5|max:1000';
+            $rules['catatan_petugas'] = 'required|string|min:2|max:1000';
         } else {
             $rules['catatan_petugas'] = 'nullable|string|max:1000';
         }
@@ -32,7 +32,7 @@ class Ak1Controller extends Controller
             'status.required' => 'Status wajib dipilih.',
             'status.in' => 'Status tidak valid.',
             'catatan_petugas.required' => 'Catatan wajib diisi untuk status ini.',
-            'catatan_petugas.min' => 'Catatan minimal 5 karakter.',
+            'catatan_petugas.min' => 'Isi Catatan Petugas minimal 2 karakter.',
             'catatan_petugas.max' => 'Catatan maksimal 1000 karakter.',
         ]);
 
@@ -179,7 +179,6 @@ class Ak1Controller extends Controller
             'keterampilan',
             'pengalamanKerja',
             'riwayatPendidikan',
-            'laporan',
             'verifikasi',
             'latestVerifikasi.pengguna',
         ]);
@@ -223,6 +222,7 @@ class Ak1Controller extends Controller
             'viewMode' => 'active',
         ]);
     }
+
     /**
      * ================= VERIFIKASI =================
      */

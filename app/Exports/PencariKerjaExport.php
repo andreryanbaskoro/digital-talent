@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\ProfilPencariKerja;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -20,10 +21,20 @@ class PencariKerjaExport implements FromCollection, WithStyles, WithColumnWidths
 
     public function collection()
     {
-        $data = ProfilPencariKerja::withTrashed()
-            ->with(['kartuAk1', 'lamaranPekerjaan'])
-            ->orderByDesc('created_at')
-            ->get();
+        $user = Auth::user();
+
+        $query = ProfilPencariKerja::withTrashed()
+            ->with(['kartuAk1', 'lamaranPekerjaan.lowongan'])
+            ->orderByDesc('created_at');
+
+        // FILTER UNTUK PERUSAHAAN
+        if ($user && $user->role === 'perusahaan') {
+            $query->whereHas('lamaranPekerjaan.lowongan', function ($q) use ($user) {
+                $q->where('id_perusahaan', $user->id_perusahaan);
+            });
+        }
+
+        $data = $query->get();
 
         $this->dataCount = $data->count();
         $this->dataEndRow = $this->dataCount > 0
@@ -35,9 +46,16 @@ class PencariKerjaExport implements FromCollection, WithStyles, WithColumnWidths
         $rows = collect();
 
         // ===== KOP =====
-        $rows->push(['PEMERINTAH KOTA JAYAPURA']);
-        $rows->push(['DINAS TENAGA KERJA']);
-        $rows->push(['Jl. Samratulangi No.25, Mandala, Jayapura Utara']);
+        if ($user && $user->role === 'perusahaan') {
+            $rows->push(['LAPORAN PENCARI KERJA PERUSAHAAN']);
+            $rows->push([$user->name ?? 'PERUSAHAAN']);
+            $rows->push(['']);
+        } else {
+            $rows->push(['PEMERINTAH KOTA JAYAPURA']);
+            $rows->push(['DINAS TENAGA KERJA']);
+            $rows->push(['Jl. Samratulangi No.25, Mandala, Jayapura Utara']);
+        }
+
         $rows->push(['']);
         $rows->push(['LAPORAN PENCARI KERJA']);
         $rows->push(['']);
@@ -56,7 +74,6 @@ class PencariKerjaExport implements FromCollection, WithStyles, WithColumnWidths
 
         // ===== DATA =====
         foreach ($data as $i => $item) {
-
             $ak1 = $item->kartuAk1
                 ? 'ADA (' . ($item->kartuAk1->nomor_pendaftaran ?? '-') . ')'
                 : 'TIDAK';
@@ -85,11 +102,18 @@ class PencariKerjaExport implements FromCollection, WithStyles, WithColumnWidths
         $rows->push(['']);
 
         // ===== SIGNATURE =====
-        $rows->push(['', '', '', 'Jayapura, ' . now()->format('d F Y')]);
-        $rows->push(['', '', '', 'Kepala Dinas Tenaga Kerja']);
-        $rows->push(['', '', '', '']);
-        $rows->push(['', '', '', '(...................................)']);
-        $rows->push(['', '', '', 'NIP. ..................................']);
+        if ($user && $user->role === 'perusahaan') {
+            $rows->push(['', '', '', 'Jayapura, ' . now()->format('d F Y')]);
+            $rows->push(['', '', '', $user->name ?? 'Pimpinan Perusahaan']);
+            $rows->push(['', '', '', '']);
+            $rows->push(['', '', '', '(...................................)']);
+        } else {
+            $rows->push(['', '', '', 'Jayapura, ' . now()->format('d F Y')]);
+            $rows->push(['', '', '', 'Kepala Dinas Tenaga Kerja']);
+            $rows->push(['', '', '', '']);
+            $rows->push(['', '', '', '(...................................)']);
+            $rows->push(['', '', '', 'NIP. ..................................']);
+        }
 
         return $rows;
     }
@@ -145,7 +169,6 @@ class PencariKerjaExport implements FromCollection, WithStyles, WithColumnWidths
 
         // ===== DATA =====
         if ($this->dataCount > 0) {
-
             $sheet->getStyle("A{$this->dataStartRow}:G{$this->dataEndRow}")
                 ->applyFromArray([
                     'borders' => [
@@ -159,7 +182,6 @@ class PencariKerjaExport implements FromCollection, WithStyles, WithColumnWidths
                     ],
                 ]);
 
-            // alignment
             $sheet->getStyle("A{$this->dataStartRow}:A{$this->dataEndRow}")
                 ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 

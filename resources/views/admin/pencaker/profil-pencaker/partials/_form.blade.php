@@ -231,11 +231,25 @@ $isEdit = isset($profil);
                         <i class="fas fa-arrow-left"></i> Kembali
                     </a>
 
+                    <a href="{{ route('pencaker.ak1.formulir') }}"
+                        class="btn btn-outline-secondary btn-sm mr-2">
+                        <i class="fas fa-file-alt me-1"></i>
+                        Formulir AK1
+                    </a>
+
+                    <a href="{{ route('pencaker.ak1.index') }}"
+                        class="btn btn-outline-primary btn-sm mr-2">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        Kembali ke AK1
+                    </a>
+
+
                     <button type="button"
                         class="btn btn-submit btn-primary btn-sm">
                         <i class="fas fa-save"></i> Perbarui
                     </button>
                 </div>
+
 
             </form>
 

@@ -132,6 +132,13 @@ class LandingPageController extends Controller
             ? \Carbon\Carbon::parse($lowongan->tanggal_mulai)->isFuture()
             : false;
 
+
+        $ak1Disetujui = false;
+
+        if (Auth::check() && Auth::user()->peran === 'pencaker') {
+            $ak1Disetujui = $this->cekAk1Disetujui(Auth::user());
+        }
+
         return view('landing.detail-lowongan', compact(
             'lowongan',
             'totalLowongan',
@@ -140,7 +147,17 @@ class LandingPageController extends Controller
             'sudahMelamar',
             'lamaranUser',
             'isExpired',
-            'isNotStarted'
+            'isNotStarted',
+            'ak1Disetujui'
         ));
+    }
+
+    private function cekAk1Disetujui($user)
+    {
+        if (!$user || !$user->profilPencariKerja) return false;
+
+        return \App\Models\KartuAk1::where('id_pencari_kerja', $user->profilPencariKerja->id_pencari_kerja)
+            ->where('status', 'disetujui')
+            ->exists();
     }
 }

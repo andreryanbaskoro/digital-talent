@@ -87,13 +87,13 @@
                     </a>
                 </li>
 
-                <!-- Daftar Lamaran Kerja -->
+                <!-- Daftar Pencari Kerja -->
                 <li class="nav-item">
                     <a href="{{ route('perusahaan.lamaran-pekerjaan.index') }}"
                         class="nav-link {{ request()->routeIs('perusahaan.lamaran-pekerjaan.*') ? 'active' : '' }}">
 
                         <i class="nav-icon fas fa-users"></i>
-                        <p>Daftar Lamaran Kerja</p>
+                        <p>Daftar Pencari Kerja</p>
 
                     </a>
                 </li>
@@ -115,7 +115,44 @@
                         <p>Keputusan Seleksi</p>
                     </a>
                 </li>
-                
+
+                <!-- Laporan -->
+                <li class="nav-item has-treeview 
+    {{ request()->routeIs('perusahaan.laporan-lowongan.*') || request()->routeIs('perusahaan.laporan-pencari-kerja.*') ? 'menu-open' : '' }}">
+
+                    <a href="#" class="nav-link 
+        {{ request()->routeIs('perusahaan.laporan-lowongan.*') || request()->routeIs('perusahaan.laporan-pencari-kerja.*') ? 'active' : '' }}">
+
+                        <i class="nav-icon fas fa-file-alt"></i>
+                        <p>
+                            Laporan
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+
+                        {{-- Laporan Lowongan --}}
+                        <li class="nav-item">
+                            <a href="{{ route('perusahaan.laporan-lowongan.index') }}"
+                                class="nav-link {{ request()->routeIs('perusahaan.laporan-lowongan.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Lowongan</p>
+                            </a>
+                        </li>
+
+                        {{-- Laporan Pencari Kerja --}}
+                        <li class="nav-item">
+                            <a href="{{ route('perusahaan.laporan-pencari-kerja.index') }}"
+                                class="nav-link {{ request()->routeIs('perusahaan.laporan-pencari-kerja.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Pencari Kerja</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
                 <!-- Notifikasi -->
                 <li class="nav-item">
                     <a href="{{ route($role . '.notifikasi.index') }}"
@@ -146,6 +183,8 @@
 
                     </a>
                 </li>
+
+
 
                 <!-- Logout -->
                 <li class="nav-item">

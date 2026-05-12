@@ -141,8 +141,6 @@
     $dokumenFilled = collect($dokumen)->filter()->count();
     $dokumenPercent = round(($dokumenFilled / 4) * 100);
 
-    $profilLengkap = $profilLengkap ?? false;
-
     $pendidikanCount = \App\Models\RiwayatPendidikanAk1::where('id_kartu_ak1', $item->id_kartu_ak1)->count();
 
     $kekurangan = [];
@@ -299,21 +297,43 @@
 
                     {{-- AJUKAN / STATUS / AJUKAN ULANG --}}
                     <div class="col-12 col-md-3 mb-2 mb-md-0">
+
                         @if(!$bolehAjukan)
+
                         <button class="btn btn-secondary btn-sm btn-block" disabled>
                             <i class="fas fa-ban mr-1"></i> Belum Bisa Ajukan
                         </button>
 
                         <div class="mt-2">
+
+                            {{-- Kekurangan umum --}}
                             @foreach($kekurangan as $itemKurang)
                             <small class="text-danger d-block">
                                 <i class="fas fa-exclamation-circle mr-1"></i>
                                 {{ $itemKurang }}
                             </small>
                             @endforeach
+
+                            {{-- Detail field profil yang kosong --}}
+                            @if(!$profilLengkap && !empty($kekuranganProfil))
+                            <small class="text-danger d-block mt-2">
+                                <i class="fas fa-user-edit mr-1"></i>
+                                Lengkapi profil:
+                            </small>
+
+                            @foreach($kekuranganProfil as $fieldKosong)
+                            <small class="text-danger d-block ml-3">
+                                - {{ $fieldKosong }}
+                            </small>
+                            @endforeach
+                            @endif
+
                         </div>
+
                         @else
+
                         @switch($item->status)
+
                         @case('pending')
                         @if($item->is_revised)
                         <span class="badge badge-info p-2 d-block">
@@ -345,7 +365,9 @@
                             <i class="fas fa-paper-plane mr-1"></i> Ajukan
                         </button>
                         @endswitch
+
                         @endif
+
                     </div>
 
                     {{-- CETAK --}}
@@ -383,18 +405,46 @@
         </div>
 </div>
 
+
 @empty
 <div class="col-12">
     <div class="card border-0 shadow-sm">
         <div class="card-body text-center py-5">
+
             <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted mb-2">Belum ada pengajuan AK1</h5>
+
+            @if(!$profilLengkap)
+
+            <h5 class="text-warning mb-2">Profil Belum Lengkap</h5>
             <p class="text-muted mb-3">
-                Silakan buat pengajuan baru untuk mulai mengisi data AK1.
+                Lengkapi data berikut sebelum membuat AK1:
             </p>
-            <a href="{{ route('pencaker.ak1.formulir') }}" class="btn btn-primary">
-                <i class="fas fa-plus mr-1"></i> Buat AK1 Baru
+
+            <ul class="text-left d-inline-block text-danger mb-3">
+                @foreach($kekuranganProfil as $item)
+                <li>{{ $item }}</li>
+                @endforeach
+            </ul>
+
+            <div>
+                <a href="{{ route('pencaker.profil.edit', ['from' => 'ak1']) }}" class="btn btn-warning">
+                    <i class="fas fa-user-edit mr-1"></i> Lengkapi Profil
+                </a>
+            </div>
+
+            @else
+
+            <h5 class="text-muted mb-2">Belum Ada AK1</h5>
+            <p class="text-muted mb-3">
+                Profil Anda sudah lengkap. Silakan unggah dokumen untuk membuat dan mengajukan AK1.
+            </p>
+
+            <a href="{{ route('pencaker.ak1.dokumen-pribadi') }}" class="btn btn-primary">
+                <i class="fas fa-file-upload mr-1"></i> Lengkapi Dokumen AK1
             </a>
+
+            @endif
+
         </div>
     </div>
 </div>

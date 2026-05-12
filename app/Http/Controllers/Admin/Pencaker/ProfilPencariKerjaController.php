@@ -54,15 +54,12 @@ class ProfilPencariKerjaController extends Controller
             'nama_lengkap' => 'required|max:150',
             'nik' => 'nullable|size:16',
             'nomor_kk' => 'nullable|size:16',
-            'tanggal_lahir' => 'required|date', // 🔥 wajib untuk generate ID
+            'tanggal_lahir' => 'required|date',
             'email' => 'nullable|email',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // ===================== UPLOAD FOTO =====================
         if ($request->hasFile('foto')) {
-
-            // hapus foto lama
             if ($profil->foto && Storage::disk('public')->exists($profil->foto)) {
                 Storage::disk('public')->delete($profil->foto);
             }
@@ -70,7 +67,6 @@ class ProfilPencariKerjaController extends Controller
             $profil->foto = $request->file('foto')->store('foto_pencaker', 'public');
         }
 
-        // ===================== SIMPAN DATA =====================
         $profil->fill([
             'nik' => $request->nik,
             'nomor_kk' => $request->nomor_kk,
@@ -95,8 +91,12 @@ class ProfilPencariKerjaController extends Controller
         $profil->id_pengguna = Auth::user()->id_pengguna;
         $profil->save();
 
-        return redirect()->back()
-            ->with('success', 'Profil berhasil disimpan');
+        if ($request->query('from') === 'ak1') {
+            return redirect()->route('pencaker.ak1.index')
+                ->with('success', 'Profil berhasil disimpan.');
+        }
+
+        return redirect()->back()->with('success', 'Profil berhasil disimpan.');
     }
 
     // ===================== HAPUS =====================

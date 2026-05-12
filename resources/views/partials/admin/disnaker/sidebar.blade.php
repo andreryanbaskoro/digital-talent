@@ -133,15 +133,6 @@
                             </a>
                         </li>
 
-                        {{-- Laporan Penempatan --}}
-                        <li class="nav-item">
-                            <a href="{{ route('disnaker.laporan-penempatan.index') }}"
-                                class="nav-link {{ request()->routeIs('disnaker.laporan-penempatan.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Penempatan</p>
-                            </a>
-                        </li>
-
                     </ul>
                 </li>
 

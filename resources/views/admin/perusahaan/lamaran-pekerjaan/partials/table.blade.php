@@ -95,7 +95,7 @@ $badge = [
 
                             @if($item->hasilPerhitungan)
                             <small class="text-success d-block">
-                                Nilai: {{ number_format($item->hasilPerhitungan->nilai_akhir,2) }}
+                                Nilai: {{ number_format($item->hasilPerhitungan->nilai_total,2) }}
                             </small>
                             @endif
                         </td>
@@ -107,7 +107,7 @@ $badge = [
                                 Terhapus
                             </span>
                             @else
-                            <span class="badge badge-{{ $badge[$item->status_lamaran] ?? 'secondary' }} px-3 py-2">
+                            <span class="px-2 py-1 text-{{ $badge[$item->status_lamaran] ?? 'secondary' }}">
                                 {{ $uiLabel[$item->status_lamaran] ?? ucfirst($item->status_lamaran) }}
                             </span>
                             @endif
@@ -116,30 +116,45 @@ $badge = [
                         {{-- AKSI --}}
                         <td class="text-center align-middle">
 
+                            <!-- PROSES HITUNG (AI / RANKING) -->
+                            <a href="javascript:void(0)"
+                                class="btn btn-sm btn-primary btn-hit-detail mb-1"
+                                data-url="{{ route('perusahaan.ranking.detail', [$item->id_lowongan, $item->id_lamaran]) }}">
+                                <i class="fas fa-calculator mr-1"></i> Proses Hitung Ranking
+                            </a>
+
+                            <!-- LIHAT DETAIL LAMARAN -->
                             <button type="button"
-                                class="btn btn-sm btn-info btn-show"
+                                class="btn btn-sm btn-outline-info btn-show mb-1"
                                 data-url="{{ route('perusahaan.lamaran-pekerjaan.show', $item->id_lamaran) }}">
-                                <i class="fas fa-eye"></i>
+                                <i class="fas fa-eye mr-1"></i> Lihat Detail Lamaran
                             </button>
 
                             @if($item->deleted_at)
+
+                            <!-- RESTORE -->
                             <button type="button"
-                                class="btn btn-success btn-sm btn-restore"
+                                class="btn btn-sm btn-success btn-restore mb-1"
                                 data-url="{{ route('perusahaan.lamaran-pekerjaan.restore', $item->id_lamaran) }}">
-                                <i class="fas fa-undo"></i>
+                                <i class="fas fa-undo mr-1"></i> Pulihkan Data
                             </button>
 
+                            <!-- FORCE DELETE -->
                             <button type="button"
-                                class="btn btn-danger btn-sm btn-force-delete"
+                                class="btn btn-sm btn-danger btn-force-delete mb-1"
                                 data-url="{{ route('perusahaan.lamaran-pekerjaan.forceDelete', $item->id_lamaran) }}">
-                                <i class="fas fa-times"></i>
+                                <i class="fas fa-times mr-1"></i> Hapus Permanen
                             </button>
+
                             @else
+
+                            <!-- DELETE -->
                             <button type="button"
-                                class="btn btn-danger btn-sm btn-hapus"
+                                class="btn btn-sm btn-danger btn-hapus mb-1"
                                 data-url="{{ route('perusahaan.lamaran-pekerjaan.destroy', $item->id_lamaran) }}">
-                                <i class="fas fa-trash"></i>
+                                <i class="fas fa-trash mr-1"></i> Hapus Lamaran
                             </button>
+
                             @endif
 
                         </td>
@@ -155,6 +170,55 @@ $badge = [
                 </tbody>
 
             </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAI" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg">
+
+            <div class="modal-body p-5">
+
+                {{-- HEADER --}}
+                <div class="text-center mb-4">
+                    <div class="spinner-grow text-primary mb-3" style="width:3rem;height:3rem;"></div>
+
+                    <h4 class="font-weight-bold">
+                        Perhitungan Ranking
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Sistem Profile Matching
+                    </p>
+                </div>
+
+                {{-- STEP BOX --}}
+                <div class="border rounded p-3 bg-light mb-3">
+
+                    <div class="step-title font-weight-bold text-primary mb-2">
+                        Inisialisasi Sistem...
+                    </div>
+
+                    <div class="step-desc text-muted small">
+                        Memuat data kandidat dan parameter lowongan pekerjaan
+                    </div>
+
+                </div>
+
+                {{-- PROGRESS --}}
+                <div class="progress mb-3" style="height:10px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                        style="width:0%"></div>
+                </div>
+
+                {{-- MATRIX SIMULASI --}}
+                <div class="text-center text-muted small matrix-log">
+                    Menunggu proses perhitungan...
+                </div>
+
+            </div>
+
         </div>
     </div>
 </div>

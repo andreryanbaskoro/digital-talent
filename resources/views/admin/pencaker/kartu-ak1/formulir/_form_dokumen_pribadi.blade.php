@@ -271,6 +271,24 @@ $status = $kartuAk1->status ?? 'draft';
                 </div>
             </div>
 
+
+            {{-- TOMBOL DI BAWAH TENGAH --}}
+            <div class="text-center mt-4">
+
+                <a href="{{ route('pencaker.ak1.formulir') }}"
+                    class="btn btn-outline-secondary px-4 me-2">
+                    <i class="fas fa-file-alt me-1"></i>
+                    Formulir AK1
+                </a>
+
+                <a href="{{ route('pencaker.ak1.index') }}"
+                    class="btn btn-primary px-4">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Kembali ke AK1
+                </a>
+
+            </div>
+
         </div>
     </section>
 </div>

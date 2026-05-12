@@ -26,6 +26,8 @@ use App\Http\Controllers\Admin\Perusahaan\LowonganPekerjaanController;
 use App\Http\Controllers\Admin\Perusahaan\NotifikasiController;
 use App\Http\Controllers\Admin\Perusahaan\HasilRankingController;
 use App\Http\Controllers\Admin\Perusahaan\KeputusanSeleksiController;
+use App\Http\Controllers\Admin\Perusahaan\LaporanLowonganController as PerusahaanLaporanLowonganController;
+use App\Http\Controllers\Admin\Perusahaan\LaporanPencariKerjaController as PerusahaanLaporanPencariKerjaController;
 
 // PENCAKER
 use App\Http\Controllers\Admin\Pencaker\DashboardController as PencakerDashboardController;
@@ -159,6 +161,7 @@ Route::middleware(['auth', 'cekrole:perusahaan'])
     ->name('perusahaan.')
     ->group(function () {
 
+
         // ================= DASHBOARD =================
         Route::get('/dashboard', [PerusahaanDashboardController::class, 'index'])
             ->name('dashboard');
@@ -249,6 +252,22 @@ Route::middleware(['auth', 'cekrole:perusahaan'])
 
             Route::post('/{idLamaran}/terima', [KeputusanSeleksiController::class, 'terima'])->name('terima');
             Route::post('/{idLamaran}/tolak', [KeputusanSeleksiController::class, 'tolak'])->name('tolak');
+        });
+
+        Route::prefix('laporan-lowongan')->name('laporan-lowongan.')->group(function () {
+            Route::get('/', [PerusahaanLaporanLowonganController::class, 'index'])->name('index');
+
+            Route::get('/export/excel', [PerusahaanLaporanLowonganController::class, 'exportExcel'])->name('excel');
+            Route::get('/export/pdf', [PerusahaanLaporanLowonganController::class, 'exportPdf'])->name('pdf');
+            Route::get('/print', [PerusahaanLaporanLowonganController::class, 'print'])->name('print');
+        });
+
+        Route::prefix('laporan-pencari-kerja')->name('laporan-pencari-kerja.')->group(function () {
+            Route::get('/', [PerusahaanLaporanPencariKerjaController::class, 'index'])->name('index');
+
+            Route::get('/export/excel', [PerusahaanLaporanPencariKerjaController::class, 'exportExcel'])->name('excel');
+            Route::get('/export/pdf', [PerusahaanLaporanPencariKerjaController::class, 'exportPdf'])->name('pdf');
+            Route::get('/print', [PerusahaanLaporanPencariKerjaController::class, 'print'])->name('print');
         });
     });
 

@@ -12,6 +12,7 @@ $levelText = [
 ];
 @endphp
 
+
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8">
 
     {{-- Breadcrumb --}}
@@ -349,6 +350,21 @@ $levelText = [
 
                 <div class="mt-6 space-y-3">
 
+                    @php
+                    $ak1Disetujui = false;
+
+                    if (Auth::check() && Auth::user()->peran === 'pencaker') {
+
+                    $profil = \App\Models\ProfilPencariKerja::where('id_pengguna', Auth::user()->id_pengguna)->first();
+
+                    if ($profil) {
+                    $ak1Disetujui = \App\Models\KartuAk1::where('id_pencari_kerja', $profil->id_pencari_kerja)
+                    ->where('status', 'disetujui')
+                    ->exists();
+                    }
+                    }
+                    @endphp
+
                     @auth
                     @php $user = Auth::user(); @endphp
 
@@ -386,6 +402,33 @@ $levelText = [
                     @else
 
                     {{-- ✅ AKTIF --}}
+                    {{-- CEK AK1 --}}
+                    @if(!$ak1Disetujui)
+
+                    <div class="w-full text-center p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm font-medium">
+
+                        ⚠ Anda belum memiliki AK1 yang disetujui
+                        <br>
+
+                        <span class="text-xs block mt-1 mb-3">
+                            Silakan buat dan tunggu verifikasi AK1 terlebih dahulu
+                        </span>
+
+                        <a href="{{ route('pencaker.ak1.index') }}"
+                            class="inline-flex items-center justify-center gap-2 mt-2 bg-red-600 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-red-700 transition">
+
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+
+                            Ke Halaman AK1
+                        </a>
+
+                    </div>
+
+                    @else
+
                     <a href="{{ route('pencaker.lamaran.create', $lowongan->id_lowongan) }}"
                         class="w-full inline-flex items-center justify-center gap-2 bg-primary text-white text-sm font-semibold px-4 py-3 rounded-xl hover:bg-primary-600 transition-all shadow">
 
@@ -395,6 +438,8 @@ $levelText = [
 
                         Lamar Sekarang
                     </a>
+
+                    @endif
 
                     @endif
 

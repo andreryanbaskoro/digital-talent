@@ -13,8 +13,8 @@
                 <h1 class="mb-0">
                     {{ $title ?? 'Data Lamaran Pekerjaan' }}
                 </h1>
-
-                <a href="{{ route('pencaker.lamaran.index') }}"
+                
+                <a href="{{ url('/') }}#lowongan"
                     class="btn btn-primary btn-sm shadow-sm ml-auto">
                     <i class="fas fa-plus mr-1"></i> Lamar Pekerjaan
                 </a>

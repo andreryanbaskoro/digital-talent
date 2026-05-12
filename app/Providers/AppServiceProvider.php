@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Notifikasi;
+use App\Models\LamaranPekerjaan;
+use App\Observers\LamaranObserver;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,5 +37,7 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('globalUnreadNotif', $unreadCount);
             }
         });
+
+        LamaranPekerjaan::observe(LamaranObserver::class);
     }
 }
