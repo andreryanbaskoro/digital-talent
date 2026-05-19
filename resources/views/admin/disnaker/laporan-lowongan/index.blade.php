@@ -20,31 +20,107 @@
     <section class="content">
         <div class="container-fluid">
 
-            {{-- STATISTIK --}}
+            {{-- DROPDOWN + STATISTIK --}}
             <div class="row mb-3">
 
-                @php
-                $cards = [
-                ['title' => 'Total', 'count' => $counts['all'], 'color' => 'info', 'icon' => 'briefcase'],
-                ['title' => 'Pending', 'count' => $counts['pending'], 'color' => 'warning', 'icon' => 'hourglass-half'],
-                ['title' => 'Disetujui', 'count' => $counts['disetujui'], 'color' => 'success', 'icon' => 'check-circle'],
-                ['title' => 'Terhapus', 'count' => $counts['deleted'], 'color' => 'danger', 'icon' => 'trash'],
-                ];
-                @endphp
+                {{-- DROPDOWN --}}
+                <div class="col-md-3 mb-3">
 
-                @foreach($cards as $card)
-                <div class="col-md-3 col-6 mb-2">
-                    <div class="small-box bg-{{ $card['color'] }}">
-                        <div class="inner">
-                            <h3>{{ $card['count'] }}</h3>
-                            <p>{{ $card['title'] }}</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-{{ $card['icon'] }}"></i>
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body d-flex align-items-center">
+
+                            <div class="w-100">
+
+                                <label class="font-weight-bold mb-2">
+                                    <i class="fas fa-file-alt mr-1"></i>
+                                    Pilih Jenis Laporan
+                                </label>
+
+                                <div class="dropdown w-100">
+
+                                    <button class="btn btn-light border dropdown-toggle w-100 text-left"
+                                        type="button"
+                                        id="laporanDropdown"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+
+                                        @if(request()->routeIs('disnaker.laporan-lowongan.*'))
+                                        <i class="fas fa-building mr-2"></i>
+                                        Laporan Lowongan
+                                        @else
+                                        <i class="fas fa-search mr-2"></i>
+                                        Laporan Pencari Kerja
+                                        @endif
+
+                                    </button>
+
+                                    <div class="dropdown-menu w-100 shadow-sm"
+                                        aria-labelledby="laporanDropdown">
+
+                                        <a class="dropdown-item"
+                                            href="{{ route('disnaker.laporan-lowongan.index') }}">
+
+                                            <i class="fas fa-building mr-2 text-primary"></i>
+                                            Laporan Lowongan
+
+                                        </a>
+
+                                        <a class="dropdown-item"
+                                            href="{{ route('disnaker.laporan-pencari-kerja.index') }}">
+
+                                            <i class="fas fa-search mr-2 text-success"></i>
+                                            Laporan Pencari Kerja
+
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
                         </div>
                     </div>
+
                 </div>
-                @endforeach
+
+                {{-- CARD STATISTIK --}}
+                <div class="col-md-9">
+
+                    <div class="row">
+
+                        @php
+                        $cards = [
+                        ['title' => 'Total', 'count' => $counts['all'], 'color' => 'info', 'icon' => 'briefcase'],
+                        ['title' => 'Pending', 'count' => $counts['pending'], 'color' => 'warning', 'icon' => 'hourglass-half'],
+                        ['title' => 'Disetujui', 'count' => $counts['disetujui'], 'color' => 'success', 'icon' => 'check-circle'],
+                        ['title' => 'Terhapus', 'count' => $counts['deleted'], 'color' => 'danger', 'icon' => 'trash'],
+                        ];
+                        @endphp
+
+                        @foreach($cards as $card)
+                        <div class="col-md-3 col-6 mb-2">
+
+                            <div class="small-box bg-{{ $card['color'] }}">
+
+                                <div class="inner">
+                                    <h3>{{ $card['count'] }}</h3>
+                                    <p>{{ $card['title'] }}</p>
+                                </div>
+
+                                <div class="icon">
+                                    <i class="fas fa-{{ $card['icon'] }}"></i>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        @endforeach
+
+                    </div>
+
+                </div>
 
             </div>
 

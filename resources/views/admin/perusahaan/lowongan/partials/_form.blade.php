@@ -179,8 +179,16 @@ $subKriteria = $isEdit ? $lowongan->subKriteriaLowongan->values() : collect();
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>Tanggal Mulai</label>
-                        <input type="date" name="tanggal_mulai" class="form-control @error('tanggal_mulai') is-invalid @enderror"
+
+                        <input type="date"
+                            name="tanggal_mulai"
+                            class="form-control @error('tanggal_mulai') is-invalid @enderror"
                             value="{{ old('tanggal_mulai', $lowongan->tanggal_mulai ?? '') }}">
+
+                        <small class="text-muted d-block mt-1">
+                            Periode tanggal lowongan (tanggal mulai publikasi)
+                        </small>
+
                         @error('tanggal_mulai')
                         <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -190,14 +198,21 @@ $subKriteria = $isEdit ? $lowongan->subKriteriaLowongan->values() : collect();
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>Tanggal Berakhir</label>
-                        <input type="date" name="tanggal_berakhir" class="form-control @error('tanggal_berakhir') is-invalid @enderror"
+
+                        <input type="date"
+                            name="tanggal_berakhir"
+                            class="form-control @error('tanggal_berakhir') is-invalid @enderror"
                             value="{{ old('tanggal_berakhir', $lowongan->tanggal_berakhir ?? '') }}">
+
+                        <small class="text-muted d-block mt-1">
+                            Periode tanggal lowongan (batas akhir publikasi)
+                        </small>
+
                         @error('tanggal_berakhir')
                         <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
                     </div>
                 </div>
-
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>Status</label>

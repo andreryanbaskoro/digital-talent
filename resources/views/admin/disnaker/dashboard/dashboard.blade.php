@@ -163,28 +163,35 @@ default => 'secondary',
                 <i class="fas fa-bolt mr-1"></i> Akses Cepat
               </h3>
             </div>
+
             <div class="card-body">
-              <div class="row">
-                <div class="col-md-3 col-6 mb-2">
-                  <a href="{{ route('disnaker.verifikasi-lowongan.index') }}" class="btn btn-outline-info btn-block">
-                    <i class="fas fa-search mr-1"></i> Verifikasi Lowongan
-                  </a>
-                </div>
-                <div class="col-md-3 col-6 mb-2">
-                  <a href="{{ route('disnaker.ak1.pending') }}" class="btn btn-outline-danger btn-block">
-                    <i class="fas fa-id-card mr-1"></i> AK1 Pending
-                  </a>
-                </div>
-                <div class="col-md-3 col-6 mb-2">
-                  <a href="{{ route('disnaker.laporan-lowongan.index') }}" class="btn btn-outline-success btn-block">
-                    <i class="fas fa-file-export mr-1"></i> Laporan Lowongan
-                  </a>
-                </div>
-                <div class="col-md-3 col-6 mb-2">
-                  <a href="{{ route('disnaker.laporan-pencari-kerja.index') }}" class="btn btn-outline-primary btn-block">
-                    <i class="fas fa-users mr-1"></i> Laporan Pencari Kerja
-                  </a>
-                </div>
+              <div class="d-flex flex-wrap justify-content-between">
+
+                <a href="{{ route('disnaker.verifikasi-lowongan.index') }}"
+                  class="btn btn-outline-info m-1 flex-fill">
+                  <i class="fas fa-search mr-1"></i> Verifikasi Lowongan
+                </a>
+
+                <a href="{{ route('disnaker.ak1.pending') }}"
+                  class="btn btn-outline-danger m-1 flex-fill">
+                  <i class="fas fa-id-card mr-1"></i> AK1 Pending
+                </a>
+
+                <a href="{{ route('laporan.pelamar-perusahaan.index', ['mode' => 'disnaker']) }}"
+                  class="btn btn-outline-primary m-1 flex-fill">
+                  <i class="fas fa-briefcase mr-1"></i> Pelamar
+                </a>
+
+                <a href="{{ route('laporan.pencari-kerja.index', ['mode' => 'disnaker']) }}"
+                  class="btn btn-outline-success m-1 flex-fill">
+                  <i class="fas fa-users mr-1"></i> Pencari Kerja
+                </a>
+
+                <a href="{{ route('laporan.profile-matching.index', ['mode' => 'disnaker']) }}"
+                  class="btn btn-outline-warning m-1 flex-fill">
+                  <i class="fas fa-chart-line mr-1"></i> Profile Matching
+                </a>
+
               </div>
             </div>
           </div>
@@ -459,30 +466,37 @@ default => 'secondary',
       <div class="row">
         <div class="col-12">
           <div class="card shadow-sm">
+
             <div class="card-header border-0">
               <h3 class="card-title mb-0">
                 <i class="fas fa-folder-open mr-1"></i> Menu Laporan
               </h3>
             </div>
+
             <div class="card-body">
-              <div class="row">
-                <div class="col-md-4 col-6 mb-2">
-                  <a href="{{ route('disnaker.laporan-lowongan.index') }}" class="btn btn-outline-info btn-block">
-                    <i class="fas fa-file-alt mr-1"></i> Laporan Lowongan
-                  </a>
-                </div>
-                <div class="col-md-4 col-6 mb-2">
-                  <a href="{{ route('disnaker.laporan-pencari-kerja.index') }}" class="btn btn-outline-primary btn-block">
-                    <i class="fas fa-file-alt mr-1"></i> Laporan Pencari Kerja
-                  </a>
-                </div>
-                <div class="col-md-4 col-6 mb-2">
-                  <a href="{{ route('disnaker.laporan-penempatan.index') }}" class="btn btn-outline-success btn-block">
-                    <i class="fas fa-file-alt mr-1"></i> Laporan Penempatan
-                  </a>
-                </div>
+              <div class="d-flex flex-wrap justify-content-between">
+
+                {{-- TAMBAHAN BARU: PELAMAR PERUSAHAAN --}}
+                <a href="{{ route('laporan.pelamar-perusahaan.index', ['mode' => 'disnaker']) }}"
+                  class="btn btn-outline-warning m-1 flex-fill">
+                  <i class="fas fa-building mr-1"></i> Pelamar
+                </a>
+
+                {{-- Laporan Pencari Kerja (lama tetap dipakai) --}}
+                <a href="{{ route('laporan.pencari-kerja.index', ['mode' => 'disnaker']) }}"
+                  class="btn btn-outline-primary m-1 flex-fill">
+                  <i class="fas fa-users mr-1"></i> Pencari Kerja
+                </a>
+
+                {{-- TAMBAHAN BARU: PROFILE MATCHING --}}
+                <a href="{{ route('laporan.profile-matching.index', ['mode' => 'disnaker']) }}"
+                  class="btn btn-outline-dark m-1 flex-fill">
+                  <i class="fas fa-chart-line mr-1"></i> Matching
+                </a>
+
               </div>
             </div>
+
           </div>
         </div>
       </div>

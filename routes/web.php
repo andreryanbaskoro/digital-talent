@@ -13,7 +13,6 @@ use App\Http\Controllers\Admin\Disnaker\VerifikasiLowonganController;
 use App\Http\Controllers\Admin\Disnaker\PenggunaController;
 use App\Http\Controllers\Admin\Disnaker\Ak1Controller;
 use App\Http\Controllers\Admin\Disnaker\LaporanLowonganController;
-use App\Http\Controllers\Admin\Disnaker\LaporanPencariKerjaController;
 use App\Http\Controllers\Admin\Disnaker\LaporanPenempatanController;
 use App\Http\Controllers\Admin\Disnaker\ProfilPencariKerjaController as DisnakerProfilPencariKerjaController;
 use App\Http\Controllers\Admin\Disnaker\ProfilPerusahaanController as DisnakerProfilPerusahaanController;
@@ -38,6 +37,12 @@ use App\Http\Controllers\Admin\Pencaker\PengalamanKerjaAk1Controller;
 use App\Http\Controllers\Admin\Pencaker\RiwayatPendidikanAk1Controller;
 use App\Http\Controllers\Admin\Pencaker\LamaranPekerjaanController;
 use App\Http\Controllers\Admin\Pencaker\NotifikasiController as PencakerNotifikasiController;
+
+// ALL
+use App\Http\Controllers\Laporan\LaporanPelamarPerusahaanController;
+use App\Http\Controllers\Laporan\LaporanPencariKerjaController;
+use App\Http\Controllers\Laporan\LaporanProfileMatchingController;
+
 
 // Landing Page (public)
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
@@ -70,6 +75,61 @@ Route::middleware(['auth'])->get('/dashboard', function () {
         default => abort(403),
     };
 })->name('dashboard');
+
+
+
+Route::prefix('laporan')->group(function () {
+
+    // =========================
+    // LAPORAN PELAMAR PERUSAHAAN
+    // =
+    Route::get('/pelamar-perusahaan/{mode}', [LaporanPelamarPerusahaanController::class, 'index'])
+        ->name('laporan.pelamar-perusahaan.index');
+
+    Route::get('/pelamar-perusahaan/{mode}/print', [LaporanPelamarPerusahaanController::class, 'print'])
+        ->name('laporan.pelamar-perusahaan.print');
+
+    Route::get('/pelamar-perusahaan/{mode}/pdf', [LaporanPelamarPerusahaanController::class, 'exportPdf'])
+        ->name('laporan.pelamar-perusahaan.pdf');
+
+    Route::get('/pelamar-perusahaan/{mode}/excel', [LaporanPelamarPerusahaanController::class, 'exportExcel'])
+        ->name('laporan.pelamar-perusahaan.excel');
+
+    // =========================
+    // LAPORAN PENCARI KERJA
+    // =========================
+
+    Route::get('/pencari-kerja/{mode}', [LaporanPencariKerjaController::class, 'index'])
+        ->name('laporan.pencari-kerja.index');
+
+    Route::get('/pencari-kerja/{mode}/print', [LaporanPencariKerjaController::class, 'print'])
+        ->name('laporan.pencari-kerja.print');
+
+    Route::get('/pencari-kerja/{mode}/pdf', [LaporanPencariKerjaController::class, 'exportPdf'])
+        ->name('laporan.pencari-kerja.pdf');
+
+    Route::get('/pencari-kerja/{mode}/excel', [LaporanPencariKerjaController::class, 'exportExcel'])
+        ->name('laporan.pencari-kerja.excel');
+
+
+    // =========================
+    // LAPORAN PROFILE MATCHING
+    // =========================
+
+    Route::get('/profile-matching/{mode}', [LaporanProfileMatchingController::class, 'index'])
+        ->name('laporan.profile-matching.index');
+
+    Route::get('/profile-matching/{mode}/print', [LaporanProfileMatchingController::class, 'print'])
+        ->name('laporan.profile-matching.print');
+
+    Route::get('/profile-matching/{mode}/pdf', [LaporanProfileMatchingController::class, 'exportPdf'])
+        ->name('laporan.profile-matching.pdf');
+
+    Route::get('/profile-matching/{mode}/excel', [LaporanProfileMatchingController::class, 'exportExcel'])
+        ->name('laporan.profile-matching.excel');
+});
+
+
 
 Route::middleware(['auth', 'cekrole:disnaker'])
     ->prefix('admin/disnaker')

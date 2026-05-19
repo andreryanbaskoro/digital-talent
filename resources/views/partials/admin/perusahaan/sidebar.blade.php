@@ -2,7 +2,9 @@
 <aside class="main-sidebar sidebar-light-primary elevation-4">
 
     @php
-    $role = request()->segment(2);
+    $role = request()->segment(1) === 'laporan'
+    ? request()->segment(3)
+    : request()->segment(2);
 
     $perusahaan = \App\Models\ProfilPerusahaan::where(
     'id_pengguna',
@@ -117,7 +119,22 @@
                 </li>
 
                 <!-- Laporan -->
-                <li class="nav-item has-treeview 
+                <li class="nav-item">
+                    <a href="{{ route('laporan.pelamar-perusahaan.index', ['mode' => 'perusahaan']) }}"
+                        class="nav-link {{
+            request()->routeIs('laporan.pelamar-perusahaan.*')
+            && request()->route('mode') === 'perusahaan'
+            ? 'active'
+            : ''
+        }}">
+
+                        <i class="nav-icon fas fa-file-alt"></i>
+
+                        <p>Laporan</p>
+                    </a>
+                </li>
+
+                <!-- <li class="nav-item has-treeview 
     {{ request()->routeIs('perusahaan.laporan-lowongan.*') || request()->routeIs('perusahaan.laporan-pencari-kerja.*') ? 'menu-open' : '' }}">
 
                     <a href="#" class="nav-link 
@@ -151,7 +168,23 @@
                         </li>
 
                     </ul>
-                </li>
+                </li> -->
+
+                <!-- Laporan -->
+                <!-- <li class="nav-item">
+
+                    <a href="{{ route('laporan.pelamar-perusahaan.index', ['mode' => 'perusahaan']) }}"
+                        class="nav-link {{ request()->is('laporan/pelamar-perusahaan/perusahaan*') ? 'active' : '' }}">
+
+                        <i class="nav-icon fas fa-file-alt"></i>
+
+                        <p>
+                            Laporan
+                        </p>
+
+                    </a>
+
+                </li> -->
 
                 <!-- Notifikasi -->
                 <li class="nav-item">

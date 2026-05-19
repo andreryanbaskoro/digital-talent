@@ -100,42 +100,35 @@
                     </a>
                 </li>
 
-                <li class="nav-item has-treeview 
-    {{ request()->routeIs('disnaker.laporan-*') ? 'menu-open' : '' }}">
-
-                    <a href="#" class="nav-link 
-        {{ request()->routeIs('disnaker.laporan-*') ? 'active' : '' }}">
+                <!-- Laporan -->
+                <li class="nav-item">
+                    <a href="{{ route('laporan.pelamar-perusahaan.index', ['mode' => 'disnaker']) }}"
+                        class="nav-link {{
+            request()->routeIs('laporan.*')
+            ? 'active'
+            : ''
+        }}">
 
                         <i class="nav-icon fas fa-file-alt"></i>
-                        <p>
-                            Laporan
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+
+                        <p>Laporan</p>
                     </a>
-
-                    <ul class="nav nav-treeview">
-
-                        {{-- Laporan Lowongan --}}
-                        <li class="nav-item">
-                            <a href="{{ route('disnaker.laporan-lowongan.index') }}"
-                                class="nav-link {{ request()->routeIs('disnaker.laporan-lowongan.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Lowongan</p>
-                            </a>
-                        </li>
-
-                        {{-- Laporan Pencari Kerja --}}
-                        <li class="nav-item">
-                            <a href="{{ route('disnaker.laporan-pencari-kerja.index') }}"
-                                class="nav-link {{ request()->routeIs('disnaker.laporan-pencari-kerja.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Pencari Kerja</p>
-                            </a>
-                        </li>
-
-                    </ul>
                 </li>
 
+                <!-- <li class="nav-item">
+
+                    <a href="{{ route('disnaker.laporan-pencari-kerja.index') }}"
+                        class="nav-link {{ request()->routeIs('disnaker.laporan-*') ? 'active' : '' }}">
+
+                        <i class="nav-icon fas fa-file-alt"></i>
+
+                        <p>
+                            Laporan
+                        </p>
+
+                    </a>
+
+                </li> -->
                 <!-- <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>
