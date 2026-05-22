@@ -19,6 +19,8 @@ class LamaranPekerjaan extends Model
         'id_lamaran',
         'id_lowongan',
         'id_pencari_kerja',
+        'periode_ke',
+        'nama_periode',
         'tanggal_lamar',
         'status_lamaran',
         'catatan_perusahaan',

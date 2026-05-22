@@ -35,11 +35,11 @@
                                     Pilih Jenis Laporan
                                 </label>
                                 <select id="laporanSelect" class="form-control">
-                                    <option value="{{ route('laporan.pelamar-perusahaan.index', ['mode' => $mode]) }}">
-                                        🏢 Laporan Data Pelamar Perusahaan
-                                    </option>
                                     <option value="{{ route('laporan.pencari-kerja.index', ['mode' => $mode]) }}">
                                         🔍 Laporan Data Pencari Kerja
+                                    </option>
+                                    <option value="{{ route('laporan.pelamar-perusahaan.index', ['mode' => $mode]) }}">
+                                        🏢 Laporan Data Pelamar Perusahaan
                                     </option>
                                     <option
                                         value="{{ route('laporan.profile-matching.index', ['mode' => $mode]) }}"
@@ -139,13 +139,18 @@
                             </div>
                             @endif
 
-                            {{-- TANGGAL SELEKSI --}}
                             <div class="col-md-3 mb-3">
-                                <label>Tanggal Seleksi</label>
-                                <input type="date"
-                                    name="tanggal_seleksi"
-                                    class="form-control"
-                                    value="{{ request('tanggal_seleksi') }}">
+                                <label>Periode Lowongan</label>
+                                <select name="periode_ke" class="form-control">
+                                    <option value="">-- Semua Periode --</option>
+                                    @foreach($periodeOptions as $periode)
+                                    <option value="{{ $periode->periode_ke }}"
+                                        {{ request('periode_ke') == $periode->periode_ke ? 'selected' : '' }}>
+                                        Periode {{ $periode->periode_ke }}
+                                        {{ $periode->nama_periode ? '- ' . $periode->nama_periode : '' }}
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             {{-- KESIMPULAN --}}
@@ -219,7 +224,7 @@
                                     <th class="text-center">Persentase Matching</th>
                                     <th class="text-center">Ranking</th>
                                     <th class="text-center">Kesimpulan</th>
-                                    <th class="text-center">Tanggal Seleksi</th>
+                                    <th class="text-center">Periode</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -241,7 +246,15 @@
                                 $secondaryFactor= (float) ($item->nilai_faktor_pendukung ?? 0);
                                 $ranking = $item->peringkat ?? '-';
                                 $rekomendasi = $item->rekomendasi ?? '-';
-                                $tanggalSeleksi = $item->created_at ? $item->created_at->format('d-m-Y') : '-';
+                                $lamaran = optional($item->lamaran);
+
+                                $periode = $lamaran->periode_ke
+                                ? 'Periode ' . $lamaran->periode_ke
+                                : '-';
+
+                                if ($lamaran->nama_periode) {
+                                $periode .= ' - ' . $lamaran->nama_periode;
+                                }
 
                                 // Badge warna kesimpulan — pakai exact match sesuai getRekomendasi()
                                 $badgeClass = match($rekomendasi) {
@@ -285,7 +298,11 @@
                                             {{ $rekomendasi }}
                                         </span>
                                     </td>
-                                    <td class="text-center">{{ $tanggalSeleksi }}</td>
+                                    <td class="text-center">
+                                        <span class="badge badge-info">
+                                            {{ $periode }}
+                                        </span>
+                                    </td>
                                 </tr>
                                 @empty
                                 <tr>

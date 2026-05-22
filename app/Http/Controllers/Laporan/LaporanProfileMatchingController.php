@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use PDF;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LaporanProfileMatchingExport;
+use Carbon\Carbon;
 
 class LaporanProfileMatchingController extends Controller
 {
@@ -76,9 +77,11 @@ class LaporanProfileMatchingController extends Controller
             });
         }
 
-        // ===================== FILTER TANGGAL SELEKSI =====================
-        if ($request->filled('tanggal_seleksi')) {
-            $query->whereDate('created_at', $request->tanggal_seleksi);
+        // ===================== FILTER PERIODE SELEKSI =====================
+        if ($request->filled('periode_ke')) {
+            $query->whereHas('lamaran', function ($q) use ($request) {
+                $q->where('periode_ke', $request->periode_ke);
+            });
         }
 
         // ===================== FILTER KESIMPULAN =====================
@@ -128,9 +131,26 @@ class LaporanProfileMatchingController extends Controller
             '❗ Kurang Cocok',
         ];
 
+        $periodeQuery = LamaranPekerjaan::withTrashed()
+            ->select('periode_ke', 'nama_periode')
+            ->whereNotNull('periode_ke')
+            ->distinct()
+            ->orderBy('periode_ke');
+
+        if ($mode === 'perusahaan') {
+            $idPengguna = $this->currentIdPengguna();
+
+            if ($idPengguna) {
+                $periodeQuery->whereHas('lowongan.profilPerusahaan', function ($q) use ($idPengguna) {
+                    $q->where('id_pengguna', $idPengguna);
+                });
+            }
+        }
+
         return [
-            'namaPekerjaan'  => $namaPekerjaanQuery->get(),
-            'jenisPekerjaan' => $jenisPekerjaanQuery->get(),
+            'namaPekerjaan'    => $namaPekerjaanQuery->get(),
+            'jenisPekerjaan'   => $jenisPekerjaanQuery->get(),
+            'periodeOptions'   => $periodeQuery->get(),
             'kesimpulanOptions' => $kesimpulanOptions,
         ];
     }
@@ -164,6 +184,7 @@ class LaporanProfileMatchingController extends Controller
             'namaPekerjaan'     => $filters['namaPekerjaan'],
             'jenisPekerjaan'    => $filters['jenisPekerjaan'],
             'kesimpulanOptions' => $filters['kesimpulanOptions'],
+            'periodeOptions' => $filters['periodeOptions'],
         ]);
     }
 

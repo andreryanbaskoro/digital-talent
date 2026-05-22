@@ -94,8 +94,21 @@ class LaporanPelamarPerusahaanController extends Controller
         });
 
         $query->when($request->filled('tanggal_posting'), function ($q) use ($request) {
-            $q->whereHas('lowongan', function ($qq) use ($request) {
-                $qq->whereDate('created_at', $request->tanggal_posting);
+
+            $tanggal = explode('-', $request->tanggal_posting);
+
+            $tahun = $tanggal[0] ?? null;
+            $bulan = $tanggal[1] ?? null;
+
+            $q->whereHas('lowongan', function ($qq) use ($tahun, $bulan) {
+
+                if ($tahun) {
+                    $qq->whereYear('created_at', $tahun);
+                }
+
+                if ($bulan) {
+                    $qq->whereMonth('created_at', $bulan);
+                }
             });
         });
 

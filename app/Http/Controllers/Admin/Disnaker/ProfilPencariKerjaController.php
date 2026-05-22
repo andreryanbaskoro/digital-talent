@@ -13,6 +13,7 @@ class ProfilPencariKerjaController extends Controller
     public function index()
     {
         $pencariKerja = ProfilPencariKerja::withTrashed()
+            ->with('kartuAk1')
             ->latest()
             ->get();
 

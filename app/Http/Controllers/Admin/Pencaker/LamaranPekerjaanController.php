@@ -106,11 +106,16 @@ class LamaranPekerjaanController extends Controller
 
             // ================= SIMPAN LAMARAN =================
             LamaranPekerjaan::create([
-                'id_lamaran' => $idLamaran,
-                'id_lowongan' => $validated['id_lowongan'],
+                'id_lamaran'       => $idLamaran,
+                'id_lowongan'      => $validated['id_lowongan'],
+
+                // snapshot periode saat melamar
+                'periode_ke'       => $lowongan->periode_ke ?? 1,
+                'nama_periode'     => $lowongan->nama_periode,
+
                 'id_pencari_kerja' => $userId,
-                'tanggal_lamar' => now(),
-                'status_lamaran' => 'dikirim'
+                'tanggal_lamar'    => now(),
+                'status_lamaran'   => 'dikirim'
             ]);
 
             // ================= SIMPAN SUB KRITERIA (OPTIONAL) =================

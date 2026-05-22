@@ -81,16 +81,60 @@
 
                         {{-- Periode --}}
                         <td>
-                            @if($item->tanggal_mulai && $item->tanggal_berakhir)
-                            <small class="text-success d-block">
-                                {{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d-m-Y') }}
-                            </small>
-                            <small class="text-danger">
-                                {{ \Carbon\Carbon::parse($item->tanggal_berakhir)->format('d-m-Y') }}
-                            </small>
-                            @else
-                            <span class="text-muted">-</span>
+
+                            {{-- Badge Periode --}}
+                            <span class="badge badge-info">
+                                Periode {{ $item->periode_ke }}
+                            </span>
+
+                            {{-- Nama Periode --}}
+                            @if($item->nama_periode)
+                            <div class="small text-muted mt-1">
+                                {{ $item->nama_periode }}
+                            </div>
                             @endif
+
+                            {{-- Tanggal --}}
+                            @if($item->tanggal_mulai && $item->tanggal_berakhir)
+
+                            <div class="small mt-2">
+                                <div>
+                                    <i class="fas fa-calendar-alt text-success"></i>
+                                    {{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M Y') }}
+                                </div>
+
+                                <div>
+                                    <i class="fas fa-calendar-times text-danger"></i>
+                                    {{ \Carbon\Carbon::parse($item->tanggal_berakhir)->format('d M Y') }}
+                                </div>
+                            </div>
+
+                            {{-- Status --}}
+                            <div class="mt-2">
+
+                                @php
+                                $badge = match($item->status_periode) {
+                                'dibuka' => 'success',
+                                'ditutup' => 'danger',
+                                'belum dibuka' => 'warning',
+                                default => 'secondary'
+                                };
+                                @endphp
+
+                                <span class="badge badge-{{ $badge }}">
+                                    {{ ucfirst($item->status_periode) }}
+                                </span>
+
+                            </div>
+
+                            @else
+
+                            <span class="text-muted small">
+                                Belum ada periode
+                            </span>
+
+                            @endif
+
                         </td>
 
                         {{-- Status --}}

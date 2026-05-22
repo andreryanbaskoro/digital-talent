@@ -68,11 +68,11 @@
                                     Pilih Jenis Laporan
                                 </label>
                                 <select id="laporanSelect" class="form-control">
-                                    <option value="{{ route('laporan.pelamar-perusahaan.index', ['mode' => $mode]) }}" selected>
-                                        🏢 Laporan Data Pelamar Perusahaan
-                                    </option>
                                     <option value="{{ route('laporan.pencari-kerja.index', ['mode' => $mode]) }}">
                                         🔍 Laporan Data Pencari Kerja
+                                    </option>
+                                    <option value="{{ route('laporan.pelamar-perusahaan.index', ['mode' => $mode]) }}" selected>
+                                        🏢 Laporan Data Pelamar Perusahaan
                                     </option>
                                     <option
                                         value="{{ route('laporan.profile-matching.index', ['mode' => $mode]) }}">
@@ -196,13 +196,12 @@
                                 </select>
 
                             </div>
-
-                            {{-- TANGGAL POSTING --}}
+                            {{-- BULAN TAHUN POSTING --}}
                             <div class="col-md-3 mb-3">
 
-                                <label>Tanggal Posting</label>
+                                <label>Bulan/Tahun Posting</label>
 
-                                <input type="date"
+                                <input type="month"
                                     name="tanggal_posting"
                                     class="form-control"
                                     value="{{ request('tanggal_posting') }}">

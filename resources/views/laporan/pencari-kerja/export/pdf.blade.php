@@ -320,80 +320,105 @@
         </thead>
         <tbody>
             @forelse($data as $item)
+
             @php
-            $riwayat = optional($item->kartuAk1)
+            $pencariKerja = $item->pencariKerja;
+
+            // Riwayat pendidikan terakhir
+            $riwayat = optional($pencariKerja->kartuAk1)
             ->riwayatPendidikan
             ?->sortByDesc('tahun_lulus')
             ?->first();
 
-            // jangan kasih '-' di sini
+            // Pendidikan
             $pendidikan = $riwayat?->jenjang
-            ?? $item->pendidikan
-            ?? $item->pendidikan_terakhir;
+            ?? $pencariKerja->pendidikan
+            ?? $pencariKerja->pendidikan_terakhir;
 
             $jurusan = $riwayat?->jurusan;
 
-            $keahlian = collect(optional($item->kartuAk1)->keterampilan)
+            // Keahlian
+            $keahlian = collect(optional($pencariKerja->kartuAk1)->keterampilan)
             ->pluck('nama_keterampilan')
             ->filter()
             ->implode(', ');
 
             $keahlian = $keahlian ?: '-';
 
-            $lamaranTerakhir = $item->lamaranPekerjaan()
-            ->withTrashed()
-            ->with('lowongan')
-            ->latest('tanggal_lamar')
-            ->first();
-            $namaPekerjaan = optional(optional($lamaranTerakhir)->lowongan)->judul_lowongan ?? '-';
+            // Nama pekerjaan
+            $namaPekerjaan = optional($item->lowongan)->judul_lowongan ?? '-';
 
-            $domisili = collect([$item->kelurahan, $item->kecamatan, $item->kab_kota])
-            ->filter()->implode(', ') ?: '-';
+            // Domisili
+            $domisili = collect([
+            $pencariKerja->kelurahan,
+            $pencariKerja->kecamatan,
+            $pencariKerja->kab_kota
+            ])->filter()->implode(', ') ?: '-';
 
-            $statusAkun = optional($item->pengguna)->status ?? '-';
+            // Status akun
+            $statusAkun = optional($pencariKerja->pengguna)->status ?? '-';
+
             $badgeColor = match(strtolower($statusAkun)) {
             'aktif', 'active' => 'badge-success',
             'nonaktif', 'banned' => 'badge-danger',
             default => 'badge-secondary',
             };
             @endphp
+
             <tr>
                 <td class="td-no">{{ $loop->iteration }}</td>
-                <td>{{ $item->nama_lengkap ?? '-' }}</td>
-                <td>{{ $item->email ?? '-' }}</td>
-                <td class="td-center">{{ $item->nomor_hp ?? '-' }}</td>
-                <td>{{ $domisili }}</td>
+
+                <td>{{ $pencariKerja->nama_lengkap ?? '-' }}</td>
+
+                <td>{{ $pencariKerja->email ?? '-' }}</td>
+
                 <td class="td-center">
-                    @if($item->jenis_kelamin == 'L')
+                    {{ $pencariKerja->nomor_hp ?? '-' }}
+                </td>
+
+                <td>{{ $domisili }}</td>
+
+                <td class="td-center">
+                    @if($pencariKerja->jenis_kelamin == 'L')
                     <span class="jk-l">L</span>
-                    @elseif($item->jenis_kelamin == 'P')
+                    @elseif($pencariKerja->jenis_kelamin == 'P')
                     <span class="jk-p">P</span>
                     @else
                     -
                     @endif
                 </td>
+
                 <td class="td-center">
                     {{
-        collect([$pendidikan, $jurusan])
-            ->filter()
-            ->implode(' - ')
-        ?: '-'
-    }}
+            collect([$pendidikan, $jurusan])
+                ->filter()
+                ->implode(' - ')
+            ?: '-'
+        }}
                 </td>
+
                 <td>{{ $keahlian }}</td>
+
                 <td>{{ $namaPekerjaan }}</td>
+
                 <td class="td-tanggal">
-                    {{ $item->created_at ? $item->created_at->format('d-m-Y') : '-' }}
+                    {{ $item->tanggal_lamar
+            ? \Carbon\Carbon::parse($item->tanggal_lamar)->format('d-m-Y')
+            : '-' }}
                 </td>
+
                 <td class="td-center">
                     <span class="status-badge {{ $badgeColor }}">
                         {{ ucfirst($statusAkun) }}
                     </span>
                 </td>
             </tr>
+
             @empty
             <tr class="empty-row">
-                <td colspan="11">Tidak ada data pencari kerja yang ditemukan.</td>
+                <td colspan="11">
+                    Tidak ada data pencari kerja yang ditemukan.
+                </td>
             </tr>
             @endforelse
         </tbody>

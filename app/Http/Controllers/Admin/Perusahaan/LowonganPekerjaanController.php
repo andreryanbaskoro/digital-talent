@@ -248,6 +248,10 @@ class LowonganPekerjaanController extends Controller
             'pendidikan_minimum' => 'nullable|string|max:100',
             'pengalaman_minimum' => 'nullable|string|max:100',
             'kuota' => 'required|integer|min:1',
+
+            'periode_ke' => 'required|integer|min:1',
+            'nama_periode' => 'nullable|string|max:100',
+
             'tanggal_mulai' => 'nullable|date',
             'tanggal_berakhir' => 'nullable|date|after_or_equal:tanggal_mulai',
 
@@ -273,6 +277,8 @@ class LowonganPekerjaanController extends Controller
                 'pendidikan_minimum' => $validated['pendidikan_minimum'] ?? null,
                 'pengalaman_minimum' => $validated['pengalaman_minimum'] ?? null,
                 'kuota' => $validated['kuota'],
+                'periode_ke' => $validated['periode_ke'],
+                'nama_periode' => $validated['nama_periode'] ?? null,
                 'tanggal_mulai' => $validated['tanggal_mulai'] ?? null,
                 'tanggal_berakhir' => $validated['tanggal_berakhir'] ?? null,
                 'status' => 'pending',
@@ -394,6 +400,9 @@ class LowonganPekerjaanController extends Controller
             'pendidikan_minimum' => 'nullable|string|max:100',
             'pengalaman_minimum' => 'nullable|string|max:100',
             'kuota' => 'required|integer|min:1',
+            'periode_ke' => 'required|integer|min:1',
+            'nama_periode' => 'nullable|string|max:100',
+
             'tanggal_mulai' => 'nullable|date',
             'tanggal_berakhir' => 'nullable|date|after_or_equal:tanggal_mulai',
 
@@ -418,6 +427,8 @@ class LowonganPekerjaanController extends Controller
                 'pendidikan_minimum' => $validated['pendidikan_minimum'] ?? null,
                 'pengalaman_minimum' => $validated['pengalaman_minimum'] ?? null,
                 'kuota' => $validated['kuota'],
+                'periode_ke' => $validated['periode_ke'],
+                'nama_periode' => $validated['nama_periode'] ?? null,
                 'tanggal_mulai' => $validated['tanggal_mulai'] ?? null,
                 'tanggal_berakhir' => $validated['tanggal_berakhir'] ?? null,
                 'status' => 'pending',

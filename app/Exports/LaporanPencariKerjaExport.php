@@ -3,7 +3,6 @@
 namespace App\Exports;
 
 use App\Models\LamaranPekerjaan;
-use App\Models\ProfilPencariKerja;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
@@ -16,6 +15,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use Carbon\Carbon;
 
 class LaporanPencariKerjaExport implements
     FromCollection,
@@ -46,86 +46,84 @@ class LaporanPencariKerjaExport implements
 
     protected function buildQuery()
     {
+        $query = LamaranPekerjaan::withTrashed()
+            ->with([
+                'pencariKerja.pengguna',
+                'pencariKerja.kartuAk1.keterampilan',
+                'pencariKerja.kartuAk1.riwayatPendidikan',
+                'lowongan',
+            ]);
+
+        // Mode perusahaan
         if ($this->mode === 'perusahaan') {
+
             $idPengguna = $this->currentIdPengguna();
 
             if (!$idPengguna) {
                 abort(403, 'Akun perusahaan tidak valid.');
             }
 
-            $idPencariKerjaList = LamaranPekerjaan::withTrashed()
-                ->whereHas('lowongan.profilPerusahaan', function ($q) use ($idPengguna) {
-                    $q->withTrashed()->where('id_pengguna', $idPengguna);
-                })
-                ->when(!empty($this->filters['nama_pekerjaan']), function ($q) {
-                    $q->whereHas('lowongan', function ($qq) {
-                        $qq->withTrashed()->where('judul_lowongan', 'like', '%' . $this->filters['nama_pekerjaan'] . '%');
-                    });
-                })
-                ->when(!empty($this->filters['jenis_pekerjaan']), function ($q) {
-                    $q->whereHas('lowongan', function ($qq) {
-                        $qq->withTrashed()->where('jenis_pekerjaan', $this->filters['jenis_pekerjaan']);
-                    });
-                })
-                ->when(!empty($this->filters['tanggal_pendaftaran']), function ($q) {
-                    $q->whereDate('tanggal_lamar', $this->filters['tanggal_pendaftaran']);
-                })
-                ->pluck('id_pencari_kerja')
-                ->unique();
+            $query->whereHas('lowongan.profilPerusahaan', function ($q) use ($idPengguna) {
+                $q->withTrashed()->where('id_pengguna', $idPengguna);
+            });
+        }
 
-            $query = ProfilPencariKerja::withTrashed()
-                ->with(['pengguna', 'kartuAk1.keterampilan'])
-                ->whereIn('id_pencari_kerja', $idPencariKerjaList);
-        } else {
-            $query = ProfilPencariKerja::withTrashed()
-                ->with(['pengguna', 'kartuAk1.keterampilan']);
+        // Filter nama pekerjaan
+        if (!empty($this->filters['nama_pekerjaan'])) {
+            $query->whereHas('lowongan', function ($q) {
+                $q->withTrashed()->where(
+                    'judul_lowongan',
+                    'like',
+                    '%' . $this->filters['nama_pekerjaan'] . '%'
+                );
+            });
+        }
 
-            $hasLamaranFilter = !empty($this->filters['nama_pekerjaan'])
-                || !empty($this->filters['jenis_pekerjaan'])
-                || !empty($this->filters['tanggal_pendaftaran']);
+        // Filter jenis pekerjaan
+        if (!empty($this->filters['jenis_pekerjaan'])) {
+            $query->whereHas('lowongan', function ($q) {
+                $q->withTrashed()->where(
+                    'jenis_pekerjaan',
+                    $this->filters['jenis_pekerjaan']
+                );
+            });
+        }
 
-            if ($hasLamaranFilter) {
-                $query->whereHas('lamaranPekerjaan', function ($q) {
-                    $q->withTrashed()
-                        ->when(!empty($this->filters['nama_pekerjaan']), function ($qq) {
-                            $qq->whereHas('lowongan', function ($qqq) {
-                                $qqq->withTrashed()->where('judul_lowongan', 'like', '%' . $this->filters['nama_pekerjaan'] . '%');
-                            });
-                        })
-                        ->when(!empty($this->filters['jenis_pekerjaan']), function ($qq) {
-                            $qq->whereHas('lowongan', function ($qqq) {
-                                $qqq->withTrashed()->where('jenis_pekerjaan', $this->filters['jenis_pekerjaan']);
-                            });
-                        })
-                        ->when(!empty($this->filters['tanggal_pendaftaran']), function ($qq) {
-                            $qq->whereDate('tanggal_lamar', $this->filters['tanggal_pendaftaran']);
-                        });
-                });
-            }
+        // Filter tanggal pendaftaran
+        if (!empty($this->filters['tanggal_pendaftaran'])) {
+
+            $start = \Carbon\Carbon::parse(
+                $this->filters['tanggal_pendaftaran']
+            )->startOfMonth();
+
+            $end = \Carbon\Carbon::parse(
+                $this->filters['tanggal_pendaftaran']
+            )->endOfMonth();
+
+            $query->whereBetween('tanggal_lamar', [$start, $end]);
         }
 
         // Filter jenis kelamin
         if (!empty($this->filters['jenis_kelamin'])) {
-            $query->where('jenis_kelamin', $this->filters['jenis_kelamin']);
+            $query->whereHas('pencariKerja', function ($q) {
+                $q->where(
+                    'jenis_kelamin',
+                    $this->filters['jenis_kelamin']
+                );
+            });
         }
 
-        return $query->orderByDesc('created_at')->get();
+        return $query
+            ->orderByDesc('tanggal_lamar')
+            ->get();
     }
 
     public function collection()
     {
         $this->rowNumber = 0;
-
         return $this->buildQuery();
     }
 
-    /**
-     * Row 1 = Judul
-     * Row 2 = Tanggal export
-     * Row 3 = Spacer
-     * Row 4 = Heading
-     * Row 5+ = Data
-     */
     public function startCell(): string
     {
         return 'A4';
@@ -152,61 +150,47 @@ class LaporanPencariKerjaExport implements
     {
         $this->rowNumber++;
 
-        // Pendidikan terakhir: dari kartuAk1.riwayatPendidikan atau field pendidikan
-        $pendidikan = optional($item->kartuAk1)
+        $profil = $item->pencariKerja;
+
+        // Pendidikan terakhir
+        $pendidikan = optional($profil?->kartuAk1)
             ->riwayatPendidikan
             ?->sortByDesc('tahun_lulus')
             ->first()
             ?->jenjang
-            ?? optional($item)->pendidikan
-            ?? optional($item)->pendidikan_terakhir
+            ?? $profil?->pendidikan
+            ?? $profil?->pendidikan_terakhir
             ?? '-';
 
-        // Keahlian dari kartuAk1.keterampilan
-        $keahlian = optional($item->kartuAk1)
+        // Keahlian
+        $keahlian = optional($profil?->kartuAk1)
             ->keterampilan
             ?->pluck('nama_keterampilan')
             ->filter()
             ->implode(', ')
             ?? '-';
 
-        // Pekerjaan yang dilamar (ambil judul lowongan terakhir)
-        $namaPekerjaan = $item->lamaranPekerjaan()
-            ->withTrashed()
-            ->with('lowongan')
-            ->latest('tanggal_lamar')
-            ->first()
-            ?->lowongan
-            ?->judul_lowongan
-            ?? '-';
-
-        // Tanggal daftar
-        $tanggalDaftar = $item->created_at
-            ? $item->created_at->format('d-m-Y')
-            : '-';
-
-        // Status akun via relasi pengguna
-        $statusAkun = optional($item->pengguna)->status ?? '-';
-
         // Domisili
         $domisili = collect([
-            $item->kelurahan,
-            $item->kecamatan,
-            $item->kab_kota,
+            $profil?->kelurahan,
+            $profil?->kecamatan,
+            $profil?->kab_kota,
         ])->filter()->implode(', ') ?: '-';
 
         return [
             $this->rowNumber,
-            $item->nama_lengkap         ?? '-',
-            $item->email                ?? '-',
-            $item->nomor_hp             ?? '-',
+            $profil?->nama_lengkap ?? '-',
+            $profil?->email ?? '-',
+            $profil?->nomor_hp ?? '-',
             $domisili,
-            $item->jenis_kelamin        ?? '-',
+            $profil?->jenis_kelamin ?? '-',
             $pendidikan,
             $keahlian,
-            $namaPekerjaan,
-            $tanggalDaftar,
-            $statusAkun,
+            $item?->lowongan?->judul_lowongan ?? '-',
+            $item->tanggal_lamar
+                ? \Carbon\Carbon::parse($item->tanggal_lamar)->format('d-m-Y')
+                : '-',
+            optional($profil?->pengguna)->status ?? '-',
         ];
     }
 
@@ -216,13 +200,11 @@ class LaporanPencariKerjaExport implements
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
 
-                $totalCols  = 11; // selalu 11 kolom
+                $totalCols  = 11;
                 $lastColumn = Coordinate::stringFromColumnIndex($totalCols);
                 $lastRow    = $sheet->getHighestRow();
 
-                // =====================================================
-                // HEADER ATAS (Row 1 & 2)
-                // =====================================================
+                // HEADER ATAS
                 $sheet->mergeCells("A1:{$lastColumn}1");
                 $sheet->mergeCells("A2:{$lastColumn}2");
 
@@ -247,9 +229,7 @@ class LaporanPencariKerjaExport implements
                 $sheet->getRowDimension(2)->setRowHeight(18);
                 $sheet->getRowDimension(3)->setRowHeight(6);
 
-                // =====================================================
-                // HEADING TABEL (Row 4)
-                // =====================================================
+                // HEADING TABEL
                 $sheet->getStyle("A4:{$lastColumn}4")->applyFromArray([
                     'font' => [
                         'bold' => true,
@@ -275,9 +255,7 @@ class LaporanPencariKerjaExport implements
 
                 $sheet->getRowDimension(4)->setRowHeight(28);
 
-                // =====================================================
-                // ISI TABEL (Row 5+)
-                // =====================================================
+                // ISI TABEL
                 if ($lastRow >= 5) {
                     $sheet->getStyle("A5:{$lastColumn}{$lastRow}")->applyFromArray([
                         'font' => [
@@ -307,7 +285,7 @@ class LaporanPencariKerjaExport implements
                         }
                     }
 
-                    // Center kolom: No, JK, Tanggal, Status
+                    // Center kolom
                     foreach (['A', 'F', 'J', 'K'] as $col) {
                         $sheet->getStyle("{$col}5:{$col}{$lastRow}")
                             ->getAlignment()
@@ -315,10 +293,8 @@ class LaporanPencariKerjaExport implements
                     }
                 }
 
-                // =====================================================
-                // FOOTER TANDA TANGAN
-                // =====================================================
-                $footerStartColIndex = $totalCols - 2; // kolom I
+                // FOOTER
+                $footerStartColIndex = $totalCols - 2;
                 $footerStartCol      = Coordinate::stringFromColumnIndex($footerStartColIndex);
 
                 $r1 = $lastRow + 3;
@@ -347,21 +323,19 @@ class LaporanPencariKerjaExport implements
 
                 $sheet->getRowDimension($r3)->setRowHeight(36);
 
-                // =====================================================
-                // LEBAR KOLOM MANUAL
-                // =====================================================
+                // LEBAR KOLOM
                 $widths = [
-                    'A' => 5,  // No
-                    'B' => 26, // Nama
-                    'C' => 26, // Email
-                    'D' => 16, // No HP
-                    'E' => 24, // Domisili
-                    'F' => 14, // JK
-                    'G' => 18, // Pendidikan
-                    'H' => 28, // Keahlian
-                    'I' => 28, // Nama Pekerjaan
-                    'J' => 16, // Tanggal
-                    'K' => 14, // Status
+                    'A' => 5,
+                    'B' => 26,
+                    'C' => 26,
+                    'D' => 16,
+                    'E' => 24,
+                    'F' => 14,
+                    'G' => 18,
+                    'H' => 28,
+                    'I' => 28,
+                    'J' => 16,
+                    'K' => 14,
                 ];
 
                 foreach ($widths as $col => $width) {

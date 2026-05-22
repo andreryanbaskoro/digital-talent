@@ -46,75 +46,62 @@ class LaporanPencariKerjaController extends Controller
     {
         $mode = $this->normalizeMode($mode);
 
-        // ===================== MODE PERUSAHAAN =====================
-        // Ambil via LamaranPekerjaan → filter ke perusahaan login → distinct pencariKerja
+        $query = LamaranPekerjaan::withTrashed()
+            ->with([
+                'pencariKerja.pengguna',
+                'pencariKerja.kartuAk1.keterampilan',
+                'lowongan.profilPerusahaan',
+            ]);
+
+        // MODE PERUSAHAAN
         if ($mode === 'perusahaan') {
+
             $idPengguna = $this->currentIdPengguna();
 
             abort_if(!$idPengguna, 403, 'Akun perusahaan tidak valid.');
 
-            // Ambil id_pencari_kerja yang melamar ke lowongan perusahaan ini
-            $idPencariKerjaList = LamaranPekerjaan::withTrashed()
-                ->whereHas('lowongan.profilPerusahaan', function ($q) use ($idPengguna) {
-                    $q->withTrashed()->where('id_pengguna', $idPengguna);
-                })
-                ->when($request->filled('nama_pekerjaan'), function ($q) use ($request) {
-                    $q->whereHas('lowongan', function ($qq) use ($request) {
-                        $qq->withTrashed()->where('judul_lowongan', 'like', '%' . $request->nama_pekerjaan . '%');
-                    });
-                })
-                ->when($request->filled('jenis_pekerjaan'), function ($q) use ($request) {
-                    $q->whereHas('lowongan', function ($qq) use ($request) {
-                        $qq->withTrashed()->where('jenis_pekerjaan', $request->jenis_pekerjaan);
-                    });
-                })
-                ->when($request->filled('tanggal_pendaftaran'), function ($q) use ($request) {
-                    $q->whereDate('tanggal_lamar', $request->tanggal_pendaftaran);
-                })
-                ->pluck('id_pencari_kerja')
-                ->unique();
-
-            $query = ProfilPencariKerja::withTrashed()
-                ->with(['pengguna', 'kartuAk1.keterampilan'])
-                ->whereIn('id_pencari_kerja', $idPencariKerjaList);
-
-            // ===================== MODE DISNAKER =====================
-        } else {
-            $query = ProfilPencariKerja::withTrashed()
-                ->with(['pengguna', 'kartuAk1.keterampilan']);
-
-            // Jika ada filter nama_pekerjaan / jenis_pekerjaan / tanggal_pendaftaran (lamar)
-            // maka scope via lamaran
-            $hasLamaranFilter = $request->filled('nama_pekerjaan')
-                || $request->filled('jenis_pekerjaan')
-                || $request->filled('tanggal_pendaftaran');
-
-            if ($hasLamaranFilter) {
-                $query->whereHas('lamaranPekerjaan', function ($q) use ($request) {
-                    $q->withTrashed()
-                        ->when($request->filled('nama_pekerjaan'), function ($qq) use ($request) {
-                            $qq->whereHas('lowongan', function ($qqq) use ($request) {
-                                $qqq->withTrashed()->where('judul_lowongan', 'like', '%' . $request->nama_pekerjaan . '%');
-                            });
-                        })
-                        ->when($request->filled('jenis_pekerjaan'), function ($qq) use ($request) {
-                            $qq->whereHas('lowongan', function ($qqq) use ($request) {
-                                $qqq->withTrashed()->where('jenis_pekerjaan', $request->jenis_pekerjaan);
-                            });
-                        })
-                        ->when($request->filled('tanggal_pendaftaran'), function ($qq) use ($request) {
-                            $qq->whereDate('tanggal_lamar', $request->tanggal_pendaftaran);
-                        });
-                });
-            }
+            $query->whereHas('lowongan.profilPerusahaan', function ($q) use ($idPengguna) {
+                $q->withTrashed()
+                    ->where('id_pengguna', $idPengguna);
+            });
         }
 
-        // ===================== FILTER BERSAMA =====================
-        $query->when($request->filled('jenis_kelamin'), function ($q) use ($request) {
-            $q->where('jenis_kelamin', $request->jenis_kelamin);
-        });
+        // FILTER NAMA PEKERJAAN
+        if ($request->filled('nama_pekerjaan')) {
+            $query->whereHas('lowongan', function ($q) use ($request) {
+                $q->withTrashed()
+                    ->where('judul_lowongan', 'like', '%' . $request->nama_pekerjaan . '%');
+            });
+        }
 
-        return $query;
+        // FILTER JENIS PEKERJAAN
+        if ($request->filled('jenis_pekerjaan')) {
+            $query->whereHas('lowongan', function ($q) use ($request) {
+                $q->withTrashed()
+                    ->where('jenis_pekerjaan', $request->jenis_pekerjaan);
+            });
+        }
+
+        // FILTER BULAN PENDAFTARAN
+        if ($request->filled('tanggal_pendaftaran')) {
+
+            $start = \Carbon\Carbon::parse($request->tanggal_pendaftaran)
+                ->startOfMonth();
+
+            $end = \Carbon\Carbon::parse($request->tanggal_pendaftaran)
+                ->endOfMonth();
+
+            $query->whereBetween('tanggal_lamar', [$start, $end]);
+        }
+
+        // FILTER JENIS KELAMIN
+        if ($request->filled('jenis_kelamin')) {
+            $query->whereHas('pencariKerja', function ($q) use ($request) {
+                $q->where('jenis_kelamin', $request->jenis_kelamin);
+            });
+        }
+
+        return $query->orderByDesc('tanggal_lamar');
     }
 
     /**

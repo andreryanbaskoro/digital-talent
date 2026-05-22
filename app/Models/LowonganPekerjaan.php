@@ -28,6 +28,8 @@ class LowonganPekerjaan extends Model
         'pendidikan_minimum',
         'pengalaman_minimum',
         'kuota',
+        'periode_ke',
+        'nama_periode',
         'tanggal_mulai',
         'tanggal_berakhir',
         'status',
@@ -91,5 +93,28 @@ class LowonganPekerjaan extends Model
             // Gabungkan jadi ID
             $model->id_lowongan = "LOW-$year-$formattedNumber";
         });
+    }
+
+    public function getStatusPeriodeAttribute()
+    {
+        $today = now()->toDateString();
+
+        // belum isi tanggal
+        if (!$this->tanggal_mulai || !$this->tanggal_berakhir) {
+            return 'draft';
+        }
+
+        // belum mulai
+        if ($today < $this->tanggal_mulai) {
+            return 'belum dibuka';
+        }
+
+        // sudah lewat
+        if ($today > $this->tanggal_berakhir) {
+            return 'ditutup';
+        }
+
+        // sedang aktif
+        return 'dibuka';
     }
 }

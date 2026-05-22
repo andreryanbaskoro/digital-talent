@@ -14,7 +14,7 @@
 
         {{-- Headline --}}
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-5 animate-fade-in-up" style="animation-delay:.1s">
-            Penempatan Kerja<br>
+            Lowongan Kerja<br>
             <span class="bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
                 Berbasis Kompetensi
             </span>

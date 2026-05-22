@@ -102,7 +102,7 @@
 
                 <!-- Laporan -->
                 <li class="nav-item">
-                    <a href="{{ route('laporan.pelamar-perusahaan.index', ['mode' => 'disnaker']) }}"
+                    <a href="{{ route('laporan.pencari-kerja.index', ['mode' => 'disnaker']) }}"
                         class="nav-link {{
             request()->routeIs('laporan.*')
             ? 'active'

@@ -12,6 +12,7 @@
                         <th>TTL</th>
                         <th>Personal</th>
                         <th>Kontak</th>
+                        <th>Status AK1</th>
                         <th style="width:120px;">Aksi</th>
                     </tr>
                 </thead>
@@ -73,6 +74,62 @@
                                 <i class="fas fa-envelope"></i>
                                 {{ $kerja->email }}
                             </small>
+                        </td>
+
+                        {{-- Status AK1 --}}
+                        <td class="text-center">
+
+                            @if($kerja->kartuAk1)
+
+                            @php
+                            $ak1 = $kerja->kartuAk1;
+                            @endphp
+
+                            {{-- STATUS --}}
+                            @if($ak1->status == 'disetujui')
+                            <span class="badge badge-success">
+                                AK1 Aktif
+                            </span>
+
+                            @elseif($ak1->status == 'pending')
+                            <span class="badge badge-warning">
+                                Pending
+                            </span>
+
+                            @elseif($ak1->status == 'ditolak')
+                            <span class="badge badge-danger">
+                                Ditolak
+                            </span>
+
+                            @elseif($ak1->status == 'draft')
+                            <span class="badge badge-secondary">
+                                Draft
+                            </span>
+                            @endif
+
+                            {{-- NOMOR --}}
+                            <br>
+                            <small class="text-muted">
+                                {{ $ak1->nomor_pendaftaran }}
+                            </small>
+
+                            {{-- BERLAKU --}}
+                            @if($ak1->status == 'disetujui' && $ak1->berlaku_sampai)
+                            <br>
+                            <small class="text-success">
+                                Berlaku s/d
+                                {{ $ak1->berlaku_sampai->format('d M Y') }}
+                            </small>
+                            @endif
+
+                            @else
+
+                            <span class="badge badge-light border">
+                                Belum Punya
+                            </span>
+
+                            @endif
+
                         </td>
 
                         {{-- Aksi --}}

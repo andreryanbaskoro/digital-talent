@@ -20,8 +20,8 @@
 
             @php
             $total = $data->count();
-            $laki = $data->where('jenis_kelamin', 'L')->count();
-            $perempuan = $data->where('jenis_kelamin', 'P')->count();
+            $laki = $data->filter(fn ($item) => optional($item->pencariKerja)->jenis_kelamin === 'L')->count();
+            $perempuan = $data->filter(fn ($item) => optional($item->pencariKerja)->jenis_kelamin === 'P')->count();
 
             $cards = [
             ['title' => 'Total Pencari Kerja', 'count' => $total, 'color' => 'info', 'icon' => 'users'],
@@ -43,11 +43,11 @@
                                     Pilih Jenis Laporan
                                 </label>
                                 <select id="laporanSelect" class="form-control">
-                                    <option value="{{ route('laporan.pelamar-perusahaan.index', ['mode' => $mode]) }}">
-                                        🏢 Laporan Data Pelamar Perusahaan
-                                    </option>
                                     <option value="{{ route('laporan.pencari-kerja.index', ['mode' => $mode]) }}" selected>
                                         🔍 Laporan Data Pencari Kerja
+                                    </option>
+                                    <option value="{{ route('laporan.pelamar-perusahaan.index', ['mode' => $mode]) }}">
+                                        🏢 Laporan Data Pelamar Perusahaan
                                     </option>
                                     <option
                                         value="{{ route('laporan.profile-matching.index', ['mode' => $mode]) }}">
@@ -121,10 +121,10 @@
                                 </select>
                             </div>
 
-                            {{-- TANGGAL PENDAFTARAN --}}
+                            {{-- BULAN PENDAFTARAN --}}
                             <div class="col-md-3 mb-3">
-                                <label>Tanggal Pendaftaran</label>
-                                <input type="date"
+                                <label>Bulan/Tahun</label>
+                                <input type="month"
                                     name="tanggal_pendaftaran"
                                     class="form-control"
                                     value="{{ request('tanggal_pendaftaran') }}">
@@ -201,45 +201,43 @@
 
                                 @forelse($data as $item)
                                 @php
-                                // Ambil riwayat terakhir (sekali saja biar tidak double query logic)
-                                $riwayat = optional($item->kartuAk1)
+                                $pencariKerja = optional($item->pencariKerja);
+                                $lowongan = optional($item->lowongan);
+
+                                // Riwayat pendidikan terakhir
+                                $riwayat = optional($pencariKerja->kartuAk1)
                                 ->riwayatPendidikan
                                 ?->sortByDesc('tahun_lulus')
                                 ?->first();
 
                                 // Pendidikan
                                 $pendidikan = $riwayat?->jenjang
-                                ?? optional($item)->pendidikan
-                                ?? optional($item)->pendidikan_terakhir;
+                                ?? $pencariKerja->pendidikan
+                                ?? $pencariKerja->pendidikan_terakhir;
 
                                 // Jurusan
                                 $jurusan = $riwayat?->jurusan;
 
-                                $keahlian = optional($item->kartuAk1)
+                                // Keahlian
+                                $keahlian = optional($pencariKerja->kartuAk1)
                                 ->keterampilan
                                 ?->pluck('nama_keterampilan')
                                 ?->filter()
                                 ?->implode(', ');
-
                                 $keahlian = $keahlian ?: '-';
 
                                 // Pekerjaan yang dilamar
-                                $lamaranTerakhir = $item->lamaranPekerjaan()
-                                ->withTrashed()
-                                ->with('lowongan')
-                                ->latest('tanggal_lamar')
-                                ->first();
-                                $namaPekerjaan = optional(optional($lamaranTerakhir)->lowongan)->judul_lowongan ?? '-';
+                                $namaPekerjaan = $lowongan->judul_lowongan ?? '-';
 
                                 // Domisili
                                 $domisili = collect([
-                                $item->kelurahan,
-                                $item->kecamatan,
-                                $item->kab_kota,
+                                $pencariKerja->kelurahan,
+                                $pencariKerja->kecamatan,
+                                $pencariKerja->kab_kota,
                                 ])->filter()->implode(', ') ?: '-';
 
                                 // Status akun
-                                $statusAkun = optional($item->pengguna)->status ?? '-';
+                                $statusAkun = optional($pencariKerja->pengguna)->status ?? '-';
 
                                 // Badge status
                                 $badgeColor = match(strtolower($statusAkun)) {
@@ -250,40 +248,90 @@
                                 @endphp
                                 <tr>
                                     <td class="text-center">{{ $loop->iteration }}</td>
-                                    <td>{{ $item->nama_lengkap ?? '-' }}</td>
-                                    <td>{{ $item->email ?? '-' }}</td>
-                                    <td>{{ $item->nomor_hp ?? '-' }}</td>
-                                    <td>{{ $domisili }}</td>
+
+                                    {{-- Nama --}}
+                                    <td>
+                                        {{ $pencariKerja->nama_lengkap ?? '-' }}
+                                    </td>
+
+                                    {{-- Email --}}
+                                    <td>
+                                        {{ $pencariKerja->email ?? '-' }}
+                                    </td>
+
+                                    {{-- Nomor HP --}}
+                                    <td>
+                                        {{ $pencariKerja->nomor_hp ?? '-' }}
+                                    </td>
+
+                                    {{-- Domisili --}}
+                                    <td>
+                                        {{ $domisili }}
+                                    </td>
+
+                                    {{-- Jenis Kelamin --}}
                                     <td class="text-center">
-                                        @if($item->jenis_kelamin == 'L')
-                                        <span class="badge badge-primary">Laki-laki</span>
-                                        @elseif($item->jenis_kelamin == 'P')
-                                        <span class="badge badge-danger">Perempuan</span>
+                                        @if($pencariKerja->jenis_kelamin == 'L')
+                                        <span class="badge badge-primary">
+                                            Laki-laki
+                                        </span>
+
+                                        @elseif($pencariKerja->jenis_kelamin == 'P')
+                                        <span class="badge badge-danger">
+                                            Perempuan
+                                        </span>
+
                                         @else
                                         -
                                         @endif
                                     </td>
+
+                                    {{-- Pendidikan --}}
                                     <td class="text-center">
-                                        {{ collect([$pendidikan, $jurusan])->filter()->implode(' - ') ?: '-' }}
+                                        {{
+            collect([$pendidikan, $jurusan])
+                ->filter()
+                ->implode(' - ')
+                ?: '-'
+        }}
                                     </td>
+
+                                    {{-- Keahlian --}}
                                     <td>
-                                        <span title="{{ $keahlian ?? '-' }}">
-                                            {{ Str::limit($keahlian ?? '-', 40) }}
+                                        <span title="{{ $keahlian }}">
+                                            {{ Str::limit($keahlian, 40) }}
                                         </span>
                                     </td>
-                                    <td>{{ $namaPekerjaan }}</td>
-                                    <td class="text-center">
-                                        {{ $item->created_at ? $item->created_at->format('d-m-Y') : '-' }}
+
+                                    {{-- Nama Pekerjaan --}}
+                                    <td>
+                                        {{ $namaPekerjaan }}
                                     </td>
+
+                                    {{-- Tanggal Lamar --}}
+                                    <td class="text-center">
+                                        {{
+            $item->tanggal_lamar
+                ? \Carbon\Carbon::parse($item->tanggal_lamar)->format('d-m-Y')
+                : '-'
+        }}
+                                    </td>
+
+                                    {{-- Status Akun --}}
                                     <td class="text-center">
                                         <span class="badge badge-{{ $badgeColor }}">
                                             {{ ucfirst($statusAkun) }}
                                         </span>
                                     </td>
                                 </tr>
+
                                 @empty
                                 <tr>
-                                    <td colspan="11" class="text-center">Data tidak ditemukan</td>
+                                    <td colspan="11" class="text-center">
+                                        Data tidak ditemukan
+                                    </td>
+                                </tr>
+                                <td colspan="11" class="text-center">Data tidak ditemukan</td>
                                 </tr>
                                 @endforelse
 

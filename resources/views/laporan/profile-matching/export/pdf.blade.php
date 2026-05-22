@@ -450,7 +450,15 @@
             $secondaryFactor = (float) ($item->nilai_faktor_pendukung ?? 0);
             $ranking = $item->peringkat ?? '-';
             $rekomendasi = $item->rekomendasi ?? '-';
-            $tanggalSeleksi = $item->created_at ? $item->created_at->format('d-m-Y') : '-';
+            $lamaran = optional($item->lamaran);
+
+            $periode = $lamaran->periode_ke
+            ? 'Periode ' . $lamaran->periode_ke
+            : '-';
+
+            if ($lamaran->nama_periode) {
+            $periode .= ' - ' . $lamaran->nama_periode;
+            }
 
             // Class kesimpulan — exact match sesuai getRekomendasi()
             $kesClass = match($rekomendasi) {
@@ -492,7 +500,11 @@
                 <td class="td-center">
                     <span class="kes-badge {{ $kesClass }}">{{ $rekomendasi }}</span>
                 </td>
-                <td class="td-date">{{ $tanggalSeleksi }}</td>
+                <td class="text-center">
+                    <span class="badge badge-info">
+                        {{ $periode }}
+                    </span>
+                </td>
             </tr>
             @empty
             <tr class="empty-row">

@@ -16,6 +16,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use Carbon\Carbon;
 
 class LaporanProfileMatchingExport implements
     FromCollection,
@@ -75,8 +76,10 @@ class LaporanProfileMatchingExport implements
             });
         }
 
-        if (!empty($this->filters['tanggal_seleksi'])) {
-            $query->whereDate('created_at', $this->filters['tanggal_seleksi']);
+        if (!empty($this->filters['periode_ke'])) {
+            $query->whereHas('lamaran', function ($q) {
+                $q->where('periode_ke', $this->filters['periode_ke']);
+            });
         }
 
         if (!empty($this->filters['kesimpulan'])) {
@@ -113,7 +116,7 @@ class LaporanProfileMatchingExport implements
                 'Persentase Matching',
                 'Ranking',
                 'Kesimpulan',
-                'Tanggal Seleksi',
+                'Periode',
             ];
         }
 
@@ -127,7 +130,7 @@ class LaporanProfileMatchingExport implements
             'Persentase Matching',
             'Ranking',
             'Kesimpulan',
-            'Tanggal Seleksi',
+            'Periode',
         ];
     }
 
@@ -154,7 +157,9 @@ class LaporanProfileMatchingExport implements
         $secondaryFactor = (float) ($item->nilai_faktor_pendukung ?? 0);
         $ranking         = $item->peringkat ?? '-';
         $kesimpulan      = $item->rekomendasi ?? '-';
-        $tanggalSeleksi  = $item->created_at ? $item->created_at->format('d-m-Y') : '-';
+        $periode = $item->lamaran->periode_ke
+            ? 'Periode ' . $item->lamaran->periode_ke . ($item->lamaran->nama_periode ? ' - ' . $item->lamaran->nama_periode : '')
+            : '-';
 
         if ($this->mode === 'disnaker') {
             return [
@@ -169,7 +174,7 @@ class LaporanProfileMatchingExport implements
                 $persentase . '%',
                 $ranking,
                 $kesimpulan,
-                $tanggalSeleksi,
+                $periode,
             ];
         }
 
@@ -182,7 +187,7 @@ class LaporanProfileMatchingExport implements
             $persentase . '%',
             $ranking,
             $kesimpulan,
-            $tanggalSeleksi,
+            $periode,
         ];
     }
 

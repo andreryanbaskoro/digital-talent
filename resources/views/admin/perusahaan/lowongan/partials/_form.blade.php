@@ -17,18 +17,90 @@ $subKriteria = $isEdit ? $lowongan->subKriteriaLowongan->values() : collect();
         <div class="card-body">
             <div class="row">
 
+                {{-- Periode --}}
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Periode Ke</label>
+
+                        <input type="number"
+                            name="periode_ke"
+                            class="form-control"
+                            min="1"
+                            value="{{ old('periode_ke', $lowongan->periode_ke ?? 1) }}">
+
+                        <small class="text-muted d-block mt-1">
+                            Contoh: Periode 1, 2, dst.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Nama Periode</label>
+
+                        <input type="text"
+                            name="nama_periode"
+                            class="form-control"
+                            placeholder="Contoh: Januari - Maret 2026"
+                            value="{{ old('nama_periode', $lowongan->nama_periode ?? '') }}">
+
+                        <small class="text-muted d-block mt-1">
+                            Nama periode rekrutmen lowongan.
+                        </small>
+                    </div>
+                </div>
+
+                {{-- Tanggal --}}
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Tanggal Mulai</label>
+
+                        <input type="date"
+                            name="tanggal_mulai"
+                            class="form-control @error('tanggal_mulai') is-invalid @enderror"
+                            value="{{ old('tanggal_mulai', $lowongan->tanggal_mulai ?? '') }}">
+
+                        <small class="text-muted d-block mt-1">
+                            Periode tanggal lowongan (tanggal mulai publikasi)
+                        </small>
+
+                        @error('tanggal_mulai')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Tanggal Berakhir</label>
+
+                        <input type="date"
+                            name="tanggal_berakhir"
+                            class="form-control @error('tanggal_berakhir') is-invalid @enderror"
+                            value="{{ old('tanggal_berakhir', $lowongan->tanggal_berakhir ?? '') }}">
+
+                        <small class="text-muted d-block mt-1">
+                            Periode tanggal lowongan (batas akhir publikasi)
+                        </small>
+
+                        @error('tanggal_berakhir')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+
                 {{-- ID Lowongan --}}
-                @if(!$isEdit)
                 <div class="col-md-12">
                     <div class="form-group">
                         <label>ID Lowongan</label>
-                        <input type="text" class="form-control"
-                            value="{{ $generatedId ?? 'Auto Generate' }}"
+
+                        <input type="text"
+                            class="form-control"
+                            value="{{ $isEdit ? $lowongan->id_lowongan : ($generatedId ?? 'Auto Generate') }}"
                             readonly>
                     </div>
                 </div>
-                @endif
-
                 {{-- Judul --}}
                 <div class="col-md-6">
                     <div class="form-group">
@@ -163,7 +235,7 @@ $subKriteria = $isEdit ? $lowongan->subKriteriaLowongan->values() : collect();
                 </div>
 
                 {{-- Kuota --}}
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Kuota</label>
                         <input type="number" name="kuota" class="form-control @error('kuota') is-invalid @enderror"
@@ -175,45 +247,7 @@ $subKriteria = $isEdit ? $lowongan->subKriteriaLowongan->values() : collect();
                     </div>
                 </div>
 
-                {{-- Tanggal --}}
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label>Tanggal Mulai</label>
-
-                        <input type="date"
-                            name="tanggal_mulai"
-                            class="form-control @error('tanggal_mulai') is-invalid @enderror"
-                            value="{{ old('tanggal_mulai', $lowongan->tanggal_mulai ?? '') }}">
-
-                        <small class="text-muted d-block mt-1">
-                            Periode tanggal lowongan (tanggal mulai publikasi)
-                        </small>
-
-                        @error('tanggal_mulai')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label>Tanggal Berakhir</label>
-
-                        <input type="date"
-                            name="tanggal_berakhir"
-                            class="form-control @error('tanggal_berakhir') is-invalid @enderror"
-                            value="{{ old('tanggal_berakhir', $lowongan->tanggal_berakhir ?? '') }}">
-
-                        <small class="text-muted d-block mt-1">
-                            Periode tanggal lowongan (batas akhir publikasi)
-                        </small>
-
-                        @error('tanggal_berakhir')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Status</label>
 
@@ -229,6 +263,7 @@ $subKriteria = $isEdit ? $lowongan->subKriteriaLowongan->values() : collect();
                             readonly>
                     </div>
                 </div>
+
 
                 {{-- Deskripsi --}}
                 <div class="col-md-12">

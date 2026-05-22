@@ -88,10 +88,21 @@ class LaporanPelamarPerusahaanExport implements
         }
 
         if (!empty($this->filters['tanggal_posting'])) {
-            $tanggalPosting = $this->filters['tanggal_posting'];
 
-            $query->whereHas('lowongan', function ($q) use ($tanggalPosting) {
-                $q->whereDate('created_at', $tanggalPosting);
+            $tanggal = explode('-', $this->filters['tanggal_posting']);
+
+            $tahun = $tanggal[0] ?? null;
+            $bulan = $tanggal[1] ?? null;
+
+            $query->whereHas('lowongan', function ($q) use ($tahun, $bulan) {
+
+                if ($tahun) {
+                    $q->whereYear('created_at', $tahun);
+                }
+
+                if ($bulan) {
+                    $q->whereMonth('created_at', $bulan);
+                }
             });
         }
 
